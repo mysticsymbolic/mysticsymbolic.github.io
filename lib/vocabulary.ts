@@ -4,6 +4,8 @@ import cheerio from "cheerio";
 
 export type Symbol = {
   name: string;
+  width: number;
+  height: number;
   svg: string;
 };
 
@@ -20,19 +22,36 @@ function removeAttr(attr: string, $: cheerio.Root, g: cheerio.Cheerio) {
   });
 }
 
+function getSvgPixelDimension($: cheerio.Root, attr: string): number {
+  const value = $("svg").attr(attr);
+  if (!value) {
+    throw new Error(`<svg> ${attr} attribute is empty or missing!`);
+  }
+  const match = value.match(/^(\d+)px$/);
+  if (!match) {
+    throw new Error(
+      `unable to parse <svg> ${attr} attribute value '${value}'!`
+    );
+  }
+  return parseInt(match[1]);
+}
+
 export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
   const vocab: SerializedVocabulary = [];
   for (let filename of filenames) {
     if (path.extname(filename) === ".svg") {
+      console.log(`Adding ${filename} to vocabulary.`);
       const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
         encoding: "utf-8",
       });
       const $ = cheerio.load(svgMarkup);
+      const width = getSvgPixelDimension($, "width");
+      const height = getSvgPixelDimension($, "height");
       const g = $("svg > g");
       removeAttr("fill", $, g);
       removeAttr("stroke", $, g);
-      const name = g.attr('id');
+      const name = g.attr("id");
       if (!name) {
         throw new Error(`${filename} has no <g> with an 'id' attribute!`);
       }
@@ -43,6 +62,8 @@ export function build() {
       const symbol: Symbol = {
         name,
         svg,
+        width,
+        height,
       };
       vocab.push(symbol);
     }
