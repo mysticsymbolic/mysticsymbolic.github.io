@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.0.3 build 635 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
+<g id="cup">
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M 96.733 51.462 C 96.759 51.459 183.693 27.609 360.000 27.609 C 536.307 27.609 623.241 51.459 623.267 51.462 C 623.263 51.492 639.241 271.327 577.920 354.039 C 537.755 408.214 410.759 430.271 400.707 447.607 C 393.142 460.654 392.438 585.810 400.707 598.423 C 411.163 614.372 580.007 645.634 577.920 668.903 C 576.499 684.741 427.073 692.391 360.000 692.391 C 292.927 692.391 141.906 684.327 142.080 668.903 C 142.361 644.062 308.837 614.372 319.293 598.423 C 327.562 585.810 326.858 460.654 319.293 447.607 C 309.241 430.271 182.245 408.214 142.080 354.039 C 80.759 271.327 96.737 51.492 96.733 51.462 Z"/>
+<path fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M 96.733 51.462 C 96.759 51.463 230.740 68.385 360.000 68.385 C 489.260 68.385 535.512 57.103 623.267 51.462 "/>
+</g>
+</svg>

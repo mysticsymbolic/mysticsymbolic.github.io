@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Moho 13.0.3 build 635 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280px" height="720px">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="heart">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 639.403 420.455 C 639.399 420.452 617.344 400.043 605.844 388.922 C 591.949 375.484 575.619 360.694 575.279 339.776 C 575.009 323.237 582.378 303.711 597.082 299.545 C 629.348 290.402 639.399 321.498 639.403 321.501 C 639.407 321.498 650.006 289.943 682.918 299.545 C 697.590 303.825 704.991 323.237 704.722 339.776 C 704.381 360.694 688.878 376.396 674.156 388.922 C 661.008 400.108 639.406 420.452 639.403 420.455 Z"/>
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 356.759 688.023 C 356.741 688.006 237.071 577.269 174.675 516.928 C 99.280 444.017 10.676 363.763 8.828 250.266 C 7.366 160.530 47.346 54.584 127.131 31.977 C 302.201 -17.631 356.736 151.094 356.759 151.106 C 356.783 151.094 414.292 -20.121 592.869 31.977 C 672.476 55.201 712.634 160.530 711.172 250.266 C 709.324 363.763 625.209 448.965 545.325 516.928 C 473.985 577.623 356.778 688.006 356.759 688.023 Z"/>
 </g>
 </svg>

@@ -3,8 +3,8 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280px" height="720px">
 <g id="eye">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 320.941 C 706.103 320.941 731.127 359.996 731.136 360.000 C 731.127 360.004 706.103 399.059 640.000 399.059 C 573.898 399.059 548.873 360.004 548.864 360.000 C 548.873 359.996 573.898 320.941 640.000 320.941 Z"/>
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 327.761 C 657.844 327.761 672.239 342.156 672.239 360.000 C 672.239 377.844 657.844 392.239 640.000 392.239 C 622.156 392.239 607.761 377.844 607.761 360.000 C 607.761 342.156 622.156 327.761 640.000 327.761 Z"/>
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 339.602 C 651.290 339.602 660.398 348.710 660.398 360.000 C 660.398 371.290 651.290 380.398 640.000 380.398 C 628.710 380.398 619.602 371.290 619.602 360.000 C 619.602 348.710 628.710 339.602 640.000 339.602 Z"/>
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 108.585 C 1065.493 108.585 1226.573 359.975 1226.631 360.000 C 1226.573 360.025 1065.493 611.415 640.000 611.415 C 214.507 611.415 53.427 360.025 53.369 360.000 C 53.427 359.975 214.507 108.585 640.000 108.585 Z"/>
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 152.484 C 754.859 152.484 847.516 245.141 847.516 360.000 C 847.516 474.859 754.859 567.516 640.000 567.516 C 525.141 567.516 432.484 474.859 432.484 360.000 C 432.484 245.141 525.141 152.484 640.000 152.484 Z"/>
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 640.000 228.699 C 712.674 228.699 771.301 287.326 771.301 360.000 C 771.301 432.674 712.674 491.301 640.000 491.301 C 567.326 491.301 508.699 432.674 508.699 360.000 C 508.699 287.326 567.326 228.699 640.000 228.699 Z"/>
 </g>
 </svg>

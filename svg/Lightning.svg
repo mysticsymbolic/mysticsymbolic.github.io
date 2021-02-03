@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.0.3 build 635 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
+<g id="lightning">
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 350.356 48.177 C 350.340 48.210 186.425 379.255 186.408 379.288 C 186.421 379.288 311.768 379.288 311.781 379.288 C 311.765 379.321 157.492 707.151 157.477 707.183 C 157.509 707.142 482.125 292.534 482.158 292.493 C 482.144 292.492 343.941 286.064 343.927 286.064 C 343.949 286.036 562.500 12.842 562.523 12.817 C 562.503 12.818 350.377 48.174 350.356 48.177 Z"/>
+</g>
+</svg>
