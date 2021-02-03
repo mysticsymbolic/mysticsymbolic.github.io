@@ -2,18 +2,27 @@ import fs from "fs";
 import path from "path";
 import cheerio from "cheerio";
 
+export type Symbol = {
+  name: string;
+  svg: string;
+};
+
+export type SerializedVocabulary = Symbol[];
+
 const MY_DIR = __dirname;
 const SVG_DIR = path.join(MY_DIR, "..", "svg");
+const VOCAB_PATH = path.join(MY_DIR, "svg-vocabulary.json");
 
 function removeAttr(attr: string, $: cheerio.Root, g: cheerio.Cheerio) {
   const items = g.find(`[${attr}]`);
   items.each(function (this: any, i, el) {
-    $((this)).removeAttr(attr);
+    $(this).removeAttr(attr);
   });
 }
 
 export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
+  const vocab: SerializedVocabulary = [];
   for (let filename of filenames) {
     if (path.extname(filename) === ".svg") {
       const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
@@ -21,9 +30,24 @@ export function build() {
       });
       const $ = cheerio.load(svgMarkup);
       const g = $("svg > g");
-      removeAttr('fill', $, g);
-      removeAttr('stroke', $, g);
-      console.log(filename, g.html());
+      removeAttr("fill", $, g);
+      removeAttr("stroke", $, g);
+      const name = g.attr('id');
+      if (!name) {
+        throw new Error(`${filename} has no <g> with an 'id' attribute!`);
+      }
+      const svg = g.html();
+      if (!svg) {
+        throw new Error(`${filename} has no <g> with child elements!`);
+      }
+      const symbol: Symbol = {
+        name,
+        svg,
+      };
+      vocab.push(symbol);
     }
   }
+
+  console.log(`Writing ${VOCAB_PATH}.`);
+  fs.writeFileSync(VOCAB_PATH, JSON.stringify(vocab, null, 2));
 }
