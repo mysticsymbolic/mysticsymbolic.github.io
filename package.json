@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "deploy": "npm run build && gh-pages -d dist",
     "build": "node build-vocabulary.js && parcel build index.html --public-url .",
     "watch": "node build-vocabulary.js && parcel index.html"
   },
@@ -19,6 +20,7 @@
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
     "cheerio": "^1.0.0-rc.5",
+    "gh-pages": "^3.1.0",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
