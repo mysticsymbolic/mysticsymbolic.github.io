@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "parcel index.html"
+    "build": "node build-vocabulary.js && parcel build index.html --public-url .",
+    "watch": "node build-vocabulary.js && parcel index.html"
   },
   "author": "",
   "license": "ISC",
