@@ -2,23 +2,27 @@ import fs from "fs";
 import path from "path";
 import cheerio from "cheerio";
 
-export type Symbol = {
+export type SvgSymbolData = {
   name: string;
   width: number;
   height: number;
   svg: string;
 };
 
-export type SerializedVocabulary = Symbol[];
-
 const MY_DIR = __dirname;
 const SVG_DIR = path.join(MY_DIR, "..", "svg");
 const VOCAB_PATH = path.join(MY_DIR, "svg-vocabulary.json");
 
-function removeAttr(attr: string, $: cheerio.Root, g: cheerio.Cheerio) {
+function removeAttrIfNotNone(
+  attr: string,
+  $: cheerio.Root,
+  g: cheerio.Cheerio
+) {
   const items = g.find(`[${attr}]`);
   items.each(function (this: any, i, el) {
-    $(this).removeAttr(attr);
+    if ($(this).attr(attr) !== "none") {
+      $(this).removeAttr(attr);
+    }
   });
 }
 
@@ -38,7 +42,7 @@ function getSvgPixelDimension($: cheerio.Root, attr: string): number {
 
 export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
-  const vocab: SerializedVocabulary = [];
+  const vocab: SvgSymbolData[] = [];
   for (let filename of filenames) {
     if (path.extname(filename) === ".svg") {
       console.log(`Adding ${filename} to vocabulary.`);
@@ -49,8 +53,8 @@ export function build() {
       const width = getSvgPixelDimension($, "width");
       const height = getSvgPixelDimension($, "height");
       const g = $("svg > g");
-      removeAttr("fill", $, g);
-      removeAttr("stroke", $, g);
+      removeAttrIfNotNone("fill", $, g);
+      removeAttrIfNotNone("stroke", $, g);
       const name = g.attr("id");
       if (!name) {
         throw new Error(`${filename} has no <g> with an 'id' attribute!`);
@@ -59,7 +63,7 @@ export function build() {
       if (!svg) {
         throw new Error(`${filename} has no <g> with child elements!`);
       }
-      const symbol: Symbol = {
+      const symbol: SvgSymbolData = {
         name,
         svg,
         width,
