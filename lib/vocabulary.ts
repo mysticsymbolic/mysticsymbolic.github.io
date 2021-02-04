@@ -12,6 +12,7 @@ export type SvgSymbolData = {
 const MY_DIR = __dirname;
 const SVG_DIR = path.join(MY_DIR, "..", "svg");
 const VOCAB_PATH = path.join(MY_DIR, "svg-vocabulary.json");
+const SVG_EXT = ".svg";
 
 function removeAttrIfNotNone(
   attr: string,
@@ -44,7 +45,7 @@ export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
   const vocab: SvgSymbolData[] = [];
   for (let filename of filenames) {
-    if (path.extname(filename) === ".svg") {
+    if (path.extname(filename) === SVG_EXT) {
       console.log(`Adding ${filename} to vocabulary.`);
       const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
         encoding: "utf-8",
@@ -55,10 +56,7 @@ export function build() {
       const g = $("svg > g");
       removeAttrIfNotNone("fill", $, g);
       removeAttrIfNotNone("stroke", $, g);
-      const name = g.attr("id");
-      if (!name) {
-        throw new Error(`${filename} has no <g> with an 'id' attribute!`);
-      }
+      const name = path.basename(filename, SVG_EXT);
       const svg = g.html();
       if (!svg) {
         throw new Error(`${filename} has no <g> with child elements!`);
