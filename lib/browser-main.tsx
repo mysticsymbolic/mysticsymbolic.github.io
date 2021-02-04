@@ -18,6 +18,8 @@ type SvgSymbolProps = {
   data: SvgSymbolData;
 };
 
+const px = (value: number) => `${value}px`;
+
 const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
   const d = props.data;
 
@@ -25,8 +27,8 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
     <svg
       stroke="#000000"
       fill="#ffffff"
-      width={`${d.width}px`}
-      height={`${d.height}px`}
+      width={px(d.width)}
+      height={px(d.height)}
       dangerouslySetInnerHTML={{ __html: d.svg }}
     ></svg>
   );
