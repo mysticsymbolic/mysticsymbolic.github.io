@@ -53,9 +53,7 @@ const App: React.FC<{}> = () => {
           value={stroke}
           onChange={(e) => setStroke(e.target.value)}
           id="stroke"
-        />
-      </p>
-      <p>
+        />{" "}
         <label htmlFor="fill">Fill: </label>
         <input
           type="color"
