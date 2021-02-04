@@ -68,9 +68,19 @@ const App: React.FC<{}> = () => {
         <div
           style={{
             display: "inline-block",
+            border: "1px solid black",
+            margin: "4px",
           }}
         >
-          <h2>{symbolData.name}</h2>
+          <div
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              padding: "4px",
+            }}
+          >
+            {symbolData.name}
+          </div>
           <SvgSymbol
             data={symbolData}
             scale={0.25}
