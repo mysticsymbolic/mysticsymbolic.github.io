@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
-    "build": "node build-vocabulary.js && parcel build index.html --public-url .",
-    "watch": "node build-vocabulary.js && parcel index.html"
+    "build": "node build-vocabulary.js && rm -rf dist && parcel build index.html -d dist --public-url .",
+    "watch": "node build-vocabulary.js && parcel index.html -d dist-watch"
   },
   "author": "",
   "license": "ISC",
