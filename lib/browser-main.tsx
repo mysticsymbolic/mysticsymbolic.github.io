@@ -106,7 +106,6 @@ const App: React.FC<{}> = () => {
             display: "inline-block",
             border: "1px solid black",
             margin: "4px",
-            backgroundColor: "#f0f0f0",
           }}
         >
           <div
@@ -118,12 +117,14 @@ const App: React.FC<{}> = () => {
           >
             {symbolData.name}
           </div>
-          <SvgSymbol
-            data={symbolData}
-            scale={0.25}
-            stroke={stroke}
-            fill={fill}
-          />
+          <div className="checkerboard-bg">
+            <SvgSymbol
+              data={symbolData}
+              scale={0.25}
+              stroke={stroke}
+              fill={fill}
+            />
+          </div>
         </div>
       ))}
     </>
