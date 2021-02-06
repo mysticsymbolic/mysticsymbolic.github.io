@@ -10,8 +10,8 @@ const appEl = document.getElementById(APP_ID);
 
 const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary as any;
 
-const BLACK = "#000000";
-const WHITE = "#ffffff";
+const STROKE_REPLACEMENT_COLOR = "#000000";
+const FILL_REPLACEMENT_COLOR = "#ffffff";
 
 if (!appEl) {
   throw new Error(`Unable to find #${APP_ID}!`);
@@ -35,18 +35,14 @@ function reactifySvgSymbolElement(
   key: number
 ): JSX.Element {
   let { fill, stroke } = el.props;
-  if (fill === BLACK && stroke === "none") {
+  if (fill === STROKE_REPLACEMENT_COLOR) {
     // The fill represents a "shadow" area, so use our stroke color here.
     fill = ctx.stroke;
-  } else {
-    // Replace the hard-coded fill color with our fill color.
-    if (fill && fill !== "none") {
-      fill = ctx.fill;
-    }
-    // Replace the hard-coded stroke color with our stroke color.
-    if (stroke && stroke !== "none") {
-      stroke = ctx.stroke;
-    }
+  } else if (fill === FILL_REPLACEMENT_COLOR) {
+    fill = ctx.fill;
+  }
+  if (stroke === STROKE_REPLACEMENT_COLOR) {
+    stroke = ctx.stroke;
   }
   return React.createElement(
     el.tagName,
