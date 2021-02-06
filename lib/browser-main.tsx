@@ -2,26 +2,54 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
 import _SvgVocabulary from "./svg-vocabulary.json";
-import type { SvgSymbolData } from "./vocabulary";
+import type { SvgSymbolData, SvgSymbolElement } from "./vocabulary";
 
 const APP_ID = "app";
 
 const appEl = document.getElementById(APP_ID);
 
-const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary;
+const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary as any;
 
 if (!appEl) {
   throw new Error(`Unable to find #${APP_ID}!`);
 }
 
-type SvgSymbolProps = {
-  data: SvgSymbolData;
-  scale?: number;
+type SvgSymbolContext = {
   stroke: string;
   fill: string;
 };
 
+type SvgSymbolProps = {
+  data: SvgSymbolData;
+  scale?: number;
+} & SvgSymbolContext;
+
 const px = (value: number) => `${value}px`;
+
+function reactifySvgSymbolElement(
+  ctx: SvgSymbolContext,
+  el: SvgSymbolElement,
+  key: number
+): JSX.Element {
+  let { fill, stroke } = el.props;
+  if (fill && fill !== "none") {
+    fill = ctx.fill;
+  }
+  if (stroke && stroke !== "none") {
+    stroke = ctx.stroke;
+  }
+  return React.createElement(
+    el.tagName,
+    {
+      ...el.props,
+      id: undefined,
+      fill,
+      stroke,
+      key,
+    },
+    el.children.map(reactifySvgSymbolElement.bind(null, ctx))
+  );
+}
 
 const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
   const d = props.data;
@@ -29,13 +57,12 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
 
   return (
     <svg
-      stroke={props.stroke}
-      fill={props.fill}
       viewBox={`0 0 ${d.width} ${d.height}`}
       width={px(d.width * scale)}
       height={px(d.height * scale)}
-      dangerouslySetInnerHTML={{ __html: d.svg }}
-    ></svg>
+    >
+      {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
+    </svg>
   );
 };
 
@@ -64,6 +91,7 @@ const App: React.FC<{}> = () => {
       </p>
       {SvgVocabulary.map((symbolData) => (
         <div
+          key={symbolData.name}
           style={{
             display: "inline-block",
             border: "1px solid black",
