@@ -78,7 +78,7 @@ const App: React.FC<{}> = () => {
 
   return (
     <>
-      <h1>Mythic Symbolic Vocabulary</h1>
+      <h1>Mystic Symbolic Vocabulary</h1>
       <p>
         <label htmlFor="stroke">Stroke: </label>
         <input
