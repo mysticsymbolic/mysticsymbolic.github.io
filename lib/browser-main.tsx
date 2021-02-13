@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import { getBoundingBoxSize } from "./bounding-box";
 
 import _SvgVocabulary from "./svg-vocabulary.json";
 import type { SvgSymbolData, SvgSymbolElement } from "./vocabulary";
@@ -60,12 +61,14 @@ function reactifySvgSymbolElement(
 const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
   const d = props.data;
   const scale = props.scale || 1;
+  const [width, height] = getBoundingBoxSize(d.bbox);
 
   return (
     <svg
-      viewBox={`0 0 ${d.width} ${d.height}`}
-      width={px(d.width * scale)}
-      height={px(d.height * scale)}
+      viewBox={`${d.bbox.minX} ${d.bbox.minY} ${width} ${height}`}
+      width={px(width * scale)}
+      height={px(height * scale)}
+      style={{ margin: "10px" }}
     >
       {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
     </svg>
@@ -113,7 +116,7 @@ const App: React.FC<{}> = () => {
           >
             {symbolData.name}
           </div>
-          <div className="checkerboard-bg">
+          <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
             <SvgSymbol
               data={symbolData}
               scale={0.25}

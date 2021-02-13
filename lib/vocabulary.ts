@@ -2,11 +2,13 @@ import fs from "fs";
 import path from "path";
 import cheerio from "cheerio";
 import { SVGProps } from "react";
+import { getSvgBoundingBox, Bbox } from "./bounding-box";
 
 export type SvgSymbolData = {
   name: string;
   width: number;
   height: number;
+  bbox: Bbox;
   layers: SvgSymbolElement[];
 };
 
@@ -131,11 +133,13 @@ export function build() {
       const layers = onlyTags(svgEl.children()).map((ch) =>
         serializeSvgSymbolElement($, ch)
       );
+      const bbox = getSvgBoundingBox(layers);
 
       const symbol: SvgSymbolData = {
         name,
         width,
         height,
+        bbox,
         layers,
       };
       vocab.push(symbol);
