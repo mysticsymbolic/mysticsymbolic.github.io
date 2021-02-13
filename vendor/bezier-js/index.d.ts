@@ -1,3 +1,8 @@
+// Note that we're vendoring this library and its typings because using it directly
+// via NPM raised issues about not being able to import ES Modules, which has always
+// led to nightmares for me, so I'm just vendoring this for now.
+
+// Typings taken from:
 // https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/bezier-js/index.d.ts
 
 interface Point {
