@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { getBoundingBoxSize } from "./bounding-box";
+import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 
 import _SvgVocabulary from "./svg-vocabulary.json";
 import type { SvgSymbolData, SvgSymbolElement } from "./vocabulary";
@@ -10,9 +11,6 @@ const APP_ID = "app";
 const appEl = document.getElementById(APP_ID);
 
 const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary as any;
-
-const STROKE_REPLACEMENT_COLOR = "#000000";
-const FILL_REPLACEMENT_COLOR = "#ffffff";
 
 if (!appEl) {
   throw new Error(`Unable to find #${APP_ID}!`);
