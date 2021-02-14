@@ -1,13 +1,14 @@
-import { Bbox } from "./bounding-box";
+import { Point } from "../vendor/bezier-js";
+import {
+  Bbox,
+  getBoundingBoxCenter,
+  getBoundingBoxForBeziers,
+} from "./bounding-box";
 import * as colors from "./colors";
+import { pathToShapes } from "./path";
 import type { SvgSymbolElement } from "./vocabulary";
 
 const SPEC_LAYER_ID_RE = /^specs.*/i;
-
-export type Point = {
-  x: number;
-  y: number;
-};
 
 export type Specs = {
   tail?: Point[];
@@ -19,13 +20,26 @@ export type Specs = {
 };
 
 function getPoints(path: string): Point[] {
-  // TODO: Implement this.
-  return [];
+  const shapes = pathToShapes(path);
+  const points: Point[] = [];
+
+  for (let shape of shapes) {
+    const bbox = getBoundingBoxForBeziers(shape);
+    points.push(getBoundingBoxCenter(bbox));
+  }
+
+  return points;
 }
 
 function getBoundingBoxes(path: string): Bbox[] {
-  // TODO: Implement this.
-  return [];
+  const shapes = pathToShapes(path);
+  const bboxes: Bbox[] = [];
+
+  for (let shape of shapes) {
+    bboxes.push(getBoundingBoxForBeziers(shape));
+  }
+
+  return bboxes;
 }
 
 function concat<T>(first: T[] | undefined, second: T[]): T[] {
