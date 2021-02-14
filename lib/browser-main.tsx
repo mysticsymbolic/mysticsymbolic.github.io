@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { AboutPage } from "./pages/about-page";
+import { WavesPage } from "./pages/waves-page";
 import { VocabularyPage } from "./pages/vocabulary-page";
 
 const Pages = {
   vocabulary: VocabularyPage,
-  about: AboutPage,
+  waves: WavesPage,
 };
 
 type PageName = keyof typeof Pages;
