@@ -6,8 +6,6 @@ import { getSvgBoundingBox, Bbox } from "./bounding-box";
 
 export type SvgSymbolData = {
   name: string;
-  width: number;
-  height: number;
   bbox: Bbox;
   layers: SvgSymbolElement[];
 };
@@ -102,20 +100,6 @@ function serializeSvgSymbolElement(
   throw new Error(`Unsupported SVG element: <${tagName}>`);
 }
 
-function getSvgPixelDimension($: cheerio.Root, attr: string): number {
-  const value = $("svg").attr(attr);
-  if (!value) {
-    throw new Error(`<svg> ${attr} attribute is empty or missing!`);
-  }
-  const match = value.match(/^(\d+)px$/);
-  if (!match) {
-    throw new Error(
-      `Unable to parse <svg> ${attr} attribute value '${value}'!`
-    );
-  }
-  return parseInt(match[1]);
-}
-
 export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
   const vocab: SvgSymbolData[] = [];
@@ -126,8 +110,6 @@ export function build() {
         encoding: "utf-8",
       });
       const $ = cheerio.load(svgMarkup);
-      const width = getSvgPixelDimension($, "width");
-      const height = getSvgPixelDimension($, "height");
       const svgEl = $("svg");
       const name = path.basename(filename, SVG_EXT);
       const layers = onlyTags(svgEl.children()).map((ch) =>
@@ -137,8 +119,6 @@ export function build() {
 
       const symbol: SvgSymbolData = {
         name,
-        width,
-        height,
         bbox,
         layers,
       };
