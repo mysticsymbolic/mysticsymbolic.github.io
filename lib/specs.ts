@@ -1,9 +1,5 @@
-import { Point } from "../vendor/bezier-js";
-import {
-  Bbox,
-  getBoundingBoxCenter,
-  getBoundingBoxForBeziers,
-} from "./bounding-box";
+import { Point, BBox } from "../vendor/bezier-js";
+import { getBoundingBoxCenter, getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
 import type { SvgSymbolElement } from "./vocabulary";
@@ -16,7 +12,7 @@ export type Specs = {
   arm?: Point[];
   horn?: Point[];
   crown?: Point[];
-  nesting?: Bbox[];
+  nesting?: BBox[];
 };
 
 function getPoints(path: string): Point[] {
@@ -31,9 +27,9 @@ function getPoints(path: string): Point[] {
   return points;
 }
 
-function getBoundingBoxes(path: string): Bbox[] {
+function getBoundingBoxes(path: string): BBox[] {
   const shapes = pathToShapes(path);
-  const bboxes: Bbox[] = [];
+  const bboxes: BBox[] = [];
 
   for (let shape of shapes) {
     bboxes.push(getBoundingBoxForBeziers(shape));

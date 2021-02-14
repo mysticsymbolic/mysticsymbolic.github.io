@@ -1,43 +1,41 @@
-import { Bezier, Point } from "../vendor/bezier-js";
+import { Bezier, Point, BBox, MinMax } from "../vendor/bezier-js";
 import { SVGProps } from "react";
 
 import type { SvgSymbolElement } from "./vocabulary";
 import { flatten, float } from "./util";
 import { pathToShapes } from "./path";
 
-export type Bbox = {
-  minX: number;
-  minY: number;
-  maxX: number;
-  maxY: number;
-};
-
-export function getBoundingBoxSize(bbox: Bbox): [number, number] {
-  const width = bbox.maxX - bbox.minX;
-  const height = bbox.maxY - bbox.minY;
+export function getBoundingBoxSize(bbox: BBox): [number, number] {
+  const width = bbox.x.max - bbox.x.min;
+  const height = bbox.y.max - bbox.y.min;
 
   return [width, height];
 }
 
-export function getBoundingBoxCenter(bbox: Bbox): Point {
+export function getBoundingBoxCenter(bbox: BBox): Point {
   const [width, height] = getBoundingBoxSize(bbox);
 
   return {
-    x: bbox.minX + width / 2,
-    y: bbox.minY + height / 2,
+    x: bbox.x.min + width / 2,
+    y: bbox.y.min + height / 2,
   };
 }
 
-export function dilateBoundingBox(bbox: Bbox, amount: number): Bbox {
+function dilateMinMax(minmax: MinMax, amount: number): MinMax {
   return {
-    minX: bbox.minX - amount,
-    maxX: bbox.maxX + amount,
-    minY: bbox.minY - amount,
-    maxY: bbox.maxY + amount,
+    min: minmax.min - amount,
+    max: minmax.max + amount,
   };
 }
 
-export function coalesceBoundingBoxes(bboxes: Bbox[]): Bbox {
+export function dilateBoundingBox(bbox: BBox, amount: number): BBox {
+  return {
+    x: dilateMinMax(bbox.x, amount),
+    y: dilateMinMax(bbox.y, amount),
+  };
+}
+
+export function coalesceBoundingBoxes(bboxes: BBox[]): BBox {
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -48,64 +46,28 @@ export function coalesceBoundingBoxes(bboxes: Bbox[]): Bbox {
   }
 
   for (let bbox of bboxes) {
-    if (bbox.minX < minX) {
-      minX = bbox.minX;
+    if (bbox.x.min < minX) {
+      minX = bbox.x.min;
     }
-    if (bbox.maxX > maxX) {
-      maxX = bbox.maxX;
+    if (bbox.x.max > maxX) {
+      maxX = bbox.x.max;
     }
-    if (bbox.minY < minY) {
-      minY = bbox.minY;
+    if (bbox.y.min < minY) {
+      minY = bbox.y.min;
     }
-    if (bbox.maxY > maxY) {
-      maxY = bbox.maxY;
-    }
-  }
-
-  return { minX, minY, maxX, maxY };
-}
-
-function getBoundingBoxForPoints(points: Point[]): Bbox {
-  let minX = Infinity;
-  let minY = Infinity;
-  let maxX = -Infinity;
-  let maxY = -Infinity;
-
-  if (points.length === 0) {
-    throw new Error(`Must have at least one point!`);
-  }
-
-  for (let point of points) {
-    if (point.x < minX) {
-      minX = point.x;
-    }
-    if (point.x > maxX) {
-      maxX = point.x;
-    }
-    if (point.y < minY) {
-      minY = point.y;
-    }
-    if (point.y > maxY) {
-      maxY = point.y;
+    if (bbox.y.max > maxY) {
+      maxY = bbox.y.max;
     }
   }
 
-  return { minX, minY, maxX, maxY };
+  return { x: { min: minX, max: maxX }, y: { min: minY, max: maxY } };
 }
 
-function getBezierBoundingBox(bezier: Bezier): Bbox {
-  const start = bezier.get(0.0);
-  const end = bezier.get(1.0);
-  const extrema = bezier.extrema().values.map((t) => bezier.get(t));
-
-  return getBoundingBoxForPoints([start, end, ...extrema]);
+export function getBoundingBoxForBeziers(beziers: Bezier[]): BBox {
+  return coalesceBoundingBoxes(beziers.map((b) => b.bbox()));
 }
 
-export function getBoundingBoxForBeziers(beziers: Bezier[]): Bbox {
-  return coalesceBoundingBoxes(beziers.map(getBezierBoundingBox));
-}
-
-function getPathBoundingBox(props: SVGProps<SVGPathElement>): Bbox {
+function getPathBoundingBox(props: SVGProps<SVGPathElement>): BBox {
   if (!props.d) {
     throw new Error(`SVG path has no 'd' attribute value!`);
   }
@@ -118,7 +80,7 @@ function getPathBoundingBox(props: SVGProps<SVGPathElement>): Bbox {
 
 export function getSvgBoundingBox(
   element: SvgSymbolElement | SvgSymbolElement[]
-): Bbox {
+): BBox {
   if (Array.isArray(element)) {
     return coalesceBoundingBoxes(element.map(getSvgBoundingBox));
   }

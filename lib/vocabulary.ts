@@ -2,12 +2,13 @@ import fs from "fs";
 import path from "path";
 import cheerio from "cheerio";
 import { SVGProps } from "react";
-import { getSvgBoundingBox, Bbox } from "./bounding-box";
+import { BBox } from "../vendor/bezier-js";
+import { getSvgBoundingBox } from "./bounding-box";
 import { Specs, extractSpecs } from "./specs";
 
 export type SvgSymbolData = {
   name: string;
-  bbox: Bbox;
+  bbox: BBox;
   layers: SvgSymbolElement[];
   specs?: Specs;
 };

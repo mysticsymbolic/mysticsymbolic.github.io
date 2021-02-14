@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { Point } from "../vendor/bezier-js";
-import { Bbox, dilateBoundingBox, getBoundingBoxSize } from "./bounding-box";
+import { Point, BBox } from "../vendor/bezier-js";
+import { dilateBoundingBox, getBoundingBoxSize } from "./bounding-box";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import * as colors from "./colors";
 import { Specs } from "./specs";
@@ -84,15 +84,15 @@ const AttachmentPoints: React.FC<{ color: string; points: Point[] }> = (
   </>
 );
 
-const BoundingBoxes: React.FC<{ fill: string; bboxes: Bbox[] }> = (props) => (
+const BoundingBoxes: React.FC<{ fill: string; bboxes: BBox[] }> = (props) => (
   <>
     {props.bboxes.map((b, i) => {
       const [width, height] = getBoundingBoxSize(b);
       return (
         <rect
           key={i}
-          x={b.minX}
-          y={b.minY}
+          x={b.x.min}
+          y={b.y.min}
           width={width}
           height={height}
           fill={props.fill}
@@ -155,7 +155,7 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
 
   return (
     <svg
-      viewBox={`${bbox.minX} ${bbox.minY} ${width} ${height}`}
+      viewBox={`${bbox.x.min} ${bbox.y.min} ${width} ${height}`}
       width={px(width * scale)}
       height={px(height * scale)}
     >
