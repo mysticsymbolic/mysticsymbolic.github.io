@@ -124,8 +124,10 @@ function filterElements(
             ...el,
             children: filterElements(el.children, filter),
           });
+          break;
         case "path":
           result.push(el);
+          break;
       }
     }
   }
@@ -133,19 +135,19 @@ function filterElements(
   return result;
 }
 
-function getAllBeziers(layers: SvgSymbolElement[]): Bezier[] {
-  const beziers: Bezier[] = [];
+function getAllShapes(layers: SvgSymbolElement[]): Bezier[][] {
+  const beziers: Bezier[][] = [];
 
   for (let layer of layers) {
     switch (layer.tagName) {
       case "g":
-        beziers.push(...getAllBeziers(layer.children));
+        beziers.push(...getAllShapes(layer.children));
         break;
       case "path":
         if (!layer.props.d) {
           throw new Error(`<path> does not have a "d" attribute!`);
         }
-        beziers.push(...flatten(pathToShapes(layer.props.d)));
+        beziers.push(...pathToShapes(layer.props.d));
         break;
     }
   }
@@ -160,6 +162,8 @@ function invertVector(v: Point) {
   v.y = -v.y;
 }
 
+const TO_INFINITY_AMOUNT = 2000;
+
 /**
  * Return whether the given point is inside the given shape, assuming
  * the SVG "evenodd" fill rule:
@@ -171,8 +175,8 @@ function isPointInsideShape(point: Point, beziers: Bezier[]): boolean {
   const line: Line = {
     p1: point,
     p2: {
-      x: point.x,
-      y: point.y + 100_000,
+      x: point.x + TO_INFINITY_AMOUNT,
+      y: point.y + TO_INFINITY_AMOUNT,
     },
   };
 
@@ -192,8 +196,8 @@ function addPoints(p1: Point, p2: Point): Point {
   };
 }
 
-function populateNormals(pwns: PointWithNormal[], beziers: Bezier[]) {
-  if (beziers.length === 0) {
+function populateNormals(pwns: PointWithNormal[], shapes: Bezier[][]) {
+  if (shapes.length === 0) {
     throw new Error(`Expected beizers to be non-empty!`);
   }
 
@@ -201,24 +205,26 @@ function populateNormals(pwns: PointWithNormal[], beziers: Bezier[]) {
     let minDistance = Infinity;
     let minDistanceNormal = ORIGIN;
     let minDistancePoint = ORIGIN;
-    for (let bezier of beziers) {
-      const { t, d } = bezier.project(pwn.point);
-      if (d === undefined || t === undefined) {
-        throw new Error(`Expected bezier.project() to return t and d!`);
+    for (let shape of shapes) {
+      let minDistanceChanged = false;
+      for (let bezier of shape) {
+        const { t, d } = bezier.project(pwn.point);
+        if (d === undefined || t === undefined) {
+          throw new Error(`Expected bezier.project() to return t and d!`);
+        }
+        if (d < minDistance) {
+          minDistanceChanged = true;
+          minDistance = d;
+          minDistanceNormal = bezier.normal(t);
+          minDistancePoint = bezier.get(t);
+        }
       }
-      if (d < minDistance) {
-        minDistance = d;
-        minDistanceNormal = bezier.normal(t);
-        minDistancePoint = bezier.get(t);
+      if (minDistanceChanged) {
+        const pointToNormal = addPoints(minDistancePoint, minDistanceNormal);
+        if (isPointInsideShape(pointToNormal, shape)) {
+          invertVector(minDistanceNormal);
+        }
       }
-    }
-    if (
-      isPointInsideShape(
-        addPoints(minDistancePoint, minDistanceNormal),
-        beziers
-      )
-    ) {
-      invertVector(minDistanceNormal);
     }
     pwn.normal = minDistanceNormal;
   }
@@ -239,27 +245,28 @@ function filterFilledShapes(elements: SvgSymbolElement[]): SvgSymbolElement[] {
 }
 
 function populateSpecNormals(specs: Specs, layers: SvgSymbolElement[]): void {
-  const beziers = getAllBeziers(filterFilledShapes(layers));
+  const shapes = getAllShapes(filterFilledShapes(layers));
 
   if (specs.tail) {
-    populateNormals(specs.tail, beziers);
+    populateNormals(specs.tail, shapes);
   }
   if (specs.leg) {
-    populateNormals(specs.leg, beziers);
+    populateNormals(specs.leg, shapes);
   }
   if (specs.arm) {
-    populateNormals(specs.arm, beziers);
+    populateNormals(specs.arm, shapes);
   }
   if (specs.horn) {
-    populateNormals(specs.horn, beziers);
+    populateNormals(specs.horn, shapes);
   }
   if (specs.crown) {
-    populateNormals(specs.crown, beziers);
+    populateNormals(specs.crown, shapes);
   }
 }
 
 export function extractSpecs(
-  layers: SvgSymbolElement[]
+  layers: SvgSymbolElement[],
+  populateNormals: boolean = true
 ): [Specs | undefined, SvgSymbolElement[]] {
   const layersWithoutSpecs: SvgSymbolElement[] = [];
   let specs: Specs | undefined = undefined;
@@ -280,7 +287,7 @@ export function extractSpecs(
         if (id && SPEC_LAYER_ID_RE.test(id)) {
           setSpecs(getSpecs(layer.children));
         } else {
-          let [s, children] = extractSpecs(layer.children);
+          let [s, children] = extractSpecs(layer.children, false);
           setSpecs(s);
           layersWithoutSpecs.push({
             ...layer,
@@ -290,10 +297,11 @@ export function extractSpecs(
         break;
       case "path":
         layersWithoutSpecs.push(layer);
+        break;
     }
   }
 
-  if (specs) {
+  if (populateNormals && specs) {
     populateSpecNormals(specs, layersWithoutSpecs);
   }
 
