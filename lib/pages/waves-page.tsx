@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 
-const Wave: React.FC<{}> = () => (
+const WAVE_STROKE = "#79beda";
+const WAVE_FILL = "#2b7c9e";
+
+const Wave: React.FC<{
+  stroke: string;
+  fill: string;
+}> = ({ stroke, fill }) => (
   <>
     {/* Generator: Moho 13.0.3 build 635 */}
     <path
-      fill="#2b7c9e"
+      fill={fill}
       fill-rule="evenodd"
-      stroke="#79beda"
+      stroke={stroke}
       stroke-width="4"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -14,7 +20,7 @@ const Wave: React.FC<{}> = () => (
     />
     <path
       fill="none"
-      stroke="#79beda"
+      stroke={stroke}
       stroke-width="4"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -22,7 +28,7 @@ const Wave: React.FC<{}> = () => (
     />
     <path
       fill="none"
-      stroke="#79beda"
+      stroke={stroke}
       stroke-width="4"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -30,7 +36,7 @@ const Wave: React.FC<{}> = () => (
     />
     <path
       fill="none"
-      stroke="#79beda"
+      stroke={stroke}
       stroke-width="4"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -38,7 +44,7 @@ const Wave: React.FC<{}> = () => (
     />
     <path
       fill="none"
-      stroke="#79beda"
+      stroke={stroke}
       stroke-width="4"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -87,6 +93,8 @@ const NumericSlider: React.FC<{
 };
 
 const Waves: React.FC<{}> = () => {
+  const [stroke, setStroke] = useState(WAVE_STROKE);
+  const [fill, setFill] = useState(WAVE_FILL);
   const [numWaves, setNumWaves] = useState(NUM_WAVES);
   const [duration, setDuration] = useState(WAVE_DURATION);
   const [initialYVel, setInitialYVel] = useState(
@@ -104,7 +112,7 @@ const Waves: React.FC<{}> = () => {
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
         <g>
-          <Wave />
+          <Wave fill={fill} stroke={stroke} />
           <animateTransform
             attributeName="transform"
             type="translate"
@@ -128,6 +136,22 @@ const Waves: React.FC<{}> = () => {
       <svg width="1280px" height="720px" viewBox="0 0 1280 720">
         {waves}
       </svg>
+      <p>
+        <label htmlFor="stroke">Stroke: </label>
+        <input
+          type="color"
+          value={stroke}
+          onChange={(e) => setStroke(e.target.value)}
+          id="stroke"
+        />{" "}
+        <label htmlFor="fill">Fill: </label>
+        <input
+          type="color"
+          value={fill}
+          onChange={(e) => setFill(e.target.value)}
+          id="fill"
+        />
+      </p>
       <NumericSlider
         id="numWaves"
         label="Number of waves"
