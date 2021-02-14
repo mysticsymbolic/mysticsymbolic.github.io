@@ -1,4 +1,4 @@
-import { Point, BBox, Bezier } from "../vendor/bezier-js";
+import { Point, BBox, Bezier, Line } from "../vendor/bezier-js";
 import { getBoundingBoxCenter, getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
@@ -101,6 +101,29 @@ function getSpecs(layers: SvgSymbolElement[]): Specs {
   return specs;
 }
 
+function filterElements(
+  elements: SvgSymbolElement[],
+  filter: (el: SvgSymbolElement) => boolean
+): SvgSymbolElement[] {
+  const result: SvgSymbolElement[] = [];
+
+  for (let el of elements) {
+    if (filter(el)) {
+      switch (el.tagName) {
+        case "g":
+          result.push({
+            ...el,
+            children: filterElements(el.children, filter),
+          });
+        case "path":
+          result.push(el);
+      }
+    }
+  }
+
+  return result;
+}
+
 function getAllBeziers(layers: SvgSymbolElement[]): Bezier[] {
   const beziers: Bezier[] = [];
 
@@ -121,6 +144,45 @@ function getAllBeziers(layers: SvgSymbolElement[]): Bezier[] {
   return beziers;
 }
 
+const ORIGIN: Point = { x: 0, y: 0 };
+
+function invertVector(v: Point) {
+  v.x = -v.x;
+  v.y = -v.y;
+}
+
+/**
+ * Return whether the given point is inside the given shape, assuming
+ * the SVG "evenodd" fill rule:
+ *
+ *   https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule#evenodd
+ */
+function isPointInsideShape(point: Point, beziers: Bezier[]): boolean {
+  let intersections = 0;
+  const line: Line = {
+    p1: point,
+    p2: {
+      x: point.x,
+      y: point.y + 100_000,
+    },
+  };
+
+  for (let bezier of beziers) {
+    const points = bezier.lineIntersects(line);
+    intersections += points.length;
+  }
+
+  const isOdd = intersections % 2 === 1;
+  return isOdd;
+}
+
+function addPoints(p1: Point, p2: Point): Point {
+  return {
+    x: p1.x + p2.x,
+    y: p1.y + p2.y,
+  };
+}
+
 function populateNormals(pwns: PointWithNormal[], beziers: Bezier[]) {
   if (beziers.length === 0) {
     throw new Error(`Expected beizers to be non-empty!`);
@@ -128,7 +190,8 @@ function populateNormals(pwns: PointWithNormal[], beziers: Bezier[]) {
 
   for (let pwn of pwns) {
     let minDistance = Infinity;
-    let minDistanceNormal = pwn.normal;
+    let minDistanceNormal = ORIGIN;
+    let minDistancePoint = ORIGIN;
     for (let bezier of beziers) {
       const { t, d } = bezier.project(pwn.point);
       if (d === undefined || t === undefined) {
@@ -136,16 +199,38 @@ function populateNormals(pwns: PointWithNormal[], beziers: Bezier[]) {
       }
       if (d < minDistance) {
         minDistance = d;
-        const n = bezier.normal(t);
-        minDistanceNormal = { x: -n.x, y: -n.y };
+        minDistanceNormal = bezier.normal(t);
+        minDistancePoint = bezier.get(t);
       }
+    }
+    if (
+      isPointInsideShape(
+        addPoints(minDistancePoint, minDistanceNormal),
+        beziers
+      )
+    ) {
+      invertVector(minDistanceNormal);
     }
     pwn.normal = minDistanceNormal;
   }
 }
 
+function filterFilledShapes(elements: SvgSymbolElement[]): SvgSymbolElement[] {
+  return filterElements(elements, (el) => {
+    if (el.tagName === "path") {
+      if (el.props.fill === "none") return false;
+      if (el.props.fillRule !== "evenodd") {
+        throw new Error(
+          `Expected <path> to have fill-rule="evenodd" but it is "${el.props.fillRule}"!`
+        );
+      }
+    }
+    return true;
+  });
+}
+
 function populateSpecNormals(specs: Specs, layers: SvgSymbolElement[]): void {
-  const beziers = getAllBeziers(layers);
+  const beziers = getAllBeziers(filterFilledShapes(layers));
 
   if (specs.arm) {
     populateNormals(specs.arm, beziers);
