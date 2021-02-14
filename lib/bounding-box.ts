@@ -95,12 +95,23 @@ function float(value: string | number | undefined): number {
   return float;
 }
 
-function pathToBeziers(path: string): Bezier[] {
+function flatten<T>(arr: T[][]): T[] {
+  const result: T[] = [];
+
+  for (let subarr of arr) {
+    result.push(...subarr);
+  }
+
+  return result;
+}
+
+function pathToBeziers(path: string): Bezier[][] {
   const parts = path.trim().split(" ");
   let x = 0;
   let y = 0;
   let i = 0;
-  const beziers: Bezier[] = [];
+  const shapes: Bezier[][] = [];
+  let currShape: Bezier[] = [];
 
   const chomp = () => {
     if (i >= parts.length) {
@@ -111,10 +122,18 @@ function pathToBeziers(path: string): Bezier[] {
     return val;
   };
 
+  const finishCurrShape = () => {
+    if (currShape.length) {
+      shapes.push(currShape);
+      currShape = [];
+    }
+  };
+
   while (i < parts.length) {
     const command = chomp();
     switch (command) {
       case "M":
+        finishCurrShape();
         x = float(chomp());
         y = float(chomp());
         break;
@@ -125,18 +144,21 @@ function pathToBeziers(path: string): Bezier[] {
         const y2 = float(chomp());
         const endX = float(chomp());
         const endY = float(chomp());
-        beziers.push(new Bezier(x, y, x1, y1, x2, y2, endX, endY));
+        currShape.push(new Bezier(x, y, x1, y1, x2, y2, endX, endY));
         x = endX;
         y = endY;
         break;
       case "Z":
+        finishCurrShape();
         break;
       default:
         throw new Error(`Unknown SVG path command: '${command}'`);
     }
   }
 
-  return beziers;
+  finishCurrShape();
+
+  return shapes;
 }
 
 function getBezierBoundingBox(bezier: Bezier): Bbox {
@@ -151,7 +173,7 @@ function getPathBoundingBox(props: SVGProps<SVGPathElement>): Bbox {
   if (!props.d) {
     throw new Error(`SVG path has no 'd' attribute value!`);
   }
-  const beziers = pathToBeziers(props.d);
+  const beziers = flatten(pathToBeziers(props.d));
   const bezierBboxes = beziers.map(getBezierBoundingBox);
   const bbox = coalesceBoundingBoxes(bezierBboxes);
   return props.strokeWidth
