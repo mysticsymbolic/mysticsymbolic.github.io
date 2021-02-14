@@ -32,21 +32,27 @@ type SvgSymbolProps = {
 
 const px = (value: number) => `${value}px`;
 
+function getColor(
+  ctx: SvgSymbolContext,
+  color: string | undefined
+): string | undefined {
+  switch (color) {
+    case STROKE_REPLACEMENT_COLOR:
+      return ctx.stroke;
+    case FILL_REPLACEMENT_COLOR:
+      return ctx.fill;
+  }
+  return color;
+}
+
 function reactifySvgSymbolElement(
   ctx: SvgSymbolContext,
   el: SvgSymbolElement,
   key: number
 ): JSX.Element {
   let { fill, stroke } = el.props;
-  if (fill === STROKE_REPLACEMENT_COLOR) {
-    // The fill represents a "shadow" area, so use our stroke color here.
-    fill = ctx.stroke;
-  } else if (fill === FILL_REPLACEMENT_COLOR) {
-    fill = ctx.fill;
-  }
-  if (stroke === STROKE_REPLACEMENT_COLOR) {
-    stroke = ctx.stroke;
-  }
+  fill = getColor(ctx, fill);
+  stroke = getColor(ctx, stroke);
   return React.createElement(
     el.tagName,
     {
