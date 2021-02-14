@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
+    "typecheck": "tsc --noemit",
     "build": "node build-vocabulary.js && rm -rf dist && parcel build index.html -d dist --public-url .",
     "watch": "node build-vocabulary.js && parcel index.html -d dist-watch"
   },
