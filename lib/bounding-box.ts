@@ -28,7 +28,7 @@ export function getBoundingBoxCenter(bbox: Bbox): Point {
   };
 }
 
-function dilateBoundingBox(bbox: Bbox, amount: number): Bbox {
+export function dilateBoundingBox(bbox: Bbox, amount: number): Bbox {
   return {
     minX: bbox.minX - amount,
     maxX: bbox.maxX + amount,
