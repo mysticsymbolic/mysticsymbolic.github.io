@@ -51,7 +51,7 @@ const NUM_WAVES = 8;
 const WAVE_DURATION = 1;
 const WAVE_PARALLAX_SCALE_START = 1.2;
 const WAVE_PARALLAX_TRANSLATE_START = 10;
-const WAVE_PARALLAX_SCALE_VELOCITY = 0.25;
+const WAVE_PARALLAX_SCALE_VELOCITY = 1.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
 const WAVE_PARALLAX_TRANSLATE_ACCEL = 10;
 
@@ -119,7 +119,7 @@ const Waves: React.FC<{}> = () => {
       </g>
     );
     y += yVel;
-    scale += scaleVel;
+    scale *= scaleVel;
     yVel += yAccel;
   }
 
@@ -168,10 +168,10 @@ const Waves: React.FC<{}> = () => {
       <NumericSlider
         id="scaleVel"
         label="Scale velocity"
-        min={0.1}
-        max={3}
+        min={1.0}
+        max={2}
         value={scaleVel}
-        step={0.05}
+        step={0.025}
         onChange={setScaleVel}
       />
     </>
