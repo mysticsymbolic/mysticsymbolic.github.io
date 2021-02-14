@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Wave: React.FC<{}> = () => (
   <>
@@ -48,24 +48,61 @@ const Wave: React.FC<{}> = () => (
 );
 
 const NUM_WAVES = 8;
-const WAVE_PARALLAX_SCALE_START = 1.25;
+const WAVE_DURATION = 1;
+const WAVE_PARALLAX_SCALE_START = 1.2;
 const WAVE_PARALLAX_TRANSLATE_START = 10;
 const WAVE_PARALLAX_SCALE_VELOCITY = 0.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
 const WAVE_PARALLAX_TRANSLATE_ACCEL = 10;
 
+const NumericSlider: React.FC<{
+  id: string;
+  label: string;
+  onChange: (value: number) => void;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  valueSuffix?: string;
+}> = (props) => {
+  return (
+    <p>
+      <label htmlFor={props.id}>{props.label}</label>
+      <input
+        type="range"
+        id={props.id}
+        min={props.min}
+        max={props.max}
+        value={props.value}
+        step={props.step}
+        onChange={(e) => props.onChange(parseFloat(e.target.value))}
+      />
+      <span>
+        {" "}
+        {props.value}
+        {props.valueSuffix}
+      </span>
+    </p>
+  );
+};
+
 const Waves: React.FC<{}> = () => {
+  const [numWaves, setNumWaves] = useState(NUM_WAVES);
+  const [duration, setDuration] = useState(WAVE_DURATION);
+  const [initialYVel, setInitialYVel] = useState(
+    WAVE_PARALLAX_TRANSLATE_VELOCITY
+  );
+  const [yAccel, setYAccel] = useState(WAVE_PARALLAX_TRANSLATE_ACCEL);
+  const [scaleVel, setScaleVel] = useState(WAVE_PARALLAX_SCALE_VELOCITY);
+
   let scale = WAVE_PARALLAX_SCALE_START;
-  let translate = WAVE_PARALLAX_TRANSLATE_START;
-  let translateVel = WAVE_PARALLAX_TRANSLATE_VELOCITY;
+  let y = WAVE_PARALLAX_TRANSLATE_START;
+  let yVel = initialYVel;
   let waves: JSX.Element[] = [];
 
-  for (let i = 0; i < NUM_WAVES; i++) {
+  for (let i = 0; i < numWaves; i++) {
     waves.push(
-      <g
-        key={i}
-        transform={`translate(0 ${translate}) scale(${scale} ${scale})`}
-      >
+      <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
         <g>
           <Wave />
           <animateTransform
@@ -73,7 +110,7 @@ const Waves: React.FC<{}> = () => {
             type="translate"
             from="-179 0"
             to="-100 0"
-            dur="1s"
+            dur={`${duration}s`}
             begin="0s"
             fill="freeze"
             repeatCount="indefinite"
@@ -81,19 +118,69 @@ const Waves: React.FC<{}> = () => {
         </g>
       </g>
     );
-    translate += translateVel;
-    scale += WAVE_PARALLAX_SCALE_VELOCITY;
-    translateVel += WAVE_PARALLAX_TRANSLATE_ACCEL;
+    y += yVel;
+    scale += scaleVel;
+    yVel += yAccel;
   }
 
-  return <>{waves}</>;
+  return (
+    <>
+      <svg width="1280px" height="720px" viewBox="0 0 1280 720">
+        {waves}
+      </svg>
+      <NumericSlider
+        id="numWaves"
+        label="Number of waves"
+        min={1}
+        max={NUM_WAVES * 2}
+        value={numWaves}
+        step={1}
+        onChange={setNumWaves}
+      />
+      <NumericSlider
+        id="duration"
+        label="Cycle duration"
+        min={0.1}
+        max={3}
+        value={duration}
+        step={0.1}
+        onChange={setDuration}
+        valueSuffix="s"
+      />
+      <NumericSlider
+        id="initialYVel"
+        label="Initial y-velocity"
+        min={1}
+        max={WAVE_PARALLAX_TRANSLATE_VELOCITY * 4}
+        value={initialYVel}
+        step={1}
+        onChange={setInitialYVel}
+      />
+      <NumericSlider
+        id="yAccel"
+        label="Y-acceleration"
+        min={1}
+        max={WAVE_PARALLAX_TRANSLATE_ACCEL * 2}
+        value={yAccel}
+        step={1}
+        onChange={setYAccel}
+      />
+      <NumericSlider
+        id="scaleVel"
+        label="Scale velocity"
+        min={0.1}
+        max={3}
+        value={scaleVel}
+        step={0.05}
+        onChange={setScaleVel}
+      />
+    </>
+  );
 };
 
 export const WavesPage: React.FC<{}> = () => (
   <>
     <h1>Waves!</h1>
-    <svg width="1280px" height="720px" viewBox="0 0 1280 720">
-      <Waves />
-    </svg>
+    <Waves />
   </>
 );
