@@ -4,7 +4,7 @@ import { Point, BBox } from "../vendor/bezier-js";
 import { dilateBoundingBox, getBoundingBoxSize } from "./bounding-box";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import * as colors from "./colors";
-import { Specs } from "./specs";
+import { PointWithNormal, Specs } from "./specs";
 
 import _SvgVocabulary from "./svg-vocabulary.json";
 import type { SvgSymbolData, SvgSymbolElement } from "./vocabulary";
@@ -68,6 +68,10 @@ function reactifySvgSymbolElement(
 
 const ATTACHMENT_POINT_RADIUS = 20;
 
+const ATTACHMENT_POINT_NORMAL_LENGTH = 50;
+
+const ATTACHMENT_POINT_NORMAL_STROKE = 4;
+
 const AttachmentPoints: React.FC<{ color: string; points: Point[] }> = (
   props
 ) => (
@@ -81,6 +85,37 @@ const AttachmentPoints: React.FC<{ color: string; points: Point[] }> = (
         cy={p.y}
       />
     ))}
+  </>
+);
+
+const AttachmentPointsWithNormals: React.FC<{
+  color: string;
+  pwns: PointWithNormal[];
+}> = (props) => (
+  <>
+    {props.pwns.map((pwn, i) => {
+      const { x, y } = pwn.point;
+      const x2 = x + pwn.normal.x * ATTACHMENT_POINT_NORMAL_LENGTH;
+      const y2 = y + pwn.normal.y * ATTACHMENT_POINT_NORMAL_LENGTH;
+      return (
+        <React.Fragment key={i}>
+          <circle
+            fill={props.color}
+            r={ATTACHMENT_POINT_RADIUS}
+            cx={x}
+            cy={y}
+          />
+          <line
+            x1={x}
+            y1={y}
+            x2={x2}
+            y2={y2}
+            stroke={props.color}
+            strokeWidth={ATTACHMENT_POINT_NORMAL_STROKE}
+          />
+        </React.Fragment>
+      );
+    })}
   </>
 );
 
@@ -118,9 +153,9 @@ const SvgSymbolSpecs: React.FC<{ specs: Specs }> = ({ specs }) => {
         />
       )}
       {specs.arm && (
-        <AttachmentPoints
+        <AttachmentPointsWithNormals
           color={colors.ARM_ATTACHMENT_COLOR}
-          points={specs.arm}
+          pwns={specs.arm}
         />
       )}
       {specs.horn && (
