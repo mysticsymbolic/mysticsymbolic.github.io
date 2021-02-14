@@ -13,28 +13,25 @@ export type PointWithNormal = {
 };
 
 export type Specs = {
-  tail?: Point[];
-  leg?: Point[];
+  tail?: PointWithNormal[];
+  leg?: PointWithNormal[];
   arm?: PointWithNormal[];
-  horn?: Point[];
-  crown?: Point[];
+  horn?: PointWithNormal[];
+  crown?: PointWithNormal[];
   nesting?: BBox[];
 };
 
-function withEmptyNormals(points: Point[]): PointWithNormal[] {
-  return points.map((point) => ({
-    point,
-    normal: { x: 0, y: 0 },
-  }));
-}
-
-function getPoints(path: string): Point[] {
+function getPointsWithEmptyNormals(path: string): PointWithNormal[] {
   const shapes = pathToShapes(path);
-  const points: Point[] = [];
+  const points: PointWithNormal[] = [];
 
   for (let shape of shapes) {
     const bbox = getBoundingBoxForBeziers(shape);
-    points.push(getBoundingBoxCenter(bbox));
+    const point = getBoundingBoxCenter(bbox);
+    points.push({
+      point,
+      normal: ORIGIN,
+    });
   }
 
   return points;
@@ -58,18 +55,30 @@ function concat<T>(first: T[] | undefined, second: T[]): T[] {
 function updateSpecs(fill: string, path: string, specs: Specs): Specs {
   switch (fill) {
     case colors.TAIL_ATTACHMENT_COLOR:
-      return { ...specs, tail: concat(specs.tail, getPoints(path)) };
+      return {
+        ...specs,
+        tail: concat(specs.tail, getPointsWithEmptyNormals(path)),
+      };
     case colors.LEG_ATTACHMENT_COLOR:
-      return { ...specs, leg: concat(specs.leg, getPoints(path)) };
+      return {
+        ...specs,
+        leg: concat(specs.leg, getPointsWithEmptyNormals(path)),
+      };
     case colors.ARM_ATTACHMENT_COLOR:
       return {
         ...specs,
-        arm: concat(specs.arm, withEmptyNormals(getPoints(path))),
+        arm: concat(specs.arm, getPointsWithEmptyNormals(path)),
       };
     case colors.HORN_ATTACHMENT_COLOR:
-      return { ...specs, horn: concat(specs.horn, getPoints(path)) };
+      return {
+        ...specs,
+        horn: concat(specs.horn, getPointsWithEmptyNormals(path)),
+      };
     case colors.CROWN_ATTACHMENT_COLOR:
-      return { ...specs, crown: concat(specs.crown, getPoints(path)) };
+      return {
+        ...specs,
+        crown: concat(specs.crown, getPointsWithEmptyNormals(path)),
+      };
     case colors.NESTING_BOUNDING_BOX_COLOR:
       return {
         ...specs,
@@ -232,8 +241,20 @@ function filterFilledShapes(elements: SvgSymbolElement[]): SvgSymbolElement[] {
 function populateSpecNormals(specs: Specs, layers: SvgSymbolElement[]): void {
   const beziers = getAllBeziers(filterFilledShapes(layers));
 
+  if (specs.tail) {
+    populateNormals(specs.tail, beziers);
+  }
+  if (specs.leg) {
+    populateNormals(specs.leg, beziers);
+  }
   if (specs.arm) {
     populateNormals(specs.arm, beziers);
+  }
+  if (specs.horn) {
+    populateNormals(specs.horn, beziers);
+  }
+  if (specs.crown) {
+    populateNormals(specs.crown, beziers);
   }
 }
 

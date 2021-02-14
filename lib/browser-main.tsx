@@ -72,28 +72,12 @@ const ATTACHMENT_POINT_NORMAL_LENGTH = 50;
 
 const ATTACHMENT_POINT_NORMAL_STROKE = 4;
 
-const AttachmentPoints: React.FC<{ color: string; points: Point[] }> = (
-  props
-) => (
-  <>
-    {props.points.map((p, i) => (
-      <circle
-        key={i}
-        fill={props.color}
-        r={ATTACHMENT_POINT_RADIUS}
-        cx={p.x}
-        cy={p.y}
-      />
-    ))}
-  </>
-);
-
-const AttachmentPointsWithNormals: React.FC<{
+const AttachmentPoints: React.FC<{
   color: string;
-  pwns: PointWithNormal[];
+  points: PointWithNormal[];
 }> = (props) => (
   <>
-    {props.pwns.map((pwn, i) => {
+    {props.points.map((pwn, i) => {
       const { x, y } = pwn.point;
       const x2 = x + pwn.normal.x * ATTACHMENT_POINT_NORMAL_LENGTH;
       const y2 = y + pwn.normal.y * ATTACHMENT_POINT_NORMAL_LENGTH;
@@ -153,9 +137,9 @@ const SvgSymbolSpecs: React.FC<{ specs: Specs }> = ({ specs }) => {
         />
       )}
       {specs.arm && (
-        <AttachmentPointsWithNormals
+        <AttachmentPoints
           color={colors.ARM_ATTACHMENT_COLOR}
-          pwns={specs.arm}
+          points={specs.arm}
         />
       )}
       {specs.horn && (
