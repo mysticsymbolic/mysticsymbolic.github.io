@@ -93,7 +93,7 @@ export function build() {
       });
       const $ = cheerio.load(svgMarkup);
       const svgEl = $("svg");
-      const name = path.basename(filename, SVG_EXT);
+      const name = path.basename(filename, SVG_EXT).toLowerCase();
       const rawLayers = onlyTags(svgEl.children()).map((ch) =>
         serializeSvgSymbolElement($, ch)
       );
