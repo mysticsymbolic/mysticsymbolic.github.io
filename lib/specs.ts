@@ -2,6 +2,7 @@ import { Point, BBox } from "../vendor/bezier-js";
 import { getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
+import { normalizePoint, subtractPoints } from "./point";
 import type { SvgSymbolElement } from "./svg-symbol";
 
 const SPEC_LAYER_ID_RE = /^specs.*/i;
@@ -53,21 +54,6 @@ export function* iterAttachmentPoints(specs: Specs): Iterable<AttachmentPoint> {
 const NUM_ARROW_POINTS = 4;
 const ARROW_TOP_POINT_IDX = 0;
 const ARROW_BOTTOM_POINT_IDX = 2;
-
-function subtractPoints(p1: Point, p2: Point): Point {
-  return {
-    x: p1.x - p2.x,
-    y: p1.y - p2.y,
-  };
-}
-
-function normalizePoint(p: Point): Point {
-  const len = Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2));
-  return {
-    x: p.x / len,
-    y: p.y / len,
-  };
-}
 
 function getArrowPoints(path: string): PointWithNormal[] {
   const shapes = pathToShapes(path);
