@@ -49,9 +49,11 @@ type CreatureContextType = SvgSymbolContext & {
   parent: SvgSymbolData | null;
 };
 
+const DEFAULT_ATTACHMENT_SCALE = 0.5;
+
 const CreatureContext = React.createContext<CreatureContextType>({
   ...createSvgSymbolContext(),
-  attachmentScale: 0.25,
+  attachmentScale: DEFAULT_ATTACHMENT_SCALE,
   parent: null,
 });
 
@@ -120,11 +122,13 @@ export const CreaturePage: React.FC<{}> = () => {
     <>
       <h1>Creature!</h1>
       <svg width="1280px" height="720px">
-        <Eye>
-          <Hand attachTo="crown">
-            <Cup attachTo="arm" />
-          </Hand>
-        </Eye>
+        <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
+          <Eye>
+            <Hand attachTo="crown">
+              <Cup attachTo="arm" />
+            </Hand>
+          </Eye>
+        </g>
       </svg>
     </>
   );
