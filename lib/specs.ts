@@ -1,5 +1,5 @@
 import { Point, BBox } from "../vendor/bezier-js";
-import { getBoundingBoxCenter, getBoundingBoxForBeziers } from "./bounding-box";
+import { getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
 import type { SvgSymbolElement } from "./vocabulary";
@@ -19,7 +19,6 @@ export type Specs = {
   crown?: PointWithNormal[];
   nesting?: BBox[];
 };
-
 const NUM_ARROW_POINTS = 4;
 const ARROW_TOP_POINT_IDX = 0;
 const ARROW_BOTTOM_POINT_IDX = 2;
