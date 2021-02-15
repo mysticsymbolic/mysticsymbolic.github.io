@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.0.3 build 635 -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
-<g id="teardrop">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 19.719 C 360.011 19.756 378.033 178.144 472.856 390.284 C 562.720 591.329 472.830 705.411 360.000 704.915 C 259.331 704.472 157.629 599.108 247.144 390.284 C 337.920 178.519 359.989 19.756 360.000 19.719 Z"/>
-</g>
-</svg>

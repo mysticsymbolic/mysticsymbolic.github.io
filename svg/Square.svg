@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.0.3 build 635 -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
-<g id="square">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M 35.445 35.445 C 35.510 35.445 684.490 35.445 684.555 35.445 C 684.555 35.510 684.555 684.490 684.555 684.555 C 684.490 684.555 35.510 684.555 35.445 684.555 C 35.445 684.490 35.445 35.510 35.445 35.445 Z"/>
-</g>
-</svg>

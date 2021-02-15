@@ -4,7 +4,7 @@ import * as colors from "./colors";
 import { pathToShapes } from "./path";
 import type { SvgSymbolElement } from "./vocabulary";
 
-const SPEC_LAYER_ID_RE = /^arrows.*/i;
+const SPEC_LAYER_ID_RE = /^specs.*/i;
 
 export type PointWithNormal = {
   point: Point;
