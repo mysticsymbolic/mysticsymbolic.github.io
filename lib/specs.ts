@@ -11,14 +11,45 @@ export type PointWithNormal = {
   normal: Point;
 };
 
-export type Specs = {
-  tail?: PointWithNormal[];
-  leg?: PointWithNormal[];
-  arm?: PointWithNormal[];
-  horn?: PointWithNormal[];
-  crown?: PointWithNormal[];
-  nesting?: BBox[];
+type AttachmentPointSpecs = {
+  tail: PointWithNormal[];
+  leg: PointWithNormal[];
+  arm: PointWithNormal[];
+  horn: PointWithNormal[];
+  crown: PointWithNormal[];
 };
+
+type FullSpecs = AttachmentPointSpecs & {
+  nesting: BBox[];
+};
+
+export type Specs = Partial<FullSpecs>;
+
+export type AttachmentPointType = keyof AttachmentPointSpecs;
+
+export type AttachmentPoint = PointWithNormal & {
+  type: AttachmentPointType;
+};
+
+export const ATTACHMENT_POINT_TYPES: AttachmentPointType[] = [
+  "tail",
+  "leg",
+  "arm",
+  "horn",
+  "crown",
+];
+
+export function* iterAttachmentPoints(specs: Specs): Iterable<AttachmentPoint> {
+  for (let type of ATTACHMENT_POINT_TYPES) {
+    const points = specs[type];
+    if (points) {
+      for (let point of points) {
+        yield { ...point, type };
+      }
+    }
+  }
+}
+
 const NUM_ARROW_POINTS = 4;
 const ARROW_TOP_POINT_IDX = 0;
 const ARROW_BOTTOM_POINT_IDX = 2;
@@ -76,38 +107,28 @@ function concat<T>(first: T[] | undefined, second: T[]): T[] {
   return first ? [...first, ...second] : second;
 }
 
+const ATTACHMENT_COLOR_MAP = new Map(
+  ATTACHMENT_POINT_TYPES.map((type) => [
+    colors.ATTACHMENT_POINT_COLORS[type],
+    type,
+  ])
+);
+
 function updateSpecs(fill: string, path: string, specs: Specs): Specs {
-  switch (fill) {
-    case colors.TAIL_ATTACHMENT_COLOR:
-      return {
-        ...specs,
-        tail: concat(specs.tail, getArrowPoints(path)),
-      };
-    case colors.LEG_ATTACHMENT_COLOR:
-      return {
-        ...specs,
-        leg: concat(specs.leg, getArrowPoints(path)),
-      };
-    case colors.ARM_ATTACHMENT_COLOR:
-      return {
-        ...specs,
-        arm: concat(specs.arm, getArrowPoints(path)),
-      };
-    case colors.HORN_ATTACHMENT_COLOR:
-      return {
-        ...specs,
-        horn: concat(specs.horn, getArrowPoints(path)),
-      };
-    case colors.CROWN_ATTACHMENT_COLOR:
-      return {
-        ...specs,
-        crown: concat(specs.crown, getArrowPoints(path)),
-      };
-    case colors.NESTING_BOUNDING_BOX_COLOR:
-      return {
-        ...specs,
-        nesting: concat(specs.nesting, getBoundingBoxes(path)),
-      };
+  const attachmentType = ATTACHMENT_COLOR_MAP.get(fill);
+
+  if (attachmentType) {
+    return {
+      ...specs,
+      [attachmentType]: concat(specs[attachmentType], getArrowPoints(path)),
+    };
+  }
+
+  if (fill === colors.NESTING_BOUNDING_BOX_COLOR) {
+    return {
+      ...specs,
+      nesting: concat(specs.nesting, getBoundingBoxes(path)),
+    };
   }
 
   throw new Error(`Not sure what to do with specs path with fill "${fill}"!`);
