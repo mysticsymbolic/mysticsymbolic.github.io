@@ -2,7 +2,7 @@ import { Point, BBox } from "../vendor/bezier-js";
 import { getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
-import type { SvgSymbolElement } from "./vocabulary";
+import type { SvgSymbolElement } from "./svg-symbol";
 
 const SPEC_LAYER_ID_RE = /^specs.*/i;
 

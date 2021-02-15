@@ -1,7 +1,7 @@
 import { Bezier, Point, BBox, MinMax } from "../vendor/bezier-js";
 import { SVGProps } from "react";
 
-import type { SvgSymbolElement } from "./vocabulary";
+import type { SvgSymbolElement } from "./svg-symbol";
 import { flatten, float } from "./util";
 import { pathToShapes } from "./path";
 

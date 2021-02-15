@@ -1,30 +1,9 @@
 import fs from "fs";
 import path from "path";
 import cheerio from "cheerio";
-import { SVGProps } from "react";
-import { BBox } from "../vendor/bezier-js";
 import { getSvgBoundingBox } from "./bounding-box";
-import { Specs, extractSpecs } from "./specs";
-
-export type SvgSymbolData = {
-  name: string;
-  bbox: BBox;
-  layers: SvgSymbolElement[];
-  specs?: Specs;
-};
-
-export type SvgSymbolElement = (
-  | {
-      tagName: "g";
-      props: SVGProps<SVGGElement>;
-    }
-  | {
-      tagName: "path";
-      props: SVGProps<SVGPathElement>;
-    }
-) & {
-  children: SvgSymbolElement[];
-};
+import { extractSpecs } from "./specs";
+import { SvgSymbolData, SvgSymbolElement } from "./svg-symbol";
 
 const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
