@@ -5,10 +5,8 @@ import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "../colors";
 import * as colors from "../colors";
 import { PointWithNormal, Specs } from "../specs";
 
-import _SvgVocabulary from "../svg-vocabulary.json";
 import type { SvgSymbolData, SvgSymbolElement } from "../vocabulary";
-
-const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary as any;
+import { SvgVocabulary } from "../svg-vocabulary";
 
 type SvgSymbolContext = {
   stroke: string;
@@ -155,7 +153,7 @@ const SvgSymbolSpecs: React.FC<{ specs: Specs }> = ({ specs }) => {
   );
 };
 
-const BBOX_DILATION = 50;
+const BBOX_DILATION = 100;
 
 const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
   const d = props.data;

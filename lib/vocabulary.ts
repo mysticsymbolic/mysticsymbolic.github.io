@@ -31,7 +31,7 @@ const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
 
 const MY_DIR = __dirname;
 const SVG_DIR = path.join(MY_DIR, "..", "svg");
-const VOCAB_PATH = path.join(MY_DIR, "svg-vocabulary.json");
+const VOCAB_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
 const SVG_EXT = ".svg";
 
 function onlyTags(
