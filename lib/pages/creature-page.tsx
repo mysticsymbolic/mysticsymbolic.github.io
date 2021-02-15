@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { Random } from "../random";
 import { SvgVocabulary } from "../svg-vocabulary";
 import {
   createSvgSymbolContext,
@@ -117,13 +116,6 @@ const Hand = createCreatureSymbol("hand");
 const Cup = createCreatureSymbol("cup");
 
 export const CreaturePage: React.FC<{}> = () => {
-  const rand = new Random(1);
-  const parts: string[] = [];
-
-  for (let i = 0; i < 5; i++) {
-    parts.push(rand.choice(SvgVocabulary).name);
-  }
-
   return (
     <>
       <h1>Creature!</h1>
@@ -134,12 +126,6 @@ export const CreaturePage: React.FC<{}> = () => {
           </Hand>
         </Eye>
       </svg>
-      <p>TODO: Make a creature with maybe the following parts:</p>
-      <ul>
-        {parts.map((name, i) => (
-          <li key={i}>{name}</li>
-        ))}
-      </ul>
     </>
   );
 };
