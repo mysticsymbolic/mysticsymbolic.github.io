@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Random } from "../random";
 import { SvgVocabulary } from "../svg-vocabulary";
 import {
   createSvgSymbolContext,
   SvgSymbolContent,
+  SvgSymbolContext,
   SvgSymbolData,
 } from "../svg-symbol";
 import { AttachmentPointType, PointWithNormal } from "../specs";
@@ -42,35 +43,96 @@ function getAttachmentPoint(
   return points[idx];
 }
 
+type AttachmentChildren = JSX.Element | JSX.Element[];
+
+type CreatureContextType = SvgSymbolContext & {
+  attachmentScale: number;
+  parent: SvgSymbolData | null;
+};
+
+const CreatureContext = React.createContext<CreatureContextType>({
+  ...createSvgSymbolContext(),
+  attachmentScale: 0.25,
+  parent: null,
+});
+
+type CreatureSymbolProps = {
+  data: SvgSymbolData;
+  children?: AttachmentChildren;
+  attachTo?: AttachmentPointType;
+  attachIndex?: number;
+};
+
+const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
+  const ctx = useContext(CreatureContext);
+  const { data, attachTo, attachIndex } = props;
+  const ourSymbol = (
+    <>
+      <SvgSymbolContent data={data} {...ctx} />
+      {props.children && (
+        <CreatureContext.Provider value={{ ...ctx, parent: data }}>
+          {props.children}
+        </CreatureContext.Provider>
+      )}
+    </>
+  );
+
+  if (!attachTo) {
+    return ourSymbol;
+  }
+
+  const parent = ctx.parent;
+  if (!parent) {
+    throw new Error(
+      `Cannot attach ${props.data.name} because it has no parent!`
+    );
+  }
+  const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
+  const ourAp = getAttachmentPoint(data, "tail");
+  const dist = subtractPoints(parentAp.point, ourAp.point);
+
+  return (
+    <g transform={`translate(${dist.x} ${dist.y})`}>
+      <g
+        transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
+        transform={`scale(${ctx.attachmentScale} ${ctx.attachmentScale})`}
+      >
+        {ourSymbol}
+      </g>
+    </g>
+  );
+};
+
+function createCreatureSymbol(
+  name: string
+): React.FC<Omit<CreatureSymbolProps, "data">> {
+  const data = getSymbol(name);
+  return (props) => <CreatureSymbol data={data} {...props} />;
+}
+
+const Eye = createCreatureSymbol("eye");
+
+const Hand = createCreatureSymbol("hand");
+
+const Cup = createCreatureSymbol("cup");
+
 export const CreaturePage: React.FC<{}> = () => {
   const rand = new Random(1);
   const parts: string[] = [];
-  const ctx = createSvgSymbolContext({ showSpecs: false });
-  const eye = getSymbol("eye");
-  const hand = getSymbol("hand");
 
   for (let i = 0; i < 5; i++) {
     parts.push(rand.choice(SvgVocabulary).name);
   }
 
-  const handTail = getAttachmentPoint(hand, "tail");
-  const eyeCrown = getAttachmentPoint(eye, "crown");
-
-  const dist = subtractPoints(eyeCrown.point, handTail.point);
-
   return (
     <>
       <h1>Creature!</h1>
       <svg width="1280px" height="720px">
-        <SvgSymbolContent data={eye} {...ctx} />
-        <g transform={`translate(${dist.x} ${dist.y})`}>
-          <g
-            transform-origin={`${handTail.point.x} ${handTail.point.y}`}
-            transform={`scale(0.25 0.25)`}
-          >
-            <SvgSymbolContent data={hand} {...ctx} />
-          </g>
-        </g>
+        <Eye>
+          <Hand attachTo="crown">
+            <Cup attachTo="arm" />
+          </Hand>
+        </Eye>
       </svg>
       <p>TODO: Make a creature with maybe the following parts:</p>
       <ul>
