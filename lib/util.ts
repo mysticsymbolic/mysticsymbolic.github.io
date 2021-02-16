@@ -20,3 +20,10 @@ export function flatten<T>(arr: T[][]): T[] {
 
   return result;
 }
+
+/**
+ * Convert radians to degrees.
+ */
+export function rad2deg(radians: number): number {
+  return (radians * 180) / Math.PI;
+}

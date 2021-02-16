@@ -8,6 +8,7 @@ import {
 } from "../svg-symbol";
 import { AttachmentPointType, PointWithNormal } from "../specs";
 import { subtractPoints } from "../point";
+import { rad2deg } from "../util";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -63,10 +64,6 @@ type CreatureSymbolProps = {
   attachTo?: AttachmentPointType;
   attachIndex?: number;
 };
-
-function rad2deg(radians: number): number {
-  return (radians * 180) / Math.PI;
-}
 
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
