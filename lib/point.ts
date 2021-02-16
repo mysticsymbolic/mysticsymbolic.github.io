@@ -17,3 +17,11 @@ export function normalizePoint(p: Point): Point {
     y: p.y / len,
   };
 }
+
+export function normalizedPoint2rad(p: Point): number {
+  let result = Math.acos(p.x);
+  if (p.y < 0) {
+    result += Math.PI;
+  }
+  return result;
+}
