@@ -1,5 +1,5 @@
 import { Point } from "../vendor/bezier-js";
-import { normalizedPoint2rad, subtractPoints } from "./point";
+import { normalizedPoint2rad, scalePointXY, subtractPoints } from "./point";
 import { PointWithNormal } from "./specs";
 import { rad2deg } from "./util";
 
@@ -18,10 +18,7 @@ function normalizeDeg(deg: number): number {
 export function normalToAttachmentSpaceDegrees(normal: Point): number {
   // We need to flip our y because we're in screen space, yet our
   // rotational math assumes we're not.
-  const yFlipped: Point = {
-    x: normal.x,
-    y: -normal.y,
-  };
+  const yFlipped = scalePointXY(normal, 1, -1);
 
   const rad = normalizedPoint2rad(yFlipped);
 

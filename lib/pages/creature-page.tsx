@@ -8,6 +8,7 @@ import {
 } from "../svg-symbol";
 import { AttachmentPointType, PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
+import { scalePointXY } from "../point";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -110,10 +111,7 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
 
   const t = getAttachmentTransforms(parentAp, {
     point: ourAp.point,
-    normal: {
-      x: xFlip * ourAp.normal.x,
-      y: ourAp.normal.y,
-    },
+    normal: scalePointXY(ourAp.normal, xFlip, 1),
   });
 
   return (

@@ -1,5 +1,12 @@
 import { Point } from "../vendor/bezier-js";
 
+export function scalePointXY(p: Point, xScale: number, yScale: number): Point {
+  return {
+    x: p.x * xScale,
+    y: p.y * yScale,
+  };
+}
+
 export function subtractPoints(p1: Point, p2: Point): Point {
   return {
     x: p1.x - p2.x,
