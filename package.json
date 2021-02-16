@@ -6,6 +6,8 @@
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
     "typecheck": "tsc --noemit",
+    "test:watch": "jest --watch",
+    "test": "jest",
     "build": "node build-vocabulary.js && rm -rf dist && parcel build index.html -d dist --public-url .",
     "watch": "node build-vocabulary.js && parcel index.html -d dist-watch"
   },
@@ -17,11 +19,14 @@
     "@babel/preset-typescript": "^7.12.7",
     "@babel/register": "^7.12.10",
     "@types/cheerio": "^0.22.23",
+    "@types/jest": "^26.0.20",
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
+    "babel-jest": "^26.6.3",
     "cheerio": "^1.0.0-rc.5",
     "gh-pages": "^3.1.0",
+    "jest": "^26.6.3",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
