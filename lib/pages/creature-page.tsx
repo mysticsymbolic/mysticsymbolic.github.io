@@ -61,16 +61,35 @@ const CreatureContext = React.createContext<CreatureContextType>({
   parent: null,
 });
 
-type CreatureSymbolProps = {
+type AttachmentIndices = {
+  left?: boolean;
+  right?: boolean;
+};
+
+type CreatureSymbolProps = AttachmentIndices & {
   data: SvgSymbolData;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
-  attachIndex?: number;
 };
+
+function getAttachmentIndices(ai: AttachmentIndices): number[] {
+  const result: number[] = [];
+
+  if (ai.left) {
+    result.push(0);
+  }
+  if (ai.right) {
+    result.push(1);
+  }
+  if (result.length === 0) {
+    result.push(0);
+  }
+  return result;
+}
 
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
-  const { data, attachTo, attachIndex } = props;
+  const { data, attachTo } = props;
   const ourSymbol = (
     <>
       {props.children && (
@@ -100,40 +119,48 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
     );
   }
 
-  const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
-  const ourAp = getAttachmentPoint(data, "tail");
+  const attachmentIndices = getAttachmentIndices(props);
+  const children: JSX.Element[] = [];
 
-  // If we're being attached as a tail, we want to actually rotate
-  // the attachment an extra 180 degrees, as the tail attachment
-  // point is facing the opposite direction that we actually
-  // want to orient the tail in.
-  const extraRot = attachTo === "tail" ? 180 : 0;
+  for (let attachIndex of attachmentIndices) {
+    const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
+    const ourAp = getAttachmentPoint(data, "tail");
 
-  // If we're attaching something oriented towards the left, horizontally flip
-  // the attachment image.
-  let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+    // If we're being attached as a tail, we want to actually rotate
+    // the attachment an extra 180 degrees, as the tail attachment
+    // point is facing the opposite direction that we actually
+    // want to orient the tail in.
+    const extraRot = attachTo === "tail" ? 180 : 0;
 
-  // Er, things look weird if we don't inverse the flip logic for
-  // the downward-facing attachments, like legs...
-  if (parentAp.normal.y > 0) {
-    xFlip *= -1;
+    // If we're attaching something oriented towards the left, horizontally flip
+    // the attachment image.
+    let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+    // Er, things look weird if we don't inverse the flip logic for
+    // the downward-facing attachments, like legs...
+    if (parentAp.normal.y > 0) {
+      xFlip *= -1;
+    }
+
+    const t = getAttachmentTransforms(parentAp, {
+      point: ourAp.point,
+      normal: scalePointXY(ourAp.normal, xFlip, 1),
+    });
+
+    children.push(
+      <AttachmentTransform
+        key={attachIndex}
+        transformOrigin={ourAp.point}
+        translate={t.translation}
+        scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
+        rotate={xFlip * t.rotation + extraRot}
+      >
+        {ourSymbol}
+      </AttachmentTransform>
+    );
   }
 
-  const t = getAttachmentTransforms(parentAp, {
-    point: ourAp.point,
-    normal: scalePointXY(ourAp.normal, xFlip, 1),
-  });
-
-  return (
-    <AttachmentTransform
-      transformOrigin={ourAp.point}
-      translate={t.translation}
-      scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
-      rotate={xFlip * t.rotation + extraRot}
-    >
-      {ourSymbol}
-    </AttachmentTransform>
-  );
+  return <>{children}</>;
 };
 
 type AttachmentTransformProps = {
@@ -157,9 +184,13 @@ const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
 
 function createCreatureSymbol(
   name: string
-): React.FC<Omit<CreatureSymbolProps, "data">> {
+): React.FC<
+  Omit<CreatureSymbolProps, "data"> & {
+    data?: SvgSymbolData;
+  }
+> {
   const data = getSymbol(name);
-  return (props) => <CreatureSymbol data={data} {...props} />;
+  return (props) => <CreatureSymbol data={props.data || data} {...props} />;
 }
 
 const Eye = createCreatureSymbol("eye");
@@ -179,6 +210,25 @@ const MuscleArm = createCreatureSymbol("muscle arm");
 const Leg = createCreatureSymbol("leg");
 
 const Tail = createCreatureSymbol("tail");
+
+const EYE_CREATURE = (
+  <Eye>
+    <Arm attachTo="arm" left>
+      <Wing attachTo="arm" left right />
+    </Arm>
+    <Arm attachTo="arm" right>
+      <MuscleArm attachTo="arm" left right />
+    </Arm>
+    <Antler attachTo="horn" left right />
+    <Crown attachTo="crown">
+      <Hand attachTo="horn" left right>
+        <Arm attachTo="arm" left />
+      </Hand>
+    </Crown>
+    <Leg attachTo="leg" left right />
+    <Tail attachTo="tail" />
+  </Eye>
+);
 
 export const CreaturePage: React.FC<{}> = () => {
   const [showSpecs, setShowSpecs] = useState(false);
@@ -205,29 +255,7 @@ export const CreaturePage: React.FC<{}> = () => {
       <CreatureContext.Provider value={ctx}>
         <svg width="1280px" height="720px">
           <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
-            <Eye>
-              <Arm attachTo="arm">
-                <Wing attachTo="arm" />
-                <Wing attachTo="arm" attachIndex={1} />
-              </Arm>
-              <Arm attachTo="arm" attachIndex={1}>
-                <MuscleArm attachTo="arm" />
-                <MuscleArm attachTo="arm" attachIndex={1} />
-              </Arm>
-              <Antler attachTo="horn" />
-              <Antler attachTo="horn" attachIndex={1} />
-              <Crown attachTo="crown">
-                <Hand attachTo="horn">
-                  <Arm attachTo="arm" />
-                </Hand>
-                <Hand attachTo="horn" attachIndex={1}>
-                  <Arm attachTo="arm" />
-                </Hand>
-              </Crown>
-              <Leg attachTo="leg" />
-              <Leg attachTo="leg" attachIndex={1} />
-              <Tail attachTo="tail" />
-            </Eye>
+            {EYE_CREATURE}
           </g>
         </svg>
       </CreatureContext.Provider>
