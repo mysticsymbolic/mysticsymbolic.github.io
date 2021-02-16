@@ -64,17 +64,21 @@ type CreatureSymbolProps = {
   attachIndex?: number;
 };
 
+function rad2deg(radians: number): number {
+  return (radians * 180) / Math.PI;
+}
+
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
   const { data, attachTo, attachIndex } = props;
   const ourSymbol = (
     <>
-      <SvgSymbolContent data={data} {...ctx} />
       {props.children && (
         <CreatureContext.Provider value={{ ...ctx, parent: data }}>
           {props.children}
         </CreatureContext.Provider>
       )}
+      <SvgSymbolContent data={data} {...ctx} />
     </>
   );
 
@@ -91,12 +95,21 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
   const ourAp = getAttachmentPoint(data, "tail");
   const dist = subtractPoints(parentAp.point, ourAp.point);
+  const normX = parentAp.normal.x;
+  const theta = rad2deg(Math.PI / 2 - Math.acos(Math.abs(normX)));
+  let xFlip = 1;
+
+  if (normX < 0) {
+    xFlip = -1;
+  }
 
   return (
     <g transform={`translate(${dist.x} ${dist.y})`}>
       <g
         transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
-        transform={`scale(${ctx.attachmentScale} ${ctx.attachmentScale})`}
+        transform={`scale(${xFlip * ctx.attachmentScale} ${
+          ctx.attachmentScale
+        }) rotate(${theta})`}
       >
         {ourSymbol}
       </g>
@@ -115,7 +128,7 @@ const Eye = createCreatureSymbol("eye");
 
 const Hand = createCreatureSymbol("hand");
 
-const Cup = createCreatureSymbol("cup");
+const Arm = createCreatureSymbol("arm");
 
 export const CreaturePage: React.FC<{}> = () => {
   return (
@@ -125,8 +138,10 @@ export const CreaturePage: React.FC<{}> = () => {
         <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
           <Eye>
             <Hand attachTo="crown">
-              <Cup attachTo="arm" />
+              <Arm attachTo="arm" />
             </Hand>
+            <Arm attachTo="arm" />
+            <Arm attachTo="arm" attachIndex={1} />
           </Eye>
         </g>
       </svg>
