@@ -135,6 +135,12 @@ const Antler = createCreatureSymbol("antler");
 
 const Crown = createCreatureSymbol("crown");
 
+const Wing = createCreatureSymbol("wing");
+
+const MuscleArm = createCreatureSymbol("muscle arm");
+
+const Tail = createCreatureSymbol("tail");
+
 export const CreaturePage: React.FC<{}> = () => {
   return (
     <>
@@ -142,15 +148,25 @@ export const CreaturePage: React.FC<{}> = () => {
       <svg width="1280px" height="720px">
         <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
           <Eye>
-            <Arm attachTo="arm" />
-            <Arm attachTo="arm" attachIndex={1} />
+            <Arm attachTo="arm">
+              <Wing attachTo="arm" />
+              <Wing attachTo="arm" attachIndex={1} />
+            </Arm>
+            <Arm attachTo="arm" attachIndex={1}>
+              <MuscleArm attachTo="arm" />
+              <MuscleArm attachTo="arm" attachIndex={1} />
+            </Arm>
             <Antler attachTo="horn" />
             <Antler attachTo="horn" attachIndex={1} />
             <Crown attachTo="crown">
-              <Hand attachTo="crown">
+              <Hand attachTo="horn">
+                <Arm attachTo="arm" />
+              </Hand>
+              <Hand attachTo="horn" attachIndex={1}>
                 <Arm attachTo="arm" />
               </Hand>
             </Crown>
+            <Tail attachTo="tail" />
           </Eye>
         </g>
       </svg>
