@@ -106,11 +106,8 @@ function sortedPoints(points: PointWithNormal[]): PointWithNormal[] {
   return copy;
 }
 
-function sortedPointConcat(
-  first: PointWithNormal[] | undefined,
-  second: PointWithNormal[]
-): PointWithNormal[] {
-  return first ? sortedPoints([...first, ...second]) : sortedPoints(second);
+function concat<T>(first: T[] | undefined, second: T[]): T[] {
+  return first ? [...first, ...second] : second;
 }
 
 const ATTACHMENT_COLOR_MAP = new Map(
@@ -126,9 +123,8 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
   if (attachmentType) {
     return {
       ...specs,
-      [attachmentType]: sortedPointConcat(
-        specs[attachmentType],
-        getArrowPoints(path)
+      [attachmentType]: sortedPoints(
+        concat(specs[attachmentType], getArrowPoints(path))
       ),
     };
   }
@@ -136,7 +132,7 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
   if (fill === colors.NESTING_BOUNDING_BOX_COLOR) {
     return {
       ...specs,
-      nesting: sortedPointConcat(specs.nesting, getBoundingBoxes(path)),
+      nesting: concat(specs.nesting, getBoundingBoxes(path)),
     };
   }
 
