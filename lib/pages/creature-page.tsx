@@ -9,6 +9,7 @@ import {
 import { AttachmentPointType, PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { scalePointXY } from "../point";
+import { Point } from "../../vendor/bezier-js";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -124,18 +125,35 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   });
 
   return (
-    <g transform={`translate(${t.translation.x} ${t.translation.y})`}>
-      <g
-        transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
-        transform={`scale(${xFlip * ctx.attachmentScale} ${
-          ctx.attachmentScale
-        }) rotate(${xFlip * t.rotation + extraRot})`}
-      >
-        {ourSymbol}
-      </g>
-    </g>
+    <AttachmentTransform
+      transformOrigin={ourAp.point}
+      translate={t.translation}
+      scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
+      rotate={xFlip * t.rotation + extraRot}
+    >
+      {ourSymbol}
+    </AttachmentTransform>
   );
 };
+
+type AttachmentTransformProps = {
+  transformOrigin: Point;
+  translate: Point;
+  scale: Point;
+  rotate: number;
+  children: JSX.Element;
+};
+
+const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
+  <g transform={`translate(${props.translate.x} ${props.translate.y})`}>
+    <g
+      transform-origin={`${props.transformOrigin.x} ${props.transformOrigin.y}`}
+      transform={`scale(${props.scale.x} ${props.scale.y}) rotate(${props.rotate})`}
+    >
+      {props.children}
+    </g>
+  </g>
+);
 
 function createCreatureSymbol(
   name: string
