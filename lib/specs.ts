@@ -89,8 +89,28 @@ function getBoundingBoxes(path: string): BBox[] {
   return bboxes;
 }
 
-function concat<T>(first: T[] | undefined, second: T[]): T[] {
-  return first ? [...first, ...second] : second;
+/**
+ * Sort points from top to bottom, left to right.
+ */
+function sortPoints(a: PointWithNormal, b: PointWithNormal): number {
+  if (a.point.y < b.point.y) return -1;
+  if (a.point.y > b.point.y) return 1;
+  if (a.point.x < b.point.x) return -1;
+  if (a.point.x > b.point.x) return 1;
+  return 0;
+}
+
+function sortedPoints(points: PointWithNormal[]): PointWithNormal[] {
+  const copy = [...points];
+  copy.sort(sortPoints);
+  return copy;
+}
+
+function sortedPointConcat(
+  first: PointWithNormal[] | undefined,
+  second: PointWithNormal[]
+): PointWithNormal[] {
+  return first ? sortedPoints([...first, ...second]) : sortedPoints(second);
 }
 
 const ATTACHMENT_COLOR_MAP = new Map(
@@ -106,14 +126,17 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
   if (attachmentType) {
     return {
       ...specs,
-      [attachmentType]: concat(specs[attachmentType], getArrowPoints(path)),
+      [attachmentType]: sortedPointConcat(
+        specs[attachmentType],
+        getArrowPoints(path)
+      ),
     };
   }
 
   if (fill === colors.NESTING_BOUNDING_BOX_COLOR) {
     return {
       ...specs,
-      nesting: concat(specs.nesting, getBoundingBoxes(path)),
+      nesting: sortedPointConcat(specs.nesting, getBoundingBoxes(path)),
     };
   }
 
