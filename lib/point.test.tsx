@@ -33,6 +33,24 @@ describe("normalizedPoint2rad()", () => {
     expect(normalizedPoint2rad({ x: -1, y: 0 })).toBe(Math.PI);
   });
 
+  it("works for (-0.9999, 0.0499)", () => {
+    expect(
+      normalizedPoint2rad({ x: -0.9999875634527172, y: 0.0049872778043753814 })
+    ).toBeCloseTo(Math.PI);
+  });
+
+  it("works for (-0.9999, -0.0499)", () => {
+    expect(
+      normalizedPoint2rad({ x: -0.9999875634527172, y: -0.0049872778043753814 })
+    ).toBeCloseTo(Math.PI);
+  });
+
+  it("works for (0.9999, -0.0499)", () => {
+    expect(
+      normalizedPoint2rad({ x: 0.9999875634527172, y: -0.0049872778043753814 })
+    ).toBeCloseTo(2 * Math.PI);
+  });
+
   it("works for (0, -1)", () => {
     expect(normalizedPoint2rad({ x: 0, y: -1 })).toBe(Math.PI + Math.PI / 2);
   });

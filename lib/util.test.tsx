@@ -22,5 +22,6 @@ test("rad2deg() works", () => {
   expect(rad2deg(0)).toBe(0);
   expect(rad2deg(-Math.PI)).toBe(-180);
   expect(rad2deg(Math.PI)).toBe(180);
+  expect(rad2deg(Math.PI - 0.0000001)).toBeCloseTo(180);
   expect(rad2deg(2 * Math.PI)).toBe(360);
 });

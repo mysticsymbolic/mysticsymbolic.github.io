@@ -7,8 +7,7 @@ import {
   SvgSymbolData,
 } from "../svg-symbol";
 import { AttachmentPointType, PointWithNormal } from "../specs";
-import { subtractPoints } from "../point";
-import { rad2deg } from "../util";
+import { getAttachmentTransforms } from "../attach";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -89,28 +88,16 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       `Cannot attach ${props.data.name} because it has no parent!`
     );
   }
+
   const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
   const ourAp = getAttachmentPoint(data, "tail");
-  const dist = subtractPoints(parentAp.point, ourAp.point);
-  const ourTheta = rad2deg(Math.PI / 2 - Math.acos(Math.abs(ourAp.normal.x)));
-  const normX = parentAp.normal.x;
-  const theta = -ourTheta + rad2deg(Math.PI / 2 - Math.acos(Math.abs(normX)));
-  let xFlip = 1;
-
-  if (normX < 0) {
-    xFlip *= -1;
-  }
-  if (ourAp.normal.x < 0) {
-    xFlip *= -1;
-  }
+  const t = getAttachmentTransforms(parentAp, ourAp);
 
   return (
-    <g transform={`translate(${dist.x} ${dist.y})`}>
+    <g transform={`translate(${t.translation.x} ${t.translation.y})`}>
       <g
         transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
-        transform={`scale(${xFlip * ctx.attachmentScale} ${
-          ctx.attachmentScale
-        }) rotate(${theta})`}
+        transform={`scale(${ctx.attachmentScale} ${ctx.attachmentScale}) rotate(${t.rotation})`}
       >
         {ourSymbol}
       </g>

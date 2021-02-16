@@ -21,7 +21,7 @@ export function normalizePoint(p: Point): Point {
 export function normalizedPoint2rad(p: Point): number {
   let result = Math.acos(p.x);
   if (p.y < 0) {
-    result += Math.PI;
+    result += (Math.PI - result) * 2;
   }
   return result;
 }
