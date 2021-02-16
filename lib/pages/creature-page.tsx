@@ -47,6 +47,7 @@ type AttachmentChildren = JSX.Element | JSX.Element[];
 
 type CreatureContextType = SvgSymbolContext & {
   attachmentScale: number;
+  cumulativeScale: number;
   parent: SvgSymbolData | null;
 };
 
@@ -55,6 +56,7 @@ const DEFAULT_ATTACHMENT_SCALE = 0.5;
 const CreatureContext = React.createContext<CreatureContextType>({
   ...createSvgSymbolContext(),
   attachmentScale: DEFAULT_ATTACHMENT_SCALE,
+  cumulativeScale: 1,
   parent: null,
 });
 
@@ -71,7 +73,14 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ourSymbol = (
     <>
       {props.children && (
-        <CreatureContext.Provider value={{ ...ctx, parent: data }}>
+        <CreatureContext.Provider
+          value={{
+            ...ctx,
+            parent: data,
+            cumulativeScale: ctx.attachmentScale * ctx.cumulativeScale,
+            strokeScale: 1 / ctx.cumulativeScale,
+          }}
+        >
           {props.children}
         </CreatureContext.Provider>
       )}

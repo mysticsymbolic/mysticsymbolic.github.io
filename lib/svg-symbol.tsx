@@ -3,6 +3,7 @@ import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { Specs } from "./specs";
+import { float } from "./util";
 import { VisibleSpecs } from "./visible-specs";
 
 export type SvgSymbolData = {
@@ -28,12 +29,14 @@ export type SvgSymbolElement = (
 export type SvgSymbolContext = {
   stroke: string;
   fill: string;
+  strokeScale: number;
   showSpecs: boolean;
 };
 
 const DEFAULT_CONTEXT: SvgSymbolContext = {
   stroke: "#000000",
   fill: "#ffffff",
+  strokeScale: 1,
   showSpecs: false,
 };
 
@@ -64,14 +67,18 @@ function reactifySvgSymbolElement(
   el: SvgSymbolElement,
   key: number
 ): JSX.Element {
-  let { fill, stroke } = el.props;
+  let { fill, stroke, strokeWidth } = el.props;
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
+  if (strokeWidth !== undefined) {
+    strokeWidth = float(strokeWidth) * ctx.strokeScale;
+  }
   return React.createElement(
     el.tagName,
     {
       ...el.props,
       id: undefined,
+      strokeWidth,
       fill,
       stroke,
       key,
