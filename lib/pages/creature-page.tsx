@@ -95,8 +95,9 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
   const ourAp = getAttachmentPoint(data, "tail");
   const dist = subtractPoints(parentAp.point, ourAp.point);
+  const ourTheta = rad2deg(Math.PI / 2 - Math.acos(Math.abs(ourAp.normal.x)));
   const normX = parentAp.normal.x;
-  const theta = rad2deg(Math.PI / 2 - Math.acos(Math.abs(normX)));
+  const theta = -ourTheta + rad2deg(Math.PI / 2 - Math.acos(Math.abs(normX)));
   let xFlip = 1;
 
   if (normX < 0) {
@@ -130,6 +131,10 @@ const Hand = createCreatureSymbol("hand");
 
 const Arm = createCreatureSymbol("arm");
 
+const Antler = createCreatureSymbol("antler");
+
+const Crown = createCreatureSymbol("crown");
+
 export const CreaturePage: React.FC<{}> = () => {
   return (
     <>
@@ -137,11 +142,15 @@ export const CreaturePage: React.FC<{}> = () => {
       <svg width="1280px" height="720px">
         <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
           <Eye>
-            <Hand attachTo="crown">
-              <Arm attachTo="arm" />
-            </Hand>
             <Arm attachTo="arm" />
             <Arm attachTo="arm" attachIndex={1} />
+            <Antler attachTo="horn" />
+            <Antler attachTo="horn" attachIndex={1} />
+            <Crown attachTo="crown">
+              <Hand attachTo="crown">
+                <Arm attachTo="arm" />
+              </Hand>
+            </Crown>
           </Eye>
         </g>
       </svg>
