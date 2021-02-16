@@ -14,6 +14,14 @@ npm run watch
 
 then visit http://localhost:1234.
 
+## Running tests
+
+To run tests interactively, run:
+
+```
+npm run test:watch
+```
+
 ## Deployment
 
 To deploy the project to GitHub Pages, run:
