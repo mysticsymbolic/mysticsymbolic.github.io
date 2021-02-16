@@ -9,6 +9,9 @@ export function subtractPoints(p1: Point, p2: Point): Point {
 
 export function normalizePoint(p: Point): Point {
   const len = Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2));
+  if (len === 0) {
+    throw new Error(`Unable to normalize point with length 0`);
+  }
   return {
     x: p.x / len,
     y: p.y / len,
