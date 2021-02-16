@@ -7,7 +7,8 @@ import {
   SvgSymbolData,
 } from "../svg-symbol";
 import { AttachmentPointType, PointWithNormal } from "../specs";
-import { subtractPoints } from "../point";
+import { getAttachmentTransforms } from "../attach";
+import { scalePointXY } from "../point";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -64,10 +65,6 @@ type CreatureSymbolProps = {
   attachIndex?: number;
 };
 
-function rad2deg(radians: number): number {
-  return (radians * 180) / Math.PI;
-}
-
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
   const { data, attachTo, attachIndex } = props;
@@ -92,28 +89,38 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       `Cannot attach ${props.data.name} because it has no parent!`
     );
   }
+
   const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
   const ourAp = getAttachmentPoint(data, "tail");
-  const dist = subtractPoints(parentAp.point, ourAp.point);
-  const ourTheta = rad2deg(Math.PI / 2 - Math.acos(Math.abs(ourAp.normal.x)));
-  const normX = parentAp.normal.x;
-  const theta = -ourTheta + rad2deg(Math.PI / 2 - Math.acos(Math.abs(normX)));
-  let xFlip = 1;
 
-  if (normX < 0) {
+  // If we're being attached as a tail, we want to actually rotate
+  // the attachment an extra 180 degrees, as the tail attachment
+  // point is facing the opposite direction that we actually
+  // want to orient the tail in.
+  const extraRot = attachTo === "tail" ? 180 : 0;
+
+  // If we're attaching something oriented towards the left, horizontally flip
+  // the attachment image.
+  let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+  // Er, things look weird if we don't inverse the flip logic for
+  // the downward-facing attachments, like legs...
+  if (parentAp.normal.y > 0) {
     xFlip *= -1;
   }
-  if (ourAp.normal.x < 0) {
-    xFlip *= -1;
-  }
+
+  const t = getAttachmentTransforms(parentAp, {
+    point: ourAp.point,
+    normal: scalePointXY(ourAp.normal, xFlip, 1),
+  });
 
   return (
-    <g transform={`translate(${dist.x} ${dist.y})`}>
+    <g transform={`translate(${t.translation.x} ${t.translation.y})`}>
       <g
         transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
         transform={`scale(${xFlip * ctx.attachmentScale} ${
           ctx.attachmentScale
-        }) rotate(${theta})`}
+        }) rotate(${xFlip * t.rotation + extraRot})`}
       >
         {ourSymbol}
       </g>

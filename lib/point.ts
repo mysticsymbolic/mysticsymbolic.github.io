@@ -1,5 +1,12 @@
 import { Point } from "../vendor/bezier-js";
 
+export function scalePointXY(p: Point, xScale: number, yScale: number): Point {
+  return {
+    x: p.x * xScale,
+    y: p.y * yScale,
+  };
+}
+
 export function subtractPoints(p1: Point, p2: Point): Point {
   return {
     x: p1.x - p2.x,
@@ -16,4 +23,12 @@ export function normalizePoint(p: Point): Point {
     x: p.x / len,
     y: p.y / len,
   };
+}
+
+export function normalizedPoint2rad(p: Point): number {
+  let result = Math.acos(p.x);
+  if (p.y < 0) {
+    result += (Math.PI - result) * 2;
+  }
+  return result;
 }
