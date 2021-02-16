@@ -101,7 +101,10 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let xFlip = 1;
 
   if (normX < 0) {
-    xFlip = -1;
+    xFlip *= -1;
+  }
+  if (ourAp.normal.x < 0) {
+    xFlip *= -1;
   }
 
   return (
@@ -138,6 +141,8 @@ const Crown = createCreatureSymbol("crown");
 const Wing = createCreatureSymbol("wing");
 
 const MuscleArm = createCreatureSymbol("muscle arm");
+
+const Leg = createCreatureSymbol("leg");
 
 const Tail = createCreatureSymbol("tail");
 
@@ -185,6 +190,8 @@ export const CreaturePage: React.FC<{}> = () => {
                   <Arm attachTo="arm" />
                 </Hand>
               </Crown>
+              <Leg attachTo="leg" />
+              <Leg attachTo="leg" attachIndex={1} />
               <Tail attachTo="tail" />
             </Eye>
           </g>
