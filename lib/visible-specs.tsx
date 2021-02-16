@@ -10,6 +10,8 @@ const ATTACHMENT_POINT_NORMAL_LENGTH = 50;
 
 const ATTACHMENT_POINT_NORMAL_STROKE = 4;
 
+const SPEC_OPACITY = 0.66;
+
 const VisibleAttachmentPoint: React.FC<{
   point: AttachmentPoint;
 }> = ({ point: ap }) => {
@@ -20,8 +22,15 @@ const VisibleAttachmentPoint: React.FC<{
 
   return (
     <>
-      <circle fill={color} r={ATTACHMENT_POINT_RADIUS} cx={x} cy={y} />
+      <circle
+        fill={color}
+        r={ATTACHMENT_POINT_RADIUS}
+        cx={x}
+        cy={y}
+        opacity={SPEC_OPACITY}
+      />
       <line
+        opacity={SPEC_OPACITY}
         x1={x}
         y1={y}
         x2={x2}
@@ -39,6 +48,7 @@ const BoundingBoxes: React.FC<{ fill: string; bboxes: BBox[] }> = (props) => (
       const [width, height] = getBoundingBoxSize(b);
       return (
         <rect
+          opacity={SPEC_OPACITY}
           key={i}
           x={b.x.min}
           y={b.y.min}
