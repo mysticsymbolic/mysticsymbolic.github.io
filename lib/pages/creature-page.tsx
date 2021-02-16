@@ -91,13 +91,38 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
 
   const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
   const ourAp = getAttachmentPoint(data, "tail");
-  const t = getAttachmentTransforms(parentAp, ourAp);
+
+  // If we're being attached as a tail, we want to actually rotate
+  // the attachment an extra 180 degrees, as the tail attachment
+  // point is facing the opposite direction that we actually
+  // want to orient the tail in.
+  const extraRot = attachTo === "tail" ? 180 : 0;
+
+  // If we're attaching something oriented towards the left, horizontally flip
+  // the attachment image.
+  let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+  // Er, things look weird if we don't inverse the flip logic for
+  // the downward-facing attachments, like legs...
+  if (parentAp.normal.y > 0) {
+    xFlip *= -1;
+  }
+
+  const t = getAttachmentTransforms(parentAp, {
+    point: ourAp.point,
+    normal: {
+      x: xFlip * ourAp.normal.x,
+      y: ourAp.normal.y,
+    },
+  });
 
   return (
     <g transform={`translate(${t.translation.x} ${t.translation.y})`}>
       <g
         transform-origin={`${ourAp.point.x} ${ourAp.point.y}`}
-        transform={`scale(${ctx.attachmentScale} ${ctx.attachmentScale}) rotate(${t.rotation})`}
+        transform={`scale(${xFlip * ctx.attachmentScale} ${
+          ctx.attachmentScale
+        }) rotate(${xFlip * t.rotation + extraRot})`}
       >
         {ourSymbol}
       </g>
