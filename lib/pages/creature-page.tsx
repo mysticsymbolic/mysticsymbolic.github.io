@@ -10,6 +10,7 @@ import { AttachmentPointType, PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { scalePointXY } from "../point";
 import { Point } from "../../vendor/bezier-js";
+import { Random } from "../random";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -182,13 +183,13 @@ const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
   </g>
 );
 
+type CreatureSymbolWithDefaultProps = Omit<CreatureSymbolProps, "data"> & {
+  data?: SvgSymbolData;
+};
+
 function createCreatureSymbol(
   name: string
-): React.FC<
-  Omit<CreatureSymbolProps, "data"> & {
-    data?: SvgSymbolData;
-  }
-> {
+): React.FC<CreatureSymbolWithDefaultProps> {
   const data = getSymbol(name);
   return (props) => <CreatureSymbol data={props.data || data} {...props} />;
 }
@@ -230,14 +231,28 @@ const EYE_CREATURE = (
   </Eye>
 );
 
+function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
+  return React.cloneElement<CreatureSymbolWithDefaultProps>(creature, {
+    data: rng.choice(SvgVocabulary),
+    children: React.Children.map(creature.props.children, (child, i) => {
+      return randomlyReplaceParts(rng, child);
+    }),
+  });
+}
+
 export const CreaturePage: React.FC<{}> = () => {
   const [showSpecs, setShowSpecs] = useState(false);
+  const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const defaultCtx = useContext(CreatureContext);
   const ctx: CreatureContextType = {
     ...defaultCtx,
     fill: showSpecs ? "none" : defaultCtx.fill,
     showSpecs,
   };
+  const creature =
+    randomSeed === null
+      ? EYE_CREATURE
+      : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
 
   return (
     <>
@@ -255,10 +270,13 @@ export const CreaturePage: React.FC<{}> = () => {
       <CreatureContext.Provider value={ctx}>
         <svg width="1280px" height="720px">
           <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
-            {EYE_CREATURE}
+            {creature}
           </g>
         </svg>
       </CreatureContext.Provider>
+      <p>
+        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
+      </p>
     </>
   );
 };
