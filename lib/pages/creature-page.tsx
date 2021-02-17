@@ -171,11 +171,24 @@ type AttachmentTransformProps = {
 
 const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
   <g transform={`translate(${props.translate.x} ${props.translate.y})`}>
+    {/**
+     * We originally used "transform-origin" here but that's not currently
+     * supported by Safari. Instead, we'll set the origin of our symbol to
+     * the transform origin, do the transform, and then move our origin back to
+     * the original origin, which is equivalent to setting "transform-origin".
+     **/}
     <g
-      transform-origin={`${props.transformOrigin.x} ${props.transformOrigin.y}`}
-      transform={`scale(${props.scale.x} ${props.scale.y}) rotate(${props.rotate})`}
+      transform={`translate(${props.transformOrigin.x} ${props.transformOrigin.y})`}
     >
-      {props.children}
+      <g
+        transform={`scale(${props.scale.x} ${props.scale.y}) rotate(${props.rotate})`}
+      >
+        <g
+          transform={`translate(-${props.transformOrigin.x} -${props.transformOrigin.y})`}
+        >
+          {props.children}
+        </g>
+      </g>
     </g>
   </g>
 );
