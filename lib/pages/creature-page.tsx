@@ -237,15 +237,38 @@ function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
   });
 }
 
+function getSvgMarkup(el: SVGSVGElement): string {
+  return [
+    `<?xml version="1.0" encoding="utf-8"?>`,
+    "<!-- Generator: https://github.com/toolness/mystic-symbolic -->",
+    '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
+    el.outerHTML,
+  ].join("\n");
+}
+
+function exportSvg(filename: string, svgEl: SVGSVGElement) {
+  const dataURL = `data:image/svg+xml;utf8,${encodeURIComponent(
+    getSvgMarkup(svgEl)
+  )}`;
+  const anchor = document.createElement("a");
+  anchor.href = dataURL;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+}
+
 const AutoSizingSvg: React.FC<{
   padding: number;
   children: JSX.Element | JSX.Element[];
-}> = (props) => {
+  downloadFilename?: string;
+}> = ({ downloadFilename, ...props }) => {
   const ref = useRef<SVGSVGElement>(null);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [width, setWidth] = useState(1);
   const [height, setHeight] = useState(1);
+  const svgEl = ref.current;
 
   useEffect(() => {
     if (ref.current) {
@@ -258,14 +281,25 @@ const AutoSizingSvg: React.FC<{
   });
 
   return (
-    <svg
-      width={`${width}px`}
-      height={`${height}px`}
-      viewBox={`${x} ${y} ${width} ${height}`}
-      ref={ref}
-    >
-      {props.children}
-    </svg>
+    <>
+      <svg
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        width={`${width}px`}
+        height={`${height}px`}
+        viewBox={`${x} ${y} ${width} ${height}`}
+        ref={ref}
+      >
+        {props.children}
+      </svg>
+      {downloadFilename && svgEl && (
+        <p>
+          <button onClick={() => exportSvg(downloadFilename, svgEl)}>
+            Export SVG
+          </button>
+        </p>
+      )}
+    </>
   );
 };
 
@@ -282,6 +316,11 @@ export const CreaturePage: React.FC<{}> = () => {
     randomSeed === null
       ? EYE_CREATURE
       : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
+  let downloadBasename = "mystic-symbolic-creature";
+
+  if (randomSeed !== null) {
+    downloadBasename += `-${randomSeed}`;
+  }
 
   return (
     <>
@@ -292,10 +331,8 @@ export const CreaturePage: React.FC<{}> = () => {
         <button onClick={() => window.location.reload()}>Reset</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <AutoSizingSvg padding={5}>
-          <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
-            {creature}
-          </g>
+        <AutoSizingSvg padding={5} downloadFilename={`${downloadBasename}.svg`}>
+          <g transform="scale(0.5 0.5)">{creature}</g>
         </AutoSizingSvg>
       </CreatureContext.Provider>
     </>
