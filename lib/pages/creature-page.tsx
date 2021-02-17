@@ -288,7 +288,8 @@ export const CreaturePage: React.FC<{}> = () => {
       <h1>Creature!</h1>
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
       <p>
-        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
+        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>{" "}
+        <button onClick={() => window.location.reload()}>Reset</button>
       </p>
       <CreatureContext.Provider value={ctx}>
         <AutoSizingSvg padding={5}>
