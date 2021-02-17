@@ -45,6 +45,13 @@ const App: React.FC<{}> = (props) => {
             </li>
           ))}
         </ul>
+        <p>
+          For more details about this project, see its{" "}
+          <a href="https://github.com/toolness/mystic-symbolic" target="_blank">
+            GitHub repository
+          </a>
+          .
+        </p>
       </footer>
     </>
   );
