@@ -246,7 +246,12 @@ function getSvgMarkup(el: SVGSVGElement): string {
   ].join("\n");
 }
 
-function exportSvg(filename: string, svgEl: SVGSVGElement) {
+function exportSvg(filename: string, svgRef: React.RefObject<SVGSVGElement>) {
+  const svgEl = svgRef.current;
+  if (!svgEl) {
+    alert("Oops, an error occurred! Please try again later.");
+    return;
+  }
   const dataURL = `data:image/svg+xml;utf8,${encodeURIComponent(
     getSvgMarkup(svgEl)
   )}`;
@@ -258,30 +263,31 @@ function exportSvg(filename: string, svgEl: SVGSVGElement) {
   document.body.removeChild(anchor);
 }
 
-const AutoSizingSvg: React.FC<{
-  padding: number;
-  children: JSX.Element | JSX.Element[];
-  downloadFilename?: string;
-}> = ({ downloadFilename, ...props }) => {
-  const ref = useRef<SVGSVGElement>(null);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-  const [width, setWidth] = useState(1);
-  const [height, setHeight] = useState(1);
-  const svgEl = ref.current;
+const AutoSizingSvg = React.forwardRef(
+  (
+    props: {
+      padding: number;
+      children: JSX.Element | JSX.Element[];
+    },
+    ref: React.ForwardedRef<SVGSVGElement>
+  ) => {
+    const [x, setX] = useState(0);
+    const [y, setY] = useState(0);
+    const [width, setWidth] = useState(1);
+    const [height, setHeight] = useState(1);
 
-  useEffect(() => {
-    if (ref.current) {
-      const bbox = ref.current.getBBox();
-      setX(bbox.x - props.padding);
-      setY(bbox.y - props.padding);
-      setWidth(bbox.width + props.padding * 2);
-      setHeight(bbox.height + props.padding * 2);
-    }
-  });
+    useEffect(() => {
+      const svgEl = ref && typeof ref === "object" && ref.current;
+      if (svgEl) {
+        const bbox = svgEl.getBBox();
+        setX(bbox.x - props.padding);
+        setY(bbox.y - props.padding);
+        setWidth(bbox.width + props.padding * 2);
+        setHeight(bbox.height + props.padding * 2);
+      }
+    });
 
-  return (
-    <>
+    return (
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -292,18 +298,22 @@ const AutoSizingSvg: React.FC<{
       >
         {props.children}
       </svg>
-      {downloadFilename && svgEl && (
-        <p>
-          <button onClick={() => exportSvg(downloadFilename, svgEl)}>
-            Export SVG
-          </button>
-        </p>
-      )}
-    </>
-  );
-};
+    );
+  }
+);
+
+function getDownloadFilename(randomSeed: number | null) {
+  let downloadBasename = "mystic-symbolic-creature";
+
+  if (randomSeed !== null) {
+    downloadBasename += `-${randomSeed}`;
+  }
+
+  return `${downloadBasename}.svg`;
+}
 
 export const CreaturePage: React.FC<{}> = () => {
+  const svgRef = useRef<SVGSVGElement>(null);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
@@ -316,11 +326,8 @@ export const CreaturePage: React.FC<{}> = () => {
     randomSeed === null
       ? EYE_CREATURE
       : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
-  let downloadBasename = "mystic-symbolic-creature";
-
-  if (randomSeed !== null) {
-    downloadBasename += `-${randomSeed}`;
-  }
+  const handleSvgExport = () =>
+    exportSvg(getDownloadFilename(randomSeed), svgRef);
 
   return (
     <>
@@ -328,10 +335,11 @@ export const CreaturePage: React.FC<{}> = () => {
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
       <p>
         <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>{" "}
-        <button onClick={() => window.location.reload()}>Reset</button>
+        <button onClick={() => window.location.reload()}>Reset</button>{" "}
+        <button onClick={handleSvgExport}>Export SVG</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <AutoSizingSvg padding={5} downloadFilename={`${downloadBasename}.svg`}>
+        <AutoSizingSvg padding={5} ref={svgRef}>
           <g transform="scale(0.5 0.5)">{creature}</g>
         </AutoSizingSvg>
       </CreatureContext.Provider>
