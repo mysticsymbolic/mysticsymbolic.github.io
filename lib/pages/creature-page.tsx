@@ -11,6 +11,7 @@ import { getAttachmentTransforms } from "../attach";
 import { scalePointXY } from "../point";
 import { Point } from "../../vendor/bezier-js";
 import { Random } from "../random";
+import { SymbolContextWidget } from "../symbol-context-widget";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -269,13 +270,13 @@ const AutoSizingSvg: React.FC<{
 };
 
 export const CreaturePage: React.FC<{}> = () => {
-  const [showSpecs, setShowSpecs] = useState(false);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
+  const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
   const ctx: CreatureContextType = {
     ...defaultCtx,
-    fill: showSpecs ? "none" : defaultCtx.fill,
-    showSpecs,
+    ...symbolCtx,
+    fill: symbolCtx.showSpecs ? "none" : symbolCtx.fill,
   };
   const creature =
     randomSeed === null
@@ -285,16 +286,7 @@ export const CreaturePage: React.FC<{}> = () => {
   return (
     <>
       <h1>Creature!</h1>
-      <p>
-        <label>
-          <input
-            type="checkbox"
-            checked={showSpecs}
-            onChange={(e) => setShowSpecs(e.target.checked)}
-          />{" "}
-          Show specs
-        </label>
-      </p>
+      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
       <p>
         <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
       </p>

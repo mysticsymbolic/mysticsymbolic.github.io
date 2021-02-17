@@ -7,6 +7,7 @@ import {
 } from "../svg-symbol";
 import { SvgVocabulary } from "../svg-vocabulary";
 import { SvgSymbolContext } from "../svg-symbol";
+import { SymbolContextWidget } from "../symbol-context-widget";
 
 type SvgSymbolProps = {
   data: SvgSymbolData;
@@ -35,38 +36,12 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
 };
 
 export const VocabularyPage: React.FC<{}> = () => {
-  const [stroke, setStroke] = useState("#000000");
-  const [fill, setFill] = useState("#ffffff");
-  const [showSpecs, setShowSpecs] = useState(false);
-  const ctx = createSvgSymbolContext({ stroke, fill, showSpecs });
+  const [ctx, setCtx] = useState(createSvgSymbolContext());
 
   return (
     <>
       <h1>Mystic Symbolic Vocabulary</h1>
-      <p>
-        <label htmlFor="stroke">Stroke: </label>
-        <input
-          type="color"
-          value={stroke}
-          onChange={(e) => setStroke(e.target.value)}
-          id="stroke"
-        />{" "}
-        <label htmlFor="fill">Fill: </label>
-        <input
-          type="color"
-          value={fill}
-          onChange={(e) => setFill(e.target.value)}
-          id="fill"
-        />{" "}
-        <label>
-          <input
-            type="checkbox"
-            checked={showSpecs}
-            onChange={(e) => setShowSpecs(e.target.checked)}
-          />{" "}
-          Show specs
-        </label>
-      </p>
+      <SymbolContextWidget ctx={ctx} onChange={setCtx} />
       {SvgVocabulary.map((symbolData) => (
         <div
           key={symbolData.name}
