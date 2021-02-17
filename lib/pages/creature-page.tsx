@@ -240,14 +240,39 @@ function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
   });
 }
 
-const SVG_PADDING = 5;
-
-export const CreaturePage: React.FC<{}> = () => {
+const AutoSizingSvg: React.FC<{
+  padding: number;
+  children: JSX.Element | JSX.Element[];
+}> = (props) => {
   const ref = useRef<SVGSVGElement>(null);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [width, setWidth] = useState(1);
   const [height, setHeight] = useState(1);
+
+  useEffect(() => {
+    if (ref.current) {
+      const bbox = ref.current.getBBox();
+      setX(bbox.x - props.padding);
+      setY(bbox.y - props.padding);
+      setWidth(bbox.width + props.padding * 2);
+      setHeight(bbox.height + props.padding * 2);
+    }
+  });
+
+  return (
+    <svg
+      width={`${width}px`}
+      height={`${height}px`}
+      viewBox={`${x} ${y} ${width} ${height}`}
+      ref={ref}
+    >
+      {props.children}
+    </svg>
+  );
+};
+
+export const CreaturePage: React.FC<{}> = () => {
   const [showSpecs, setShowSpecs] = useState(false);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const defaultCtx = useContext(CreatureContext);
@@ -260,16 +285,6 @@ export const CreaturePage: React.FC<{}> = () => {
     randomSeed === null
       ? EYE_CREATURE
       : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
-
-  useEffect(() => {
-    if (ref.current) {
-      const bbox = ref.current.getBBox();
-      setX(bbox.x - SVG_PADDING);
-      setY(bbox.y - SVG_PADDING);
-      setWidth(bbox.width + SVG_PADDING * 2);
-      setHeight(bbox.height + SVG_PADDING * 2);
-    }
-  });
 
   return (
     <>
@@ -288,16 +303,11 @@ export const CreaturePage: React.FC<{}> = () => {
         <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <svg
-          width={`${width}px`}
-          height={`${height}px`}
-          viewBox={`${x} ${y} ${width} ${height}`}
-          ref={ref}
-        >
+        <AutoSizingSvg padding={5}>
           <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
             {creature}
           </g>
-        </svg>
+        </AutoSizingSvg>
       </CreatureContext.Provider>
     </>
   );
