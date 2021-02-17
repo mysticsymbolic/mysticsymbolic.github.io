@@ -3,8 +3,9 @@ import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { Specs } from "./specs";
-import { float } from "./util";
 import { VisibleSpecs } from "./visible-specs";
+
+const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
 
 export type SvgSymbolData = {
   name: string;
@@ -29,15 +30,15 @@ export type SvgSymbolElement = (
 export type SvgSymbolContext = {
   stroke: string;
   fill: string;
-  strokeScale: number;
   showSpecs: boolean;
+  uniformStrokeWidth?: number;
 };
 
 const DEFAULT_CONTEXT: SvgSymbolContext = {
   stroke: "#000000",
   fill: "#ffffff",
-  strokeScale: 1,
   showSpecs: false,
+  uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
 };
 
 export function createSvgSymbolContext(
@@ -68,16 +69,19 @@ function reactifySvgSymbolElement(
   key: number
 ): JSX.Element {
   let { fill, stroke, strokeWidth } = el.props;
+  let vectorEffect;
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
-  if (strokeWidth !== undefined) {
-    strokeWidth = float(strokeWidth) * ctx.strokeScale;
+  if (strokeWidth !== undefined && ctx.uniformStrokeWidth) {
+    strokeWidth = ctx.uniformStrokeWidth;
+    vectorEffect = "non-scaling-stroke";
   }
   return React.createElement(
     el.tagName,
     {
       ...el.props,
       id: undefined,
+      vectorEffect,
       strokeWidth,
       fill,
       stroke,
