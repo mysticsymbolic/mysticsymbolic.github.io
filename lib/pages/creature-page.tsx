@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SvgVocabulary } from "../svg-vocabulary";
 import {
   createSvgSymbolContext,
@@ -240,7 +240,14 @@ function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
   });
 }
 
+const SVG_PADDING = 5;
+
 export const CreaturePage: React.FC<{}> = () => {
+  const ref = useRef<SVGSVGElement>(null);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [width, setWidth] = useState(1);
+  const [height, setHeight] = useState(1);
   const [showSpecs, setShowSpecs] = useState(false);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const defaultCtx = useContext(CreatureContext);
@@ -253,6 +260,16 @@ export const CreaturePage: React.FC<{}> = () => {
     randomSeed === null
       ? EYE_CREATURE
       : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
+
+  useEffect(() => {
+    if (ref.current) {
+      const bbox = ref.current.getBBox();
+      setX(bbox.x - SVG_PADDING);
+      setY(bbox.y - SVG_PADDING);
+      setWidth(bbox.width + SVG_PADDING * 2);
+      setHeight(bbox.height + SVG_PADDING * 2);
+    }
+  });
 
   return (
     <>
@@ -267,16 +284,21 @@ export const CreaturePage: React.FC<{}> = () => {
           Show specs
         </label>
       </p>
+      <p>
+        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
+      </p>
       <CreatureContext.Provider value={ctx}>
-        <svg width="1280px" height="720px">
+        <svg
+          width={`${width}px`}
+          height={`${height}px`}
+          viewBox={`${x} ${y} ${width} ${height}`}
+          ref={ref}
+        >
           <g transform-origin="50% 50%" transform="scale(0.5 0.5)">
             {creature}
           </g>
         </svg>
       </CreatureContext.Provider>
-      <p>
-        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>
-      </p>
     </>
   );
 };
