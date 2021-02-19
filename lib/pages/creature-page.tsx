@@ -37,13 +37,27 @@ function getAttachmentPoint(
   const points = specs[type];
   if (!(points && points.length > idx)) {
     throw new Error(
-      `Symbol ${s.name} must have at least ${
+      `Expected symbol ${s.name} to have at least ${
         idx + 1
       } ${type} attachment point(s)!`
     );
   }
 
   return points[idx];
+}
+
+function safeGetAttachmentPoint(
+  s: SvgSymbolData,
+  type: AttachmentPointType,
+  idx: number = 0
+): PointWithNormal | null {
+  try {
+    return getAttachmentPoint(s, type, idx);
+  } catch (e) {
+    console.error(e);
+  }
+
+  return null;
 }
 
 type AttachmentChildren = JSX.Element | JSX.Element[];
@@ -121,8 +135,12 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const children: JSX.Element[] = [];
 
   for (let attachIndex of attachmentIndices) {
-    const parentAp = getAttachmentPoint(parent, attachTo, attachIndex);
-    const ourAp = getAttachmentPoint(data, "tail");
+    const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
+    const ourAp = safeGetAttachmentPoint(data, "tail");
+
+    if (!parentAp || !ourAp) {
+      continue;
+    }
 
     // If we're being attached as a tail, we want to actually rotate
     // the attachment an extra 180 degrees, as the tail attachment
