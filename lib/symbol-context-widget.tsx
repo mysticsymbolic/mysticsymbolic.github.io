@@ -1,5 +1,6 @@
 import React from "react";
 import { SvgSymbolContext } from "./svg-symbol";
+import { float } from "./util";
 
 export const SymbolContextWidget: React.FC<{
   ctx: SvgSymbolContext;
@@ -33,6 +34,23 @@ export const SymbolContextWidget: React.FC<{
         />{" "}
         Show specs
       </label>
+      {ctx.uniformStrokeWidth !== undefined && (
+        <>
+          <br />
+          <label htmlFor="strokeWidth">Stroke width: </label>
+          <input
+            type="range"
+            min={0.5}
+            max={3}
+            step={0.1}
+            value={ctx.uniformStrokeWidth}
+            onChange={(e) =>
+              updateCtx({ uniformStrokeWidth: float(e.target.value) })
+            }
+          />{" "}
+          {ctx.uniformStrokeWidth}{" "}
+        </>
+      )}
     </p>
   );
 };
