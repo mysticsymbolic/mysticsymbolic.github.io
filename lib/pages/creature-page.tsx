@@ -216,7 +216,7 @@ const Crown = createCreatureSymbol("crown");
 
 const Wing = createCreatureSymbol("wing");
 
-const MuscleArm = createCreatureSymbol("muscle arm");
+const MuscleArm = createCreatureSymbol("muscle_arm");
 
 const Leg = createCreatureSymbol("leg");
 
