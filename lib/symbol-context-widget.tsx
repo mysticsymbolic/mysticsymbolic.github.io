@@ -5,13 +5,15 @@ import { float } from "./util";
 export const SymbolContextWidget: React.FC<{
   ctx: SvgSymbolContext;
   onChange: (value: SvgSymbolContext) => void;
-}> = ({ ctx, onChange }) => {
+  children?: any;
+}> = ({ ctx, children, onChange }) => {
   const updateCtx = (updates: Partial<SvgSymbolContext>) => {
     onChange({ ...ctx, ...updates });
   };
 
   return (
     <p>
+      {children}
       <label htmlFor="stroke">Stroke: </label>
       <input
         type="color"
