@@ -365,7 +365,9 @@ export const CreaturePage: React.FC<{}> = () => {
       <h1>Creature!</h1>
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
       <p>
-        <button onClick={() => setRandomSeed(Date.now())}>Randomize!</button>{" "}
+        <button accessKey="r" onClick={() => setRandomSeed(Date.now())}>
+          <u>R</u>andomize!
+        </button>{" "}
         <button onClick={() => window.location.reload()}>Reset</button>{" "}
         <button onClick={handleSvgExport}>Export SVG</button>
       </p>
