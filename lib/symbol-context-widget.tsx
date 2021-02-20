@@ -42,7 +42,7 @@ export const SymbolContextWidget: React.FC<{
           <label htmlFor="strokeWidth">Stroke width: </label>
           <input
             type="range"
-            min={0.5}
+            min={0}
             max={3}
             step={0.1}
             value={ctx.uniformStrokeWidth}

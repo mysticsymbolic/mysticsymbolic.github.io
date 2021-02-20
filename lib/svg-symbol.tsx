@@ -72,7 +72,7 @@ function reactifySvgSymbolElement(
   let vectorEffect;
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
-  if (strokeWidth !== undefined && ctx.uniformStrokeWidth) {
+  if (strokeWidth !== undefined && typeof ctx.uniformStrokeWidth === "number") {
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
   }
