@@ -298,23 +298,26 @@ const AutoSizingSvg = React.forwardRef(
   (
     props: {
       padding: number;
+      bgColor?: string;
       children: JSX.Element | JSX.Element[];
     },
     ref: React.ForwardedRef<SVGSVGElement>
   ) => {
+    const { bgColor, padding } = props;
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [width, setWidth] = useState(1);
     const [height, setHeight] = useState(1);
+    const gRef = useRef<SVGGElement>(null);
 
     useEffect(() => {
-      const svgEl = ref && typeof ref === "object" && ref.current;
+      const svgEl = gRef.current;
       if (svgEl) {
         const bbox = svgEl.getBBox();
-        setX(bbox.x - props.padding);
-        setY(bbox.y - props.padding);
-        setWidth(bbox.width + props.padding * 2);
-        setHeight(bbox.height + props.padding * 2);
+        setX(bbox.x - padding);
+        setY(bbox.y - padding);
+        setWidth(bbox.width + padding * 2);
+        setHeight(bbox.height + padding * 2);
       }
     });
 
@@ -327,7 +330,10 @@ const AutoSizingSvg = React.forwardRef(
         viewBox={`${x} ${y} ${width} ${height}`}
         ref={ref}
       >
-        {props.children}
+        {bgColor && (
+          <rect x={x} y={y} width={width} height={height} fill={bgColor} />
+        )}
+        <g ref={gRef}>{props.children}</g>
       </svg>
     );
   }
@@ -345,6 +351,7 @@ function getDownloadFilename(randomSeed: number | null) {
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [bgColor, setBgColor] = useState("#cccccc");
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
@@ -363,7 +370,14 @@ export const CreaturePage: React.FC<{}> = () => {
   return (
     <>
       <h1>Creature!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
+        <label htmlFor="bgColor">Background: </label>
+        <input
+          type="color"
+          value={bgColor}
+          onChange={(e) => setBgColor(e.target.value)}
+        />{" "}
+      </SymbolContextWidget>
       <p>
         <button accessKey="r" onClick={() => setRandomSeed(Date.now())}>
           <u>R</u>andomize!
@@ -372,7 +386,7 @@ export const CreaturePage: React.FC<{}> = () => {
         <button onClick={handleSvgExport}>Export SVG</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <AutoSizingSvg padding={5} ref={svgRef}>
+        <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
           <g transform="scale(0.5 0.5)">{creature}</g>
         </AutoSizingSvg>
       </CreatureContext.Provider>
