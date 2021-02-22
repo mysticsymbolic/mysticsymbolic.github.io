@@ -13,6 +13,7 @@ export type PointWithNormal = {
 };
 
 type AttachmentPointSpecs = {
+  anchor: PointWithNormal[];
   tail: PointWithNormal[];
   leg: PointWithNormal[];
   arm: PointWithNormal[];
@@ -33,6 +34,7 @@ export type AttachmentPoint = PointWithNormal & {
 };
 
 export const ATTACHMENT_POINT_TYPES: AttachmentPointType[] = [
+  "anchor",
   "tail",
   "leg",
   "arm",

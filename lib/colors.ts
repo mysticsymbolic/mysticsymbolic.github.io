@@ -6,7 +6,8 @@ export const FILL_REPLACEMENT_COLOR = "#ffffff";
 export const ATTACHMENT_POINT_COLORS: {
   [key in AttachmentPointType]: string;
 } = {
-  tail: "#ff0000",
+  anchor: "#ff0000",
+  tail: "#be0027",
   leg: "#ffff00",
   arm: "#00ff00",
   horn: "#00ffff",
