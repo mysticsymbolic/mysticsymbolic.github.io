@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`convertSvgMarkupToSymbolData() works with SVGs that just have a path and no specs 1`] = `
+Object {
+  "bbox": Object {
+    "x": Object {
+      "max": 692.249,
+      "min": 27.751,
+    },
+    "y": Object {
+      "max": 692.249,
+      "min": 27.751,
+    },
+  },
+  "layers": Array [
+    Object {
+      "children": Array [],
+      "props": Object {
+        "d": "M 360.000 29.751 C 542.791 29.751 690.249 177.209 690.249 360.000 C 690.249 542.791 542.791 690.249 360.000 690.249 C 177.209 690.249 29.751 542.791 29.751 360.000 C 29.751 177.209 177.209 29.751 360.000 29.751 Z",
+        "fill": "#ffffff",
+        "fillRule": "evenodd",
+        "stroke": "#000000",
+        "strokeLinecap": "round",
+        "strokeLinejoin": "round",
+        "strokeWidth": "4",
+      },
+      "tagName": "path",
+    },
+  ],
+  "name": "blarg",
+  "specs": undefined,
+}
+`;

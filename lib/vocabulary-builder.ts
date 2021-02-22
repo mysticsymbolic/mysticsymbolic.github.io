@@ -82,6 +82,28 @@ function serializeSvgSymbolElement(
   throw new Error(`Unsupported SVG element: <${tagName}>`);
 }
 
+export function convertSvgMarkupToSymbolData(
+  filename: string,
+  svgMarkup: string
+): SvgSymbolData {
+  const name = path.basename(filename, SVG_EXT).toLowerCase();
+  const $ = cheerio.load(svgMarkup);
+  const svgEl = $("svg");
+  const rawLayers = onlyTags(svgEl.children()).map((ch) =>
+    serializeSvgSymbolElement($, ch)
+  );
+  const [specs, layers] = extractSpecs(rawLayers);
+  const bbox = getSvgBoundingBox(layers);
+
+  const symbol: SvgSymbolData = {
+    name,
+    bbox,
+    layers,
+    specs,
+  };
+  return symbol;
+}
+
 export function build() {
   const filenames = fs.readdirSync(SVG_DIR);
   const vocab: SvgSymbolData[] = [];
@@ -91,21 +113,7 @@ export function build() {
       const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
         encoding: "utf-8",
       });
-      const $ = cheerio.load(svgMarkup);
-      const svgEl = $("svg");
-      const name = path.basename(filename, SVG_EXT).toLowerCase();
-      const rawLayers = onlyTags(svgEl.children()).map((ch) =>
-        serializeSvgSymbolElement($, ch)
-      );
-      const [specs, layers] = extractSpecs(rawLayers);
-      const bbox = getSvgBoundingBox(layers);
-
-      const symbol: SvgSymbolData = {
-        name,
-        bbox,
-        layers,
-        specs,
-      };
+      const symbol = convertSvgMarkupToSymbolData(filename, svgMarkup);
       vocab.push(symbol);
     }
   }
