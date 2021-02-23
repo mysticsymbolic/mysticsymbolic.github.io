@@ -248,7 +248,9 @@ function getSymbolWithAttachments(
   const root = rng.choice(SvgVocabulary);
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
-      Array.from(iterAttachmentPoints(root.specs)).map((point) => point.type),
+      Array.from(iterAttachmentPoints(root.specs))
+        .filter((point) => point.type !== "anchor")
+        .map((point) => point.type),
       numAttachmentKinds
     );
     for (let kind of attachmentKinds) {
