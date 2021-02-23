@@ -1,4 +1,4 @@
-import { flatten, float, rad2deg } from "./util";
+import { flatten, float, rad2deg, range } from "./util";
 
 describe("float", () => {
   it("converts strings", () => {
@@ -24,4 +24,10 @@ test("rad2deg() works", () => {
   expect(rad2deg(Math.PI)).toBe(180);
   expect(rad2deg(Math.PI - 0.0000001)).toBeCloseTo(180);
   expect(rad2deg(2 * Math.PI)).toBe(360);
+});
+
+test("range() works", () => {
+  expect(range(0)).toEqual([]);
+  expect(range(1)).toEqual([0]);
+  expect(range(5)).toEqual([0, 1, 2, 3, 4]);
 });
