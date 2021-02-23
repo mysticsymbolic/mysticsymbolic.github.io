@@ -392,6 +392,7 @@ export const CreaturePage: React.FC<{}> = () => {
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
+  const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = {
     ...defaultCtx,
     ...symbolCtx,
@@ -425,13 +426,13 @@ export const CreaturePage: React.FC<{}> = () => {
           value={complexity}
           onChange={(e) => {
             setComplexity(parseInt(e.target.value));
-            setRandomSeed(Date.now());
+            newRandomSeed();
           }}
         />{" "}
         {complexity === MAX_COMPLEXITY_LEVEL ? "bonkers" : complexity}
       </p>
       <p>
-        <button accessKey="r" onClick={() => setRandomSeed(Date.now())}>
+        <button accessKey="r" onClick={newRandomSeed}>
           <u>R</u>andomize!
         </button>{" "}
         <button onClick={() => window.location.reload()}>Reset</button>{" "}
