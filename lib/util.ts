@@ -27,3 +27,16 @@ export function flatten<T>(arr: T[][]): T[] {
 export function rad2deg(radians: number): number {
   return (radians * 180) / Math.PI;
 }
+
+/**
+ * Return an array containing the numbers from 0 to one
+ * less than the given value, increasing.
+ */
+export function range(count: number): number[] {
+  const result: number[] = [];
+  for (let i = 0; i < count; i++) {
+    result.push(i);
+  }
+
+  return result;
+}
