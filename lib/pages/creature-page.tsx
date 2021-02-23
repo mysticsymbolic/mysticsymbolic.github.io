@@ -6,12 +6,17 @@ import {
   SvgSymbolContext,
   SvgSymbolData,
 } from "../svg-symbol";
-import { AttachmentPointType, PointWithNormal } from "../specs";
+import {
+  AttachmentPointType,
+  iterAttachmentPoints,
+  PointWithNormal,
+} from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { scalePointXY } from "../point";
 import { Point } from "../../vendor/bezier-js";
 import { Random } from "../random";
 import { SymbolContextWidget } from "../symbol-context-widget";
+import { range } from "../util";
 
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
@@ -84,6 +89,7 @@ type CreatureSymbolProps = AttachmentIndices & {
   data: SvgSymbolData;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
+  indices?: number[];
 };
 
 function getAttachmentIndices(ai: AttachmentIndices): number[] {
@@ -131,7 +137,7 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
     );
   }
 
-  const attachmentIndices = getAttachmentIndices(props);
+  const attachmentIndices = props.indices || getAttachmentIndices(props);
   const children: JSX.Element[] = [];
 
   for (let attachIndex of attachmentIndices) {
@@ -234,6 +240,33 @@ const Leg = createCreatureSymbol("leg");
 
 const Tail = createCreatureSymbol("tail");
 
+function getSymbolWithAttachments(
+  numAttachmentKinds: number,
+  rng: Random
+): JSX.Element {
+  const children: JSX.Element[] = [];
+  const root = rng.choice(SvgVocabulary);
+  if (root.specs) {
+    const attachmentKinds = rng.uniqueChoices(
+      Array.from(iterAttachmentPoints(root.specs)).map((point) => point.type),
+      numAttachmentKinds
+    );
+    for (let kind of attachmentKinds) {
+      const attachment = rng.choice(SvgVocabulary);
+      const indices = range(root.specs[kind]?.length ?? 0);
+      children.push(
+        <CreatureSymbol
+          data={attachment}
+          key={children.length}
+          attachTo={kind}
+          indices={indices}
+        />
+      );
+    }
+  }
+  return <CreatureSymbol data={root} children={children} />;
+}
+
 const EYE_CREATURE = (
   <Eye>
     <Arm attachTo="arm" left>
@@ -261,6 +294,15 @@ function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
     }),
   });
 }
+
+type CreatureGenerator = (rng: Random) => JSX.Element;
+
+const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
+  ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
+  (rng) => randomlyReplaceParts(rng, EYE_CREATURE),
+];
+
+const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
 function getSvgMarkup(el: SVGSVGElement): string {
   return [
@@ -348,6 +390,7 @@ export const CreaturePage: React.FC<{}> = () => {
   const [bgColor, setBgColor] = useState("#cccccc");
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
+  const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
   const ctx: CreatureContextType = {
     ...defaultCtx,
@@ -357,7 +400,7 @@ export const CreaturePage: React.FC<{}> = () => {
   const creature =
     randomSeed === null
       ? EYE_CREATURE
-      : randomlyReplaceParts(new Random(randomSeed), EYE_CREATURE);
+      : COMPLEXITY_LEVEL_GENERATORS[complexity](new Random(randomSeed));
   const handleSvgExport = () =>
     exportSvg(getDownloadFilename(randomSeed), svgRef);
 
@@ -372,6 +415,21 @@ export const CreaturePage: React.FC<{}> = () => {
           onChange={(e) => setBgColor(e.target.value)}
         />{" "}
       </SymbolContextWidget>
+      <p>
+        <label htmlFor="complexity">Random creature complexity: </label>
+        <input
+          type="range"
+          min={0}
+          max={MAX_COMPLEXITY_LEVEL}
+          step={1}
+          value={complexity}
+          onChange={(e) => {
+            setComplexity(parseInt(e.target.value));
+            setRandomSeed(Date.now());
+          }}
+        />{" "}
+        {complexity === MAX_COMPLEXITY_LEVEL ? "bonkers" : complexity}
+      </p>
       <p>
         <button accessKey="r" onClick={() => setRandomSeed(Date.now())}>
           <u>R</u>andomize!

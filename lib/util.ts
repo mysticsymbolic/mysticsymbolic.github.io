@@ -27,3 +27,12 @@ export function flatten<T>(arr: T[][]): T[] {
 export function rad2deg(radians: number): number {
   return (radians * 180) / Math.PI;
 }
+
+export function range(count: number): number[] {
+  const result: number[] = [];
+  for (let i = 0; i < count; i++) {
+    result.push(i);
+  }
+
+  return result;
+}
