@@ -344,6 +344,8 @@ const Leg = createCreatureSymbol("leg");
 
 const Tail = createCreatureSymbol("tail");
 
+const Lightning = createCreatureSymbol("lightning");
+
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
   rng: Random
@@ -375,7 +377,7 @@ function getSymbolWithAttachments(
 
 const EYE_CREATURE = (
   <Eye>
-    <Crown nestInside />
+    <Lightning nestInside />
     <Arm attachTo="arm" left>
       <Wing attachTo="arm" left right />
     </Arm>
