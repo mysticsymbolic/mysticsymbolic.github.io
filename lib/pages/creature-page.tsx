@@ -136,12 +136,19 @@ function splitCreatureSymbolChildren(
   return result;
 }
 
-const NestedCreatureSymbol: React.FC<{
+type ChildCreatureSymbolProps = {
   symbol: JSX.Element;
   data: SvgSymbolData;
   parent: SvgSymbolData;
   indices: number[];
-}> = ({ symbol, data, parent, indices }) => {
+};
+
+const NestedCreatureSymbol: React.FC<ChildCreatureSymbolProps> = ({
+  symbol,
+  data,
+  parent,
+  indices,
+}) => {
   const children: JSX.Element[] = [];
 
   for (let nestIndex of indices) {
@@ -169,13 +176,11 @@ const NestedCreatureSymbol: React.FC<{
   return <>{children}</>;
 };
 
-const AttachedCreatureSymbol: React.FC<{
-  symbol: JSX.Element;
-  data: SvgSymbolData;
-  parent: SvgSymbolData;
-  indices: number[];
-  attachTo: AttachmentPointType;
-}> = ({ symbol, data, parent, indices, attachTo }) => {
+const AttachedCreatureSymbol: React.FC<
+  ChildCreatureSymbolProps & {
+    attachTo: AttachmentPointType;
+  }
+> = ({ symbol, data, parent, indices, attachTo }) => {
   const ctx = useContext(CreatureContext);
   const children: JSX.Element[] = [];
 
@@ -227,7 +232,7 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // The attachments should be before our symbol in the DOM so they
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
-  const ourSymbol = (
+  const symbol = (
     <>
       {attachments.length && (
         <CreatureContext.Provider value={childCtx}>
@@ -244,7 +249,7 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   );
 
   if (!(attachTo || nestInside)) {
-    return ourSymbol;
+    return symbol;
   }
 
   const parent = ctx.parent;
@@ -254,28 +259,18 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
     );
   }
 
-  const indices = props.indices || getAttachmentIndices(props);
+  const childProps: ChildCreatureSymbolProps = {
+    parent,
+    symbol,
+    data,
+    indices: props.indices || getAttachmentIndices(props),
+  };
 
   if (attachTo) {
-    return (
-      <AttachedCreatureSymbol
-        parent={parent}
-        symbol={ourSymbol}
-        data={data}
-        indices={indices}
-        attachTo={attachTo}
-      />
-    );
+    return <AttachedCreatureSymbol {...childProps} attachTo={attachTo} />;
   }
 
-  return (
-    <NestedCreatureSymbol
-      parent={parent}
-      symbol={ourSymbol}
-      data={data}
-      indices={indices}
-    />
-  );
+  return <NestedCreatureSymbol {...childProps} />;
 };
 
 function getNestingTransforms(parent: BBox, child: BBox) {
