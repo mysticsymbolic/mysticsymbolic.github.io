@@ -18,6 +18,8 @@ import { Random } from "../random";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
+const DEFAULT_BG_COLOR = "#858585";
+
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
 );
@@ -389,7 +391,7 @@ function getDownloadFilename(randomSeed: number | null) {
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [bgColor, setBgColor] = useState("#cccccc");
+  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
