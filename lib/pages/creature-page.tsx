@@ -136,6 +136,88 @@ function splitCreatureSymbolChildren(
   return result;
 }
 
+const NestedCreatureSymbol: React.FC<{
+  symbol: JSX.Element;
+  data: SvgSymbolData;
+  parent: SvgSymbolData;
+  indices: number[];
+}> = ({ symbol, data, parent, indices }) => {
+  const children: JSX.Element[] = [];
+
+  for (let nestIndex of indices) {
+    const parentNest = (parent.specs?.nesting ?? [])[nestIndex];
+    if (!parentNest) {
+      console.error(
+        `Parent symbol ${parent.name} has no nesting index ${nestIndex}!`
+      );
+      continue;
+    }
+    const t = getNestingTransforms(parentNest, data.bbox);
+    children.push(
+      <AttachmentTransform
+        key={nestIndex}
+        transformOrigin={t.transformOrigin}
+        translate={t.translation}
+        scale={t.scaling}
+        rotate={0}
+      >
+        {symbol}
+      </AttachmentTransform>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+const AttachedCreatureSymbol: React.FC<{
+  symbol: JSX.Element;
+  data: SvgSymbolData;
+  parent: SvgSymbolData;
+  indices: number[];
+  attachTo: AttachmentPointType;
+}> = ({ symbol, data, parent, indices, attachTo }) => {
+  const ctx = useContext(CreatureContext);
+  const children: JSX.Element[] = [];
+
+  for (let attachIndex of indices) {
+    const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
+    const ourAp = safeGetAttachmentPoint(data, "anchor");
+
+    if (!parentAp || !ourAp) {
+      continue;
+    }
+
+    // If we're attaching something oriented towards the left, horizontally flip
+    // the attachment image.
+    let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+    // Er, things look weird if we don't inverse the flip logic for
+    // the downward-facing attachments, like legs...
+    if (parentAp.normal.y > 0) {
+      xFlip *= -1;
+    }
+
+    const t = getAttachmentTransforms(parentAp, {
+      point: ourAp.point,
+      normal: scalePointXY(ourAp.normal, xFlip, 1),
+    });
+
+    children.push(
+      <AttachmentTransform
+        key={attachIndex}
+        transformOrigin={ourAp.point}
+        translate={t.translation}
+        scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
+        rotate={xFlip * t.rotation}
+      >
+        {symbol}
+      </AttachmentTransform>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
   const { data, attachTo, nestInside } = props;
@@ -173,69 +255,27 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   }
 
   const indices = props.indices || getAttachmentIndices(props);
-  const children: JSX.Element[] = [];
 
   if (attachTo) {
-    for (let attachIndex of indices) {
-      const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
-      const ourAp = safeGetAttachmentPoint(data, "anchor");
-
-      if (!parentAp || !ourAp) {
-        continue;
-      }
-
-      // If we're attaching something oriented towards the left, horizontally flip
-      // the attachment image.
-      let xFlip = parentAp.normal.x < 0 ? -1 : 1;
-
-      // Er, things look weird if we don't inverse the flip logic for
-      // the downward-facing attachments, like legs...
-      if (parentAp.normal.y > 0) {
-        xFlip *= -1;
-      }
-
-      const t = getAttachmentTransforms(parentAp, {
-        point: ourAp.point,
-        normal: scalePointXY(ourAp.normal, xFlip, 1),
-      });
-
-      children.push(
-        <AttachmentTransform
-          key={attachIndex}
-          transformOrigin={ourAp.point}
-          translate={t.translation}
-          scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
-          rotate={xFlip * t.rotation}
-        >
-          {ourSymbol}
-        </AttachmentTransform>
-      );
-    }
-  } else if (nestInside) {
-    for (let nestIndex of indices) {
-      const parentNest = (parent.specs?.nesting ?? [])[nestIndex];
-      if (!parentNest) {
-        console.error(
-          `Parent symbol ${parent.name} has no nesting index ${nestIndex}!`
-        );
-        continue;
-      }
-      const t = getNestingTransforms(parentNest, data.bbox);
-      children.push(
-        <AttachmentTransform
-          key={nestIndex}
-          transformOrigin={t.transformOrigin}
-          translate={t.translation}
-          scale={t.scaling}
-          rotate={0}
-        >
-          {ourSymbol}
-        </AttachmentTransform>
-      );
-    }
+    return (
+      <AttachedCreatureSymbol
+        parent={parent}
+        symbol={ourSymbol}
+        data={data}
+        indices={indices}
+        attachTo={attachTo}
+      />
+    );
   }
 
-  return <>{children}</>;
+  return (
+    <NestedCreatureSymbol
+      parent={parent}
+      symbol={ourSymbol}
+      data={data}
+      indices={indices}
+    />
+  );
 };
 
 function getNestingTransforms(parent: BBox, child: BBox) {
