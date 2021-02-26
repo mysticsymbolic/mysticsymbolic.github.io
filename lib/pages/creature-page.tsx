@@ -112,27 +112,23 @@ function getAttachmentIndices(ai: AttachmentIndices): number[] {
 }
 
 type SplitCreatureSymbolChildren = {
-  attachments?: JSX.Element[];
-  nests?: JSX.Element[];
+  attachments: JSX.Element[];
+  nests: JSX.Element[];
 };
 
 function splitCreatureSymbolChildren(
   children?: AttachmentChildren
 ): SplitCreatureSymbolChildren {
-  if (!children) return {};
-
-  const result: SplitCreatureSymbolChildren = {};
+  const result: SplitCreatureSymbolChildren = {
+    attachments: [],
+    nests: [],
+  };
+  if (!children) return result;
 
   React.Children.forEach(children, (child) => {
     if (child.props.nestInside) {
-      if (!result.nests) {
-        result.nests = [];
-      }
       result.nests.push(child);
     } else {
-      if (!result.attachments) {
-        result.attachments = [];
-      }
       result.attachments.push(child);
     }
   });
@@ -151,13 +147,13 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // should be after our symbol so they appear in front of it.
   const ourSymbol = (
     <>
-      {attachments && (
+      {attachments.length && (
         <CreatureContext.Provider value={childCtx}>
           {attachments}
         </CreatureContext.Provider>
       )}
       <SvgSymbolContent data={data} {...ctx} />
-      {nests && (
+      {nests.length && (
         <CreatureContext.Provider value={childCtx}>
           {nests}
         </CreatureContext.Provider>
