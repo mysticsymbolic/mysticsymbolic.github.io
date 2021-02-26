@@ -12,11 +12,12 @@ import {
   PointWithNormal,
 } from "../specs";
 import { getAttachmentTransforms } from "../attach";
-import { scalePointXY } from "../point";
-import { Point } from "../../vendor/bezier-js";
+import { scalePointXY, subtractPoints } from "../point";
+import { BBox, Point } from "../../vendor/bezier-js";
 import { Random } from "../random";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
+import { getBoundingBoxCenter, uniformlyScaleToFit } from "../bounding-box";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -89,6 +90,7 @@ type AttachmentIndices = {
 
 type CreatureSymbolProps = AttachmentIndices & {
   data: SvgSymbolData;
+  nestInside?: boolean;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
   indices?: number[];
@@ -109,77 +111,146 @@ function getAttachmentIndices(ai: AttachmentIndices): number[] {
   return result;
 }
 
+type SplitCreatureSymbolChildren = {
+  attachments?: JSX.Element[];
+  nests?: JSX.Element[];
+};
+
+function splitCreatureSymbolChildren(
+  children?: AttachmentChildren
+): SplitCreatureSymbolChildren {
+  if (!children) return {};
+
+  const result: SplitCreatureSymbolChildren = {};
+
+  React.Children.forEach(children, (child) => {
+    if (child.props.nestInside) {
+      if (!result.nests) {
+        result.nests = [];
+      }
+      result.nests.push(child);
+    } else {
+      if (!result.attachments) {
+        result.attachments = [];
+      }
+      result.attachments.push(child);
+    }
+  });
+
+  return result;
+}
+
 const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const ctx = useContext(CreatureContext);
-  const { data, attachTo } = props;
+  const { data, attachTo, nestInside } = props;
+  const childCtx: CreatureContextType = { ...ctx, parent: data };
+  const { nests, attachments } = splitCreatureSymbolChildren(props.children);
+
+  // The attachments should be before our symbol in the DOM so they
+  // appear behind our symbol, while anything nested within our symbol
+  // should be after our symbol so they appear in front of it.
   const ourSymbol = (
     <>
-      {props.children && (
-        <CreatureContext.Provider
-          value={{
-            ...ctx,
-            parent: data,
-          }}
-        >
-          {props.children}
+      {attachments && (
+        <CreatureContext.Provider value={childCtx}>
+          {attachments}
         </CreatureContext.Provider>
       )}
       <SvgSymbolContent data={data} {...ctx} />
+      {nests && (
+        <CreatureContext.Provider value={childCtx}>
+          {nests}
+        </CreatureContext.Provider>
+      )}
     </>
   );
 
-  if (!attachTo) {
+  if (!(attachTo || nestInside)) {
     return ourSymbol;
   }
 
   const parent = ctx.parent;
   if (!parent) {
     throw new Error(
-      `Cannot attach ${props.data.name} because it has no parent!`
+      `Cannot attach/nest ${props.data.name} because it has no parent!`
     );
   }
 
-  const attachmentIndices = props.indices || getAttachmentIndices(props);
+  const indices = props.indices || getAttachmentIndices(props);
   const children: JSX.Element[] = [];
 
-  for (let attachIndex of attachmentIndices) {
-    const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
-    const ourAp = safeGetAttachmentPoint(data, "anchor");
+  if (attachTo) {
+    for (let attachIndex of indices) {
+      const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
+      const ourAp = safeGetAttachmentPoint(data, "anchor");
 
-    if (!parentAp || !ourAp) {
-      continue;
+      if (!parentAp || !ourAp) {
+        continue;
+      }
+
+      // If we're attaching something oriented towards the left, horizontally flip
+      // the attachment image.
+      let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+      // Er, things look weird if we don't inverse the flip logic for
+      // the downward-facing attachments, like legs...
+      if (parentAp.normal.y > 0) {
+        xFlip *= -1;
+      }
+
+      const t = getAttachmentTransforms(parentAp, {
+        point: ourAp.point,
+        normal: scalePointXY(ourAp.normal, xFlip, 1),
+      });
+
+      children.push(
+        <AttachmentTransform
+          key={attachIndex}
+          transformOrigin={ourAp.point}
+          translate={t.translation}
+          scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
+          rotate={xFlip * t.rotation}
+        >
+          {ourSymbol}
+        </AttachmentTransform>
+      );
     }
-
-    // If we're attaching something oriented towards the left, horizontally flip
-    // the attachment image.
-    let xFlip = parentAp.normal.x < 0 ? -1 : 1;
-
-    // Er, things look weird if we don't inverse the flip logic for
-    // the downward-facing attachments, like legs...
-    if (parentAp.normal.y > 0) {
-      xFlip *= -1;
+  } else if (nestInside) {
+    for (let nestIndex of indices) {
+      const parentNest = (parent.specs?.nesting ?? [])[nestIndex];
+      if (!parentNest) {
+        console.error(
+          `Parent symbol ${parent.name} has no nesting index ${nestIndex}!`
+        );
+        continue;
+      }
+      const t = getNestingTransforms(parentNest, data.bbox);
+      children.push(
+        <AttachmentTransform
+          key={nestIndex}
+          transformOrigin={t.transformOrigin}
+          translate={t.translation}
+          scale={t.scaling}
+          rotate={0}
+        >
+          {ourSymbol}
+        </AttachmentTransform>
+      );
     }
-
-    const t = getAttachmentTransforms(parentAp, {
-      point: ourAp.point,
-      normal: scalePointXY(ourAp.normal, xFlip, 1),
-    });
-
-    children.push(
-      <AttachmentTransform
-        key={attachIndex}
-        transformOrigin={ourAp.point}
-        translate={t.translation}
-        scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
-        rotate={xFlip * t.rotation}
-      >
-        {ourSymbol}
-      </AttachmentTransform>
-    );
   }
 
   return <>{children}</>;
 };
+
+function getNestingTransforms(parent: BBox, child: BBox) {
+  const parentCenter = getBoundingBoxCenter(parent);
+  const childCenter = getBoundingBoxCenter(child);
+  const translation = subtractPoints(parentCenter, childCenter);
+  const uniformScaling = uniformlyScaleToFit(parent, child);
+  const scaling: Point = { x: uniformScaling, y: uniformScaling };
+
+  return { translation, transformOrigin: childCenter, scaling };
+}
 
 type AttachmentTransformProps = {
   transformOrigin: Point;
@@ -273,6 +344,7 @@ function getSymbolWithAttachments(
 
 const EYE_CREATURE = (
   <Eye>
+    <Crown nestInside />
     <Arm attachTo="arm" left>
       <Wing attachTo="arm" left right />
     </Arm>
