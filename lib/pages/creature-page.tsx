@@ -12,11 +12,12 @@ import {
   PointWithNormal,
 } from "../specs";
 import { getAttachmentTransforms } from "../attach";
-import { scalePointXY } from "../point";
-import { Point } from "../../vendor/bezier-js";
+import { scalePointXY, subtractPoints } from "../point";
+import { BBox, Point } from "../../vendor/bezier-js";
 import { Random } from "../random";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
+import { getBoundingBoxCenter, uniformlyScaleToFit } from "../bounding-box";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -89,6 +90,7 @@ type AttachmentIndices = {
 
 type CreatureSymbolProps = AttachmentIndices & {
   data: SvgSymbolData;
+  nestInside?: boolean;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
   indices?: number[];
@@ -109,40 +111,80 @@ function getAttachmentIndices(ai: AttachmentIndices): number[] {
   return result;
 }
 
-const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
-  const ctx = useContext(CreatureContext);
-  const { data, attachTo } = props;
-  const ourSymbol = (
-    <>
-      {props.children && (
-        <CreatureContext.Provider
-          value={{
-            ...ctx,
-            parent: data,
-          }}
-        >
-          {props.children}
-        </CreatureContext.Provider>
-      )}
-      <SvgSymbolContent data={data} {...ctx} />
-    </>
-  );
+type SplitCreatureSymbolChildren = {
+  attachments: JSX.Element[];
+  nests: JSX.Element[];
+};
 
-  if (!attachTo) {
-    return ourSymbol;
-  }
+function splitCreatureSymbolChildren(
+  children?: AttachmentChildren
+): SplitCreatureSymbolChildren {
+  const result: SplitCreatureSymbolChildren = {
+    attachments: [],
+    nests: [],
+  };
+  if (!children) return result;
 
-  const parent = ctx.parent;
-  if (!parent) {
-    throw new Error(
-      `Cannot attach ${props.data.name} because it has no parent!`
+  React.Children.forEach(children, (child) => {
+    if (child.props.nestInside) {
+      result.nests.push(child);
+    } else {
+      result.attachments.push(child);
+    }
+  });
+
+  return result;
+}
+
+type ChildCreatureSymbolProps = {
+  symbol: JSX.Element;
+  data: SvgSymbolData;
+  parent: SvgSymbolData;
+  indices: number[];
+};
+
+const NestedCreatureSymbol: React.FC<ChildCreatureSymbolProps> = ({
+  symbol,
+  data,
+  parent,
+  indices,
+}) => {
+  const children: JSX.Element[] = [];
+
+  for (let nestIndex of indices) {
+    const parentNest = (parent.specs?.nesting ?? [])[nestIndex];
+    if (!parentNest) {
+      console.error(
+        `Parent symbol ${parent.name} has no nesting index ${nestIndex}!`
+      );
+      continue;
+    }
+    const t = getNestingTransforms(parentNest, data.bbox);
+    children.push(
+      <AttachmentTransform
+        key={nestIndex}
+        transformOrigin={t.transformOrigin}
+        translate={t.translation}
+        scale={t.scaling}
+        rotate={0}
+      >
+        {symbol}
+      </AttachmentTransform>
     );
   }
 
-  const attachmentIndices = props.indices || getAttachmentIndices(props);
+  return <>{children}</>;
+};
+
+const AttachedCreatureSymbol: React.FC<
+  ChildCreatureSymbolProps & {
+    attachTo: AttachmentPointType;
+  }
+> = ({ symbol, data, parent, indices, attachTo }) => {
+  const ctx = useContext(CreatureContext);
   const children: JSX.Element[] = [];
 
-  for (let attachIndex of attachmentIndices) {
+  for (let attachIndex of indices) {
     const parentAp = safeGetAttachmentPoint(parent, attachTo, attachIndex);
     const ourAp = safeGetAttachmentPoint(data, "anchor");
 
@@ -173,13 +215,73 @@ const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
         scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
         rotate={xFlip * t.rotation}
       >
-        {ourSymbol}
+        {symbol}
       </AttachmentTransform>
     );
   }
 
   return <>{children}</>;
 };
+
+const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
+  const ctx = useContext(CreatureContext);
+  const { data, attachTo, nestInside } = props;
+  const childCtx: CreatureContextType = { ...ctx, parent: data };
+  const { nests, attachments } = splitCreatureSymbolChildren(props.children);
+
+  // The attachments should be before our symbol in the DOM so they
+  // appear behind our symbol, while anything nested within our symbol
+  // should be after our symbol so they appear in front of it.
+  const symbol = (
+    <>
+      {attachments.length && (
+        <CreatureContext.Provider value={childCtx}>
+          {attachments}
+        </CreatureContext.Provider>
+      )}
+      <SvgSymbolContent data={data} {...ctx} />
+      {nests.length && (
+        <CreatureContext.Provider value={childCtx}>
+          {nests}
+        </CreatureContext.Provider>
+      )}
+    </>
+  );
+
+  if (!(attachTo || nestInside)) {
+    return symbol;
+  }
+
+  const parent = ctx.parent;
+  if (!parent) {
+    throw new Error(
+      `Cannot attach/nest ${props.data.name} because it has no parent!`
+    );
+  }
+
+  const childProps: ChildCreatureSymbolProps = {
+    parent,
+    symbol,
+    data,
+    indices: props.indices || getAttachmentIndices(props),
+  };
+
+  if (attachTo) {
+    return <AttachedCreatureSymbol {...childProps} attachTo={attachTo} />;
+  }
+
+  return <NestedCreatureSymbol {...childProps} />;
+};
+
+function getNestingTransforms(parent: BBox, child: BBox) {
+  const parentCenter = getBoundingBoxCenter(parent);
+  const childCenter = getBoundingBoxCenter(child);
+  const translation = subtractPoints(parentCenter, childCenter);
+  const uniformScaling = uniformlyScaleToFit(parent, child);
+  const scaling: Point = { x: uniformScaling, y: uniformScaling };
+
+  return { translation, transformOrigin: childCenter, scaling };
+}
 
 type AttachmentTransformProps = {
   transformOrigin: Point;
@@ -242,6 +344,8 @@ const Leg = createCreatureSymbol("leg");
 
 const Tail = createCreatureSymbol("tail");
 
+const Lightning = createCreatureSymbol("lightning");
+
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
   rng: Random
@@ -273,6 +377,7 @@ function getSymbolWithAttachments(
 
 const EYE_CREATURE = (
   <Eye>
+    <Lightning nestInside />
     <Arm attachTo="arm" left>
       <Wing attachTo="arm" left right />
     </Arm>
