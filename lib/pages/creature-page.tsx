@@ -19,6 +19,7 @@ import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "../bounding-box";
 import { AutoSizingSvg } from "../auto-sizing-svg";
+import { exportSvg } from "../export-svg";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -413,32 +414,6 @@ const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
-
-function getSvgMarkup(el: SVGSVGElement): string {
-  return [
-    `<?xml version="1.0" encoding="utf-8"?>`,
-    "<!-- Generator: https://github.com/toolness/mystic-symbolic -->",
-    '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
-    el.outerHTML,
-  ].join("\n");
-}
-
-function exportSvg(filename: string, svgRef: React.RefObject<SVGSVGElement>) {
-  const svgEl = svgRef.current;
-  if (!svgEl) {
-    alert("Oops, an error occurred! Please try again later.");
-    return;
-  }
-  const dataURL = `data:image/svg+xml;utf8,${encodeURIComponent(
-    getSvgMarkup(svgEl)
-  )}`;
-  const anchor = document.createElement("a");
-  anchor.href = dataURL;
-  anchor.download = filename;
-  document.body.append(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-}
 
 function getDownloadFilename(randomSeed: number | null) {
   let downloadBasename = "mystic-symbolic-creature";
