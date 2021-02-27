@@ -9,10 +9,11 @@ import { range } from "../util";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { exportSvg } from "../export-svg";
 import {
+  createCreatureSymbolFactory,
+  normalizeCreatureSymbol,
   CreatureContext,
   CreatureContextType,
   CreatureSymbol,
-  CreatureSymbolProps,
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
 
@@ -105,51 +106,27 @@ function getSymbolWithAttachments(
   return <CreatureSymbol data={root} children={children} />;
 }
 
-/**
- * A creature symbol that comes with default (but overrideable) symbol data.
- * This makes it easy to use the symbol in JSX, but also easy to dynamically
- * replace the symbol with a different one.
- */
-type CreatureSymbolWithDefaultProps = Omit<CreatureSymbolProps, "data"> & {
-  data?: SvgSymbolData;
-};
+const symbol = createCreatureSymbolFactory(getSymbol);
 
-/**
- * Returns a React component that renders a `<CreatureSymbol>`, using the symbol
- * with the given name as its default data.
- */
-function createCreatureSymbol(
-  name: string
-): React.FC<CreatureSymbolWithDefaultProps> {
-  const data = getSymbol(name);
-  const Component: React.FC<CreatureSymbolWithDefaultProps> = (props) => (
-    <CreatureSymbol data={props.data || data} {...props} />
-  );
-  Component.defaultProps = {
-    data,
-  };
-  return Component;
-}
+const Eye = symbol("eye");
 
-const Eye = createCreatureSymbol("eye");
+const Hand = symbol("hand");
 
-const Hand = createCreatureSymbol("hand");
+const Arm = symbol("arm");
 
-const Arm = createCreatureSymbol("arm");
+const Antler = symbol("antler");
 
-const Antler = createCreatureSymbol("antler");
+const Crown = symbol("crown");
 
-const Crown = createCreatureSymbol("crown");
+const Wing = symbol("wing");
 
-const Wing = createCreatureSymbol("wing");
+const MuscleArm = symbol("muscle_arm");
 
-const MuscleArm = createCreatureSymbol("muscle_arm");
+const Leg = symbol("leg");
 
-const Leg = createCreatureSymbol("leg");
+const Tail = symbol("tail");
 
-const Tail = createCreatureSymbol("tail");
-
-const Lightning = createCreatureSymbol("lightning");
+const Lightning = symbol("lightning");
 
 const EYE_CREATURE = (
   <Eye>
@@ -178,6 +155,8 @@ const EYE_CREATURE = (
  * sure the final creature structure is fully valid.
  */
 function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
+  const normalized = normalizeCreatureSymbol(creature);
+
   return React.cloneElement<CreatureSymbolWithDefaultProps>(creature, {
     data: rng.choice(SvgVocabulary),
     children: React.Children.map(creature.props.children, (child, i) => {

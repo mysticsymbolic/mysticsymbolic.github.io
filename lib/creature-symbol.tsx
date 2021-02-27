@@ -72,6 +72,21 @@ type AttachmentIndices = {
   right?: boolean;
 };
 
+export type AttachedNormalizedCreatureSymbol = NormalizedCreatureSymbol & {
+  attachTo: AttachmentPointType;
+  indices: number[];
+};
+
+export type NestedNormalizedCreatureSymbol = NormalizedCreatureSymbol & {
+  indices: number[];
+};
+
+export type NormalizedCreatureSymbol = {
+  data: SvgSymbolData;
+  attachments: AttachedNormalizedCreatureSymbol[];
+  nesting: NestedNormalizedCreatureSymbol[];
+};
+
 export type CreatureSymbolProps = AttachmentIndices & {
   data: SvgSymbolData;
   nestInside?: boolean;
@@ -310,3 +325,87 @@ const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
     </g>
   </g>
 );
+
+export type SimpleCreatureSymbolProps = Omit<CreatureSymbolProps, "data">;
+
+/**
+ * Create a factory that can be used to return React components to
+ * render a `<CreatureSymbol>`.
+ */
+export function createCreatureSymbolFactory(
+  getSymbol: (name: string) => SvgSymbolData
+) {
+  /**
+   * Returns a React component that renders a `<CreatureSymbol>`, using the symbol
+   * with the given name as its default data.
+   */
+  return function createCreatureSymbol(
+    name: string
+  ): React.FC<SimpleCreatureSymbolProps> {
+    const data = getSymbol(name);
+    const Component: React.FC<SimpleCreatureSymbolProps> = (props) => (
+      <CreatureSymbol data={data} {...props} />
+    );
+    (Component as any)._isCreatedCreatureSymbol = true;
+    Component.defaultProps = {
+      data,
+    };
+    return Component;
+  };
+}
+
+function normalizeNestedCreatureSymbol(
+  el: JSX.Element
+): NestedNormalizedCreatureSymbol {
+  const base = normalizeCreatureSymbol(el);
+  const props: SimpleCreatureSymbolProps = el.props;
+  const indices = props.indices || getAttachmentIndices(props);
+  const result: NestedNormalizedCreatureSymbol = {
+    ...base,
+    indices,
+  };
+  return result;
+}
+
+function normalizeAttachedCreatureSymbol(
+  el: JSX.Element
+): AttachedNormalizedCreatureSymbol {
+  const base = normalizeNestedCreatureSymbol(el);
+  const props: SimpleCreatureSymbolProps = el.props;
+  const { attachTo } = props;
+  if (!attachTo) {
+    throw new Error("Expected attachment to have `attachTo` prop!");
+  }
+  const result: AttachedNormalizedCreatureSymbol = {
+    ...base,
+    attachTo,
+  };
+  return result;
+}
+
+export function normalizeCreatureSymbol(
+  el: JSX.Element
+): NormalizedCreatureSymbol {
+  let data: SvgSymbolData;
+  let props: SimpleCreatureSymbolProps;
+
+  if (el.type === CreatureSymbol) {
+    const eProps: CreatureSymbolProps = el.props;
+    data = eProps.data;
+    props = eProps;
+  } else if (el.type._createdCreatureSymbolData) {
+    const eProps: SimpleCreatureSymbolProps = el.props;
+    data = el.type._createdCreatureSymbolData;
+    props = eProps;
+  } else {
+    throw new Error("Found unknown component type!");
+  }
+
+  const { attachments, nests } = splitCreatureSymbolChildren(props.children);
+  const result: NormalizedCreatureSymbol = {
+    data,
+    attachments: attachments.map(normalizeAttachedCreatureSymbol),
+    nesting: nests.map(normalizeNestedCreatureSymbol),
+  };
+  return result;
+}
