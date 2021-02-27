@@ -17,10 +17,17 @@ import {
 
 const DEFAULT_BG_COLOR = "#858585";
 
+/**
+ * Mapping from symbol names to symbol data, for quick and easy access.
+ */
 const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
 );
 
+/**
+ * Returns the data for the given symbol, throwing an error
+ * if it doesn't exist.
+ */
 function getSymbol(name: string): SvgSymbolData {
   const symbol = SYMBOL_MAP.get(name);
   if (!symbol) {
@@ -29,10 +36,19 @@ function getSymbol(name: string): SvgSymbolData {
   return symbol;
 }
 
+/**
+ * A creature symbol that comes with default (but overrideable) symbol data.
+ * This makes it easy to use the symbol in JSX, but also easy to dynamically
+ * replace the symbol with a different one.
+ */
 type CreatureSymbolWithDefaultProps = Omit<CreatureSymbolProps, "data"> & {
   data?: SvgSymbolData;
 };
 
+/**
+ * Returns a React component that renders a `<CreatureSymbol>`, using the symbol
+ * with the given name as its default data.
+ */
 function createCreatureSymbol(
   name: string
 ): React.FC<CreatureSymbolWithDefaultProps> {
@@ -60,6 +76,11 @@ const Tail = createCreatureSymbol("tail");
 
 const Lightning = createCreatureSymbol("lightning");
 
+/**
+ * Randomly creates a symbol with the given number of
+ * types of attachments.  The symbol itself, and where the
+ * attachments are attached, are chosen randomly.
+ */
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
   rng: Random
@@ -109,6 +130,12 @@ const EYE_CREATURE = (
   </Eye>
 );
 
+/**
+ * Randomly replace all the parts of the given creature. Note that this
+ * might end up logging some console messages about not being able to find
+ * attachment/nesting indices, because it doesn't really check to make
+ * sure the final creature structure is fully valid.
+ */
 function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
   return React.cloneElement<CreatureSymbolWithDefaultProps>(creature, {
     data: rng.choice(SvgVocabulary),
@@ -120,6 +147,13 @@ function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
 
 type CreatureGenerator = (rng: Random) => JSX.Element;
 
+/**
+ * Each index of this array represents the algorithm we use to
+ * randomly construct a creature with a particular "complexity level".
+ *
+ * For instance, the algorithm used to create a creature with
+ * complexity level 0 will be the first item of this array.
+ */
 const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
   ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
   (rng) => randomlyReplaceParts(rng, EYE_CREATURE),
