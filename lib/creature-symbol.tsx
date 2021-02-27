@@ -11,6 +11,8 @@ import {
   SvgSymbolData,
 } from "./svg-symbol";
 
+const DEFAULT_ATTACHMENT_SCALE = 0.5;
+
 function getAttachmentPoint(
   s: SvgSymbolData,
   type: AttachmentPointType,
@@ -52,8 +54,6 @@ export type CreatureContextType = SvgSymbolContext & {
   attachmentScale: number;
   parent: SvgSymbolData | null;
 };
-
-const DEFAULT_ATTACHMENT_SCALE = 0.5;
 
 export const CreatureContext = React.createContext<CreatureContextType>({
   ...createSvgSymbolContext(),
