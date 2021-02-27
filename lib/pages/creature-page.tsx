@@ -223,11 +223,20 @@ const HoverHelper: React.FC<{
       const path: string[] = [];
       let node = target;
       while (true) {
-        const { specType, specIndex, symbolName } = node.dataset;
+        const {
+          specType,
+          specIndex,
+          symbolName,
+          attachParent,
+          attachType,
+          attachIndex,
+        } = node.dataset;
         if (specType && specIndex) {
           path.unshift(`${specType}[${specIndex}]`);
         } else if (symbolName) {
           path.unshift(symbolName);
+        } else if (attachParent && attachType && attachIndex && path.length) {
+          path[0] = `${path[0]}@${attachParent}.${attachType}[${attachIndex}]`;
         }
         if (node.parentNode instanceof SVGElement) {
           node = node.parentNode;
