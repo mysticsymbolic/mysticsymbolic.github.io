@@ -100,9 +100,9 @@ export const SvgSymbolContent: React.FC<
   const d = props.data;
 
   return (
-    <>
+    <g data-symbol-name={d.name}>
       {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
       {props.showSpecs && d.specs && <VisibleSpecs specs={d.specs} />}
-    </>
+    </g>
   );
 };
