@@ -14,6 +14,7 @@ import {
   CreatureSymbol,
   CreatureSymbolProps,
 } from "../creature-symbol";
+import { HoverDebugHelper } from "../hover-debug-helper";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -259,9 +260,11 @@ export const CreaturePage: React.FC<{}> = () => {
         <button onClick={handleSvgExport}>Export SVG</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-          <g transform="scale(0.5 0.5)">{creature}</g>
-        </AutoSizingSvg>
+        <HoverDebugHelper>
+          <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
+            <g transform="scale(0.5 0.5)">{creature}</g>
+          </AutoSizingSvg>
+        </HoverDebugHelper>
       </CreatureContext.Provider>
     </>
   );

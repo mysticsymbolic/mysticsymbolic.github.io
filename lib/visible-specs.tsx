@@ -21,7 +21,7 @@ const VisibleAttachmentPoint: React.FC<{
   const color = colors.ATTACHMENT_POINT_COLORS[ap.type];
 
   return (
-    <>
+    <g data-spec-type={ap.type} data-spec-index={ap.index}>
       <circle
         fill={color}
         r={ATTACHMENT_POINT_RADIUS}
@@ -38,7 +38,7 @@ const VisibleAttachmentPoint: React.FC<{
         stroke={color}
         strokeWidth={ATTACHMENT_POINT_NORMAL_STROKE}
       />
-    </>
+    </g>
   );
 };
 
@@ -48,6 +48,8 @@ const BoundingBoxes: React.FC<{ fill: string; bboxes: BBox[] }> = (props) => (
       const [width, height] = getBoundingBoxSize(b);
       return (
         <rect
+          data-spec-type="nesting"
+          data-spec-index={i}
           opacity={SPEC_OPACITY}
           key={i}
           x={b.x.min}

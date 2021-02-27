@@ -152,7 +152,13 @@ const NestedCreatureSymbol: React.FC<ChildCreatureSymbolProps> = ({
         scale={t.scaling}
         rotate={0}
       >
-        {symbol}
+        <g
+          data-attach-parent={parent.name}
+          data-attach-type="nesting"
+          data-attach-index={nestIndex}
+        >
+          {symbol}
+        </g>
       </AttachmentTransform>
     );
   }
@@ -199,7 +205,13 @@ const AttachedCreatureSymbol: React.FC<
         scale={{ x: ctx.attachmentScale * xFlip, y: ctx.attachmentScale }}
         rotate={xFlip * t.rotation}
       >
-        {symbol}
+        <g
+          data-attach-parent={parent.name}
+          data-attach-type={attachTo}
+          data-attach-index={attachIndex}
+        >
+          {symbol}
+        </g>
       </AttachmentTransform>
     );
   }
