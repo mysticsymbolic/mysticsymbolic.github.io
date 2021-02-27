@@ -20,19 +20,21 @@ function getAttachmentPoint(
 ): PointWithNormal {
   const { specs } = s;
   if (!specs) {
-    throw new Error(`Symbol ${s.name} has no specs!`);
+    throw new AttachmentPointError(`Symbol ${s.name} has no specs.`);
   }
   const points = specs[type];
   if (!(points && points.length > idx)) {
-    throw new Error(
+    throw new AttachmentPointError(
       `Expected symbol ${s.name} to have at least ${
         idx + 1
-      } ${type} attachment point(s)!`
+      } ${type} attachment point(s).`
     );
   }
 
   return points[idx];
 }
+
+class AttachmentPointError extends Error {}
 
 function safeGetAttachmentPoint(
   s: SvgSymbolData,
@@ -42,7 +44,11 @@ function safeGetAttachmentPoint(
   try {
     return getAttachmentPoint(s, type, idx);
   } catch (e) {
-    console.error(e);
+    if (e instanceof AttachmentPointError) {
+      console.log(e.message);
+    } else {
+      throw e;
+    }
   }
 
   return null;
@@ -132,8 +138,8 @@ const NestedCreatureSymbol: React.FC<ChildCreatureSymbolProps> = ({
   for (let nestIndex of indices) {
     const parentNest = (parent.specs?.nesting ?? [])[nestIndex];
     if (!parentNest) {
-      console.error(
-        `Parent symbol ${parent.name} has no nesting index ${nestIndex}!`
+      console.log(
+        `Parent symbol ${parent.name} has no nesting index ${nestIndex}.`
       );
       continue;
     }
