@@ -122,7 +122,13 @@ function createCreatureSymbol(
   name: string
 ): React.FC<CreatureSymbolWithDefaultProps> {
   const data = getSymbol(name);
-  return (props) => <CreatureSymbol data={props.data || data} {...props} />;
+  const Component: React.FC<CreatureSymbolWithDefaultProps> = (props) => (
+    <CreatureSymbol data={props.data || data} {...props} />
+  );
+  Component.defaultProps = {
+    data,
+  };
+  return Component;
 }
 
 const Eye = createCreatureSymbol("eye");
