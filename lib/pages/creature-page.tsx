@@ -24,6 +24,19 @@ const SYMBOL_MAP = new Map(
   SvgVocabulary.map((symbol) => [symbol.name, symbol])
 );
 
+/** Symbols that can be the "root" (i.e., main body) of a creature. */
+const ROOT_SYMBOLS = SvgVocabulary.filter(
+  (data) => data.meta?.always_be_nested !== true
+);
+
+/** Symbols that can be attached to the main body of a creature. */
+const ATTACHMENT_SYMBOLS = ROOT_SYMBOLS;
+
+/** Symbols that can be nested within any part of a creature. */
+const NESTED_SYMBOLS = SvgVocabulary.filter(
+  (data) => data.meta?.always_nest !== true
+);
+
 /**
  * Returns the data for the given symbol, throwing an error
  * if it doesn't exist.
@@ -37,6 +50,25 @@ function getSymbol(name: string): SvgSymbolData {
 }
 
 /**
+ * Given a parent symbol, return an array of random children to be nested within
+ * it.
+ *
+ * Can return an empty array e.g. if the parent symbol doesn't have
+ * any nesting areas.
+ */
+function getNestingChildren(parent: SvgSymbolData, rng: Random): JSX.Element[] {
+  const { meta, specs } = parent;
+  if (meta?.always_nest && specs?.nesting) {
+    const indices = range(specs.nesting.length);
+    const child = rng.choice(NESTED_SYMBOLS);
+    return [
+      <CreatureSymbol data={child} key="nested" nestInside indices={indices} />,
+    ];
+  }
+  return [];
+}
+
+/**
  * Randomly creates a symbol with the given number of
  * types of attachments.  The symbol itself, and where the
  * attachments are attached, are chosen randomly.
@@ -46,7 +78,7 @@ function getSymbolWithAttachments(
   rng: Random
 ): JSX.Element {
   const children: JSX.Element[] = [];
-  const root = rng.choice(SvgVocabulary);
+  const root = rng.choice(ROOT_SYMBOLS);
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
       Array.from(iterAttachmentPoints(root.specs))
@@ -55,7 +87,7 @@ function getSymbolWithAttachments(
       numAttachmentKinds
     );
     for (let kind of attachmentKinds) {
-      const attachment = rng.choice(SvgVocabulary);
+      const attachment = rng.choice(ATTACHMENT_SYMBOLS);
       const indices = range(root.specs[kind]?.length ?? 0);
       children.push(
         <CreatureSymbol
@@ -63,10 +95,12 @@ function getSymbolWithAttachments(
           key={children.length}
           attachTo={kind}
           indices={indices}
+          children={getNestingChildren(attachment, rng)}
         />
       );
     }
   }
+  children.push(...getNestingChildren(root, rng));
   return <CreatureSymbol data={root} children={children} />;
 }
 
