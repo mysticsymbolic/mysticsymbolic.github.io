@@ -78,17 +78,18 @@ function reactifySvgSymbolElement(
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
   }
+  const props: typeof el.props = {
+    ...el.props,
+    id: undefined,
+    vectorEffect,
+    strokeWidth,
+    fill,
+    stroke,
+    key,
+  };
   return React.createElement(
     el.tagName,
-    {
-      ...el.props,
-      id: undefined,
-      vectorEffect,
-      strokeWidth,
-      fill,
-      stroke,
-      key,
-    },
+    props,
     el.children.map(reactifySvgSymbolElement.bind(null, ctx))
   );
 }
