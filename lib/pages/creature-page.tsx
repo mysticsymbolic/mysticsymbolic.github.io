@@ -236,7 +236,8 @@ const HoverHelper: React.FC<{
         } else if (symbolName) {
           path.unshift(symbolName);
         } else if (attachParent && attachType && attachIndex && path.length) {
-          path[0] = `${path[0]}@${attachParent}.${attachType}[${attachIndex}]`;
+          const i = path.length - 1;
+          path[i] = `${path[i]}@${attachParent}.${attachType}[${attachIndex}]`;
         }
         if (node.parentNode instanceof SVGElement) {
           node = node.parentNode;
