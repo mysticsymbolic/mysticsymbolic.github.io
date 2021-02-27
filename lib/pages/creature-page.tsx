@@ -10,10 +10,13 @@ import { AutoSizingSvg } from "../auto-sizing-svg";
 import { exportSvg } from "../export-svg";
 import {
   createCreatureSymbolFactory,
-  normalizeCreatureSymbol,
+  extractCreatureSymbolFromElement,
+} from "../creature-symbol-factory";
+import {
   CreatureContext,
   CreatureContextType,
   CreatureSymbol,
+  NestedCreatureSymbol,
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
 
@@ -58,13 +61,21 @@ function getSymbol(name: string): SvgSymbolData {
  * Can return an empty array e.g. if the parent symbol doesn't have
  * any nesting areas.
  */
-function getNestingChildren(parent: SvgSymbolData, rng: Random): JSX.Element[] {
+function getNestingChildren(
+  parent: SvgSymbolData,
+  rng: Random
+): NestedCreatureSymbol[] {
   const { meta, specs } = parent;
   if (meta?.always_nest && specs?.nesting) {
     const indices = range(specs.nesting.length);
     const child = rng.choice(NESTED_SYMBOLS);
     return [
-      <CreatureSymbol data={child} key="nested" nestInside indices={indices} />,
+      {
+        data: child,
+        attachments: [],
+        nests: [],
+        indices,
+      },
     ];
   }
   return [];
@@ -78,9 +89,13 @@ function getNestingChildren(parent: SvgSymbolData, rng: Random): JSX.Element[] {
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
   rng: Random
-): JSX.Element {
-  const children: JSX.Element[] = [];
+): CreatureSymbol {
   const root = rng.choice(ROOT_SYMBOLS);
+  const result: CreatureSymbol = {
+    data: root,
+    attachments: [],
+    nests: getNestingChildren(root, rng),
+  };
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
       Array.from(iterAttachmentPoints(root.specs))
@@ -91,19 +106,16 @@ function getSymbolWithAttachments(
     for (let kind of attachmentKinds) {
       const attachment = rng.choice(ATTACHMENT_SYMBOLS);
       const indices = range(root.specs[kind]?.length ?? 0);
-      children.push(
-        <CreatureSymbol
-          data={attachment}
-          key={children.length}
-          attachTo={kind}
-          indices={indices}
-          children={getNestingChildren(attachment, rng)}
-        />
-      );
+      result.attachments.push({
+        data: attachment,
+        attachTo: kind,
+        indices,
+        attachments: [],
+        nests: getNestingChildren(attachment, rng),
+      });
     }
   }
-  children.push(...getNestingChildren(root, rng));
-  return <CreatureSymbol data={root} children={children} />;
+  return result;
 }
 
 const symbol = createCreatureSymbolFactory(getSymbol);
@@ -148,24 +160,28 @@ const EYE_CREATURE = (
   </Eye>
 );
 
+const EYE_CREATURE_SYMBOL = extractCreatureSymbolFromElement(EYE_CREATURE);
+
 /**
  * Randomly replace all the parts of the given creature. Note that this
  * might end up logging some console messages about not being able to find
  * attachment/nesting indices, because it doesn't really check to make
  * sure the final creature structure is fully valid.
  */
-function randomlyReplaceParts(rng: Random, creature: JSX.Element): JSX.Element {
-  const normalized = normalizeCreatureSymbol(creature);
-
-  return React.cloneElement<CreatureSymbolWithDefaultProps>(creature, {
+function randomlyReplaceParts<T extends CreatureSymbol>(
+  rng: Random,
+  creature: T
+): T {
+  const result: T = {
+    ...creature,
     data: rng.choice(SvgVocabulary),
-    children: React.Children.map(creature.props.children, (child, i) => {
-      return randomlyReplaceParts(rng, child);
-    }),
-  });
+    attachments: creature.attachments.map((a) => randomlyReplaceParts(rng, a)),
+    nests: creature.nests.map((n) => randomlyReplaceParts(rng, n)),
+  };
+  return result;
 }
 
-type CreatureGenerator = (rng: Random) => JSX.Element;
+type CreatureGenerator = (rng: Random) => CreatureSymbol;
 
 /**
  * Each index of this array represents the algorithm we use to
@@ -176,7 +192,7 @@ type CreatureGenerator = (rng: Random) => JSX.Element;
  */
 const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
   ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
-  (rng) => randomlyReplaceParts(rng, EYE_CREATURE),
+  (rng) => randomlyReplaceParts(rng, EYE_CREATURE_SYMBOL),
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
@@ -206,7 +222,7 @@ export const CreaturePage: React.FC<{}> = () => {
   };
   const creature =
     randomSeed === null
-      ? EYE_CREATURE
+      ? EYE_CREATURE_SYMBOL
       : COMPLEXITY_LEVEL_GENERATORS[complexity](new Random(randomSeed));
   const handleSvgExport = () =>
     exportSvg(getDownloadFilename(randomSeed), svgRef);
@@ -247,7 +263,9 @@ export const CreaturePage: React.FC<{}> = () => {
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
           <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-            <g transform="scale(0.5 0.5)">{creature}</g>
+            <g transform="scale(0.5 0.5)">
+              <CreatureSymbol {...creature} />
+            </g>
           </AutoSizingSvg>
         </HoverDebugHelper>
       </CreatureContext.Provider>
