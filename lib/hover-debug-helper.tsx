@@ -12,8 +12,8 @@ export const HoverDebugHelper: React.FC<{
   const handleMouseMove: React.MouseEventHandler = (e) => {
     const { target } = e;
     if (target instanceof SVGElement) {
-      const x = e.clientX;
-      const y = e.clientY;
+      const x = e.clientX + window.scrollX;
+      const y = e.clientY + window.scrollY;
       const path: string[] = [];
       let node = target;
       while (true) {
