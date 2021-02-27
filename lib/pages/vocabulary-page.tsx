@@ -8,6 +8,7 @@ import {
 import { SvgVocabulary } from "../svg-vocabulary";
 import { SvgSymbolContext } from "../svg-symbol";
 import { SymbolContextWidget } from "../symbol-context-widget";
+import { HoverDebugHelper } from "../hover-debug-helper";
 
 type SvgSymbolProps = {
   data: SvgSymbolData;
@@ -60,9 +61,11 @@ export const VocabularyPage: React.FC<{}> = () => {
           >
             {symbolData.name}
           </div>
-          <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
-            <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
-          </div>
+          <HoverDebugHelper>
+            <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
+              <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
+            </div>
+          </HoverDebugHelper>
         </div>
       ))}
     </>
