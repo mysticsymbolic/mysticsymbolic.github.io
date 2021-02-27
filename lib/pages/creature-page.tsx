@@ -14,6 +14,7 @@ import {
   CreatureSymbol,
   CreatureSymbolProps,
 } from "../creature-symbol";
+import { HoverDebugHelper } from "../hover-debug-helper";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -205,74 +206,6 @@ function getDownloadFilename(randomSeed: number | null) {
   return `${downloadBasename}.svg`;
 }
 
-const HoverHelper: React.FC<{
-  children: any;
-  svgRef: React.RefObject<SVGSVGElement | null>;
-}> = (props) => {
-  type HoverInfo = {
-    x: number;
-    y: number;
-    text: string;
-  };
-  let [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
-  const handleMouseMove: React.MouseEventHandler = (e) => {
-    const { target } = e;
-    if (target instanceof SVGElement) {
-      const x = e.clientX;
-      const y = e.clientY;
-      const path: string[] = [];
-      let node = target;
-      while (true) {
-        const {
-          specType,
-          specIndex,
-          symbolName,
-          attachParent,
-          attachType,
-          attachIndex,
-        } = node.dataset;
-        if (specType && specIndex) {
-          path.unshift(`${specType}[${specIndex}]`);
-        } else if (symbolName) {
-          path.unshift(symbolName);
-        } else if (attachParent && attachType && attachIndex && path.length) {
-          const i = path.length - 1;
-          path[i] = `${path[i]}@${attachParent}.${attachType}[${attachIndex}]`;
-        }
-        if (node.parentNode instanceof SVGElement) {
-          node = node.parentNode;
-        } else {
-          break;
-        }
-      }
-      if (path.length) {
-        setHoverInfo({ x, y, text: path.join(".") });
-        return;
-      }
-    }
-    setHoverInfo(null);
-  };
-
-  return (
-    <div onMouseMove={handleMouseMove}>
-      {hoverInfo && (
-        <div
-          className="hover-help"
-          style={{
-            position: "absolute",
-            pointerEvents: "none",
-            top: `${hoverInfo.y}px`,
-            left: `${hoverInfo.x}px`,
-          }}
-        >
-          {hoverInfo.text}
-        </div>
-      )}
-      {props.children}
-    </div>
-  );
-};
-
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
@@ -327,11 +260,11 @@ export const CreaturePage: React.FC<{}> = () => {
         <button onClick={handleSvgExport}>Export SVG</button>
       </p>
       <CreatureContext.Provider value={ctx}>
-        <HoverHelper svgRef={svgRef}>
+        <HoverDebugHelper>
           <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
             <g transform="scale(0.5 0.5)">{creature}</g>
           </AutoSizingSvg>
-        </HoverHelper>
+        </HoverDebugHelper>
       </CreatureContext.Provider>
     </>
   );
