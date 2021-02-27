@@ -37,6 +37,40 @@ function getSymbol(name: string): SvgSymbolData {
 }
 
 /**
+ * Randomly creates a symbol with the given number of
+ * types of attachments.  The symbol itself, and where the
+ * attachments are attached, are chosen randomly.
+ */
+function getSymbolWithAttachments(
+  numAttachmentKinds: number,
+  rng: Random
+): JSX.Element {
+  const children: JSX.Element[] = [];
+  const root = rng.choice(SvgVocabulary);
+  if (root.specs) {
+    const attachmentKinds = rng.uniqueChoices(
+      Array.from(iterAttachmentPoints(root.specs))
+        .filter((point) => point.type !== "anchor")
+        .map((point) => point.type),
+      numAttachmentKinds
+    );
+    for (let kind of attachmentKinds) {
+      const attachment = rng.choice(SvgVocabulary);
+      const indices = range(root.specs[kind]?.length ?? 0);
+      children.push(
+        <CreatureSymbol
+          data={attachment}
+          key={children.length}
+          attachTo={kind}
+          indices={indices}
+        />
+      );
+    }
+  }
+  return <CreatureSymbol data={root} children={children} />;
+}
+
+/**
  * A creature symbol that comes with default (but overrideable) symbol data.
  * This makes it easy to use the symbol in JSX, but also easy to dynamically
  * replace the symbol with a different one.
@@ -75,40 +109,6 @@ const Leg = createCreatureSymbol("leg");
 const Tail = createCreatureSymbol("tail");
 
 const Lightning = createCreatureSymbol("lightning");
-
-/**
- * Randomly creates a symbol with the given number of
- * types of attachments.  The symbol itself, and where the
- * attachments are attached, are chosen randomly.
- */
-function getSymbolWithAttachments(
-  numAttachmentKinds: number,
-  rng: Random
-): JSX.Element {
-  const children: JSX.Element[] = [];
-  const root = rng.choice(SvgVocabulary);
-  if (root.specs) {
-    const attachmentKinds = rng.uniqueChoices(
-      Array.from(iterAttachmentPoints(root.specs))
-        .filter((point) => point.type !== "anchor")
-        .map((point) => point.type),
-      numAttachmentKinds
-    );
-    for (let kind of attachmentKinds) {
-      const attachment = rng.choice(SvgVocabulary);
-      const indices = range(root.specs[kind]?.length ?? 0);
-      children.push(
-        <CreatureSymbol
-          data={attachment}
-          key={children.length}
-          attachTo={kind}
-          indices={indices}
-        />
-      );
-    }
-  }
-  return <CreatureSymbol data={root} children={children} />;
-}
 
 const EYE_CREATURE = (
   <Eye>
