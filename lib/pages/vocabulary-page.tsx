@@ -43,31 +43,31 @@ export const VocabularyPage: React.FC<{}> = () => {
     <>
       <h1>Mystic Symbolic Vocabulary</h1>
       <SymbolContextWidget ctx={ctx} onChange={setCtx} />
-      {SvgVocabulary.map((symbolData) => (
-        <div
-          key={symbolData.name}
-          style={{
-            display: "inline-block",
-            border: "1px solid black",
-            margin: "4px",
-          }}
-        >
+      <HoverDebugHelper>
+        {SvgVocabulary.map((symbolData) => (
           <div
+            key={symbolData.name}
             style={{
-              backgroundColor: "black",
-              color: "white",
-              padding: "4px",
+              display: "inline-block",
+              border: "1px solid black",
+              margin: "4px",
             }}
           >
-            {symbolData.name}
-          </div>
-          <HoverDebugHelper>
+            <div
+              style={{
+                backgroundColor: "black",
+                color: "white",
+                padding: "4px",
+              }}
+            >
+              {symbolData.name}
+            </div>
             <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
               <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
             </div>
-          </HoverDebugHelper>
-        </div>
-      ))}
+          </div>
+        ))}
+      </HoverDebugHelper>
     </>
   );
 };
