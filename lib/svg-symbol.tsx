@@ -3,6 +3,7 @@ import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { Specs } from "./specs";
+import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
 import { VisibleSpecs } from "./visible-specs";
 
 const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
@@ -11,6 +12,7 @@ export type SvgSymbolData = {
   name: string;
   bbox: BBox;
   layers: SvgSymbolElement[];
+  meta?: SvgSymbolMetadata;
   specs?: Specs;
 };
 

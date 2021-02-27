@@ -4,6 +4,8 @@ import cheerio from "cheerio";
 import { getSvgBoundingBox } from "./bounding-box";
 import { extractSpecs } from "./specs";
 import { SvgSymbolData, SvgSymbolElement } from "./svg-symbol";
+import toml from "toml";
+import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
 
 const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
@@ -109,11 +111,24 @@ export function build() {
   const vocab: SvgSymbolData[] = [];
   for (let filename of filenames) {
     if (path.extname(filename) === SVG_EXT) {
-      console.log(`Adding ${filename} to vocabulary.`);
+      let filenames = filename;
+      let metaToml: string | null = null;
+      const metaFilename = `${path.basename(filename, SVG_EXT)}.toml`;
+      const metaFilepath = path.join(SVG_DIR, metaFilename);
+      if (fs.existsSync(metaFilepath)) {
+        filenames += ` and ${metaFilename}`;
+        metaToml = fs.readFileSync(metaFilepath, {
+          encoding: "utf-8",
+        });
+      }
+      console.log(`Adding ${filenames} to vocabulary.`);
       const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
         encoding: "utf-8",
       });
       const symbol = convertSvgMarkupToSymbolData(filename, svgMarkup);
+      if (metaToml) {
+        symbol.meta = validateSvgSymbolMetadata(toml.parse(metaToml));
+      }
       vocab.push(symbol);
     }
   }
