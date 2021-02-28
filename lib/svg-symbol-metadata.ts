@@ -25,8 +25,11 @@ function isSvgSymbolMetadataBoolean(
 
 export type SvgSymbolMetadata = SvgSymbolMetadataBooleans;
 
-export function validateSvgSymbolMetadata(obj: any): SvgSymbolMetadata {
-  const result: SvgSymbolMetadata = {};
+export function validateSvgSymbolMetadata(
+  obj: any
+): { metadata: SvgSymbolMetadata; unknownProperties: string[] } {
+  const metadata: SvgSymbolMetadata = {};
+  const unknownProperties: string[] = [];
   for (let key in obj) {
     const value: unknown = obj[key];
     if (isSvgSymbolMetadataBoolean(key)) {
@@ -35,10 +38,10 @@ export function validateSvgSymbolMetadata(obj: any): SvgSymbolMetadata {
           `Expected "${key}" to be a boolean, but it is a ${typeof value}!`
         );
       }
-      result[key] = value;
+      metadata[key] = value;
     } else {
-      throw new Error(`Unrecognized SVG symbol metadata property "${key}"`);
+      unknownProperties.push(key);
     }
   }
-  return result;
+  return { metadata, unknownProperties };
 }

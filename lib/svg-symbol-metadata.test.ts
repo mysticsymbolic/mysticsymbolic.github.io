@@ -23,8 +23,11 @@ describe("validateSvgSymbolMetadata()", () => {
         always_be_nested: true,
       })
     ).toEqual({
-      always_nest: true,
-      always_be_nested: true,
+      metadata: {
+        always_nest: true,
+        always_be_nested: true,
+      },
+      unknownProperties: [],
     });
   });
 
@@ -37,10 +40,14 @@ describe("validateSvgSymbolMetadata()", () => {
   });
 
   it("raises errors when a property is unrecognized", () => {
-    expect(() =>
+    expect(
       validateSvgSymbolMetadata({
+        always_nest: true,
         blarp: true,
       })
-    ).toThrow('Unrecognized SVG symbol metadata property "blarp"');
+    ).toEqual({
+      metadata: { always_nest: true },
+      unknownProperties: ["blarp"],
+    });
   });
 });

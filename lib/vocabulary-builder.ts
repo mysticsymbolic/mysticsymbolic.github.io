@@ -127,7 +127,17 @@ export function build() {
       });
       const symbol = convertSvgMarkupToSymbolData(filename, svgMarkup);
       if (metaToml) {
-        symbol.meta = validateSvgSymbolMetadata(toml.parse(metaToml));
+        const { metadata, unknownProperties } = validateSvgSymbolMetadata(
+          toml.parse(metaToml)
+        );
+        symbol.meta = metadata;
+        if (unknownProperties.length) {
+          console.log(
+            `WARNING: Found unknown metadata properties ${unknownProperties.join(
+              ", "
+            )}.`
+          );
+        }
       }
       vocab.push(symbol);
     }
