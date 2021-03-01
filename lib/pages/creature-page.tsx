@@ -66,10 +66,11 @@ function getSymbol(name: string): SvgSymbolData {
  */
 function getNestingChildren(
   parent: SvgSymbolData,
-  rng: Random
+  rng: Random,
+  preferNesting?: boolean
 ): NestedCreatureSymbol[] {
   const { meta, specs } = parent;
-  if (meta?.always_nest && specs?.nesting) {
+  if ((meta?.always_nest || preferNesting) && specs?.nesting) {
     const indices = range(specs.nesting.length);
     const child = rng.choice(NESTED_SYMBOLS);
     return [
@@ -97,7 +98,7 @@ function getSymbolWithAttachments(
   const result: CreatureSymbol = {
     data: root,
     attachments: [],
-    nests: getNestingChildren(root, rng),
+    nests: getNestingChildren(root, rng, true),
   };
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
