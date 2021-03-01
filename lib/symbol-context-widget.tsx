@@ -10,6 +10,12 @@ export const SymbolContextWidget: React.FC<{
   const updateCtx = (updates: Partial<SvgSymbolContext>) => {
     onChange({ ...ctx, ...updates });
   };
+  const swapColors = () => {
+    updateCtx({
+      fill: ctx.stroke,
+      stroke: ctx.fill,
+    });
+  };
 
   return (
     <p>
@@ -28,6 +34,7 @@ export const SymbolContextWidget: React.FC<{
         onChange={(e) => updateCtx({ fill: e.target.value })}
         id="fill"
       />{" "}
+      <button onClick={swapColors}>Swap stroke/fill</button>{" "}
       <label>
         <input
           type="checkbox"
