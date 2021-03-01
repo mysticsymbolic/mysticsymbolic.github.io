@@ -10,11 +10,18 @@ type SvgSymbolMetadataBooleans = {
    * be nested inside another symbol's nesting area.
    */
   always_be_nested?: boolean;
+
+  /**
+   * If true, this indicates that the symbol should never
+   * be nested inside another symbol's nesting area.
+   */
+  never_be_nested?: boolean;
 };
 
 const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
   "always_nest",
   "always_be_nested",
+  "never_be_nested",
 ]);
 
 function isSvgSymbolMetadataBoolean(

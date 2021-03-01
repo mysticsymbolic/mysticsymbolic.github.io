@@ -39,7 +39,10 @@ const ATTACHMENT_SYMBOLS = ROOT_SYMBOLS;
 
 /** Symbols that can be nested within any part of a creature. */
 const NESTED_SYMBOLS = SvgVocabulary.filter(
-  (data) => data.meta?.always_nest !== true
+  // Since we don't currently support recursive nesting, ignore anything that
+  // wants nested children.
+  (data) =>
+    data.meta?.always_nest !== true && data.meta?.never_be_nested !== true
 );
 
 /**
