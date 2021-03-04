@@ -11,3 +11,7 @@ always_nest = false
 # be nested inside another symbol's nesting area.
 
 always_be_nested = false
+
+
+
+never_be_nested = true
