@@ -141,7 +141,11 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
     };
   }
 
-  throw new Error(`Not sure what to do with specs path with fill "${fill}"!`);
+  console.log(
+    `Not sure what to do with specs path with fill "${fill}", ignoring it.`
+  );
+
+  return specs;
 }
 
 function getSpecs(layers: SvgSymbolElement[]): Specs {

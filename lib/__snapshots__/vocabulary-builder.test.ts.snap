@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`convertSvgMarkupToSymbolData() processes specs 1`] = `
+Object {
+  "anchor": Array [
+    Object {
+      "normal": Object {
+        "x": 0,
+        "y": -1,
+      },
+      "point": Object {
+        "t": 0,
+        "x": 360,
+        "y": 701.804,
+      },
+    },
+  ],
+}
+`;
+
 exports[`convertSvgMarkupToSymbolData() works with SVGs that just have a path and no specs 1`] = `
 Object {
   "bbox": Object {
