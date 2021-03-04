@@ -20,6 +20,6 @@ always_be_nested = false
 
 # be nested inside another symbol's nesting area.
 
-never_be_nested = false
+never_be_nested = true
 
 
