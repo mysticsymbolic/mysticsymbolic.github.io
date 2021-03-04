@@ -10,4 +10,4 @@ always_nest = false
 
 # be nested inside another symbol's nesting area.
 
-always_be_nested = false
+always_be_nested = true
