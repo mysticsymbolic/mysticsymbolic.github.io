@@ -24,6 +24,18 @@ describe("convertSvgMarkupToSymbolData()", () => {
     ).toMatchSnapshot();
   });
 
+  it("ignores empty layers", () => {
+    const sd1 = convertSvgMarkupToSymbolData(
+      "blarg.svg",
+      `<svg>${CIRCLE}</svg>`
+    );
+    const sd2 = convertSvgMarkupToSymbolData(
+      "blarg.svg",
+      `<svg>${CIRCLE}<g id="boop"></g></svg>`
+    );
+    expect(sd1).toEqual(sd2);
+  });
+
   it("processes specs", () => {
     const result = convertSvgMarkupToSymbolData(
       "blarg.svg",

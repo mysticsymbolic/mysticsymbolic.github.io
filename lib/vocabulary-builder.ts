@@ -84,6 +84,15 @@ function serializeSvgSymbolElement(
   throw new Error(`Unsupported SVG element: <${tagName}>`);
 }
 
+function removeEmptyGroups(s: SvgSymbolElement[]): SvgSymbolElement[] {
+  return s
+    .filter((child) => !(child.tagName === "g" && child.children.length === 0))
+    .map((s) => ({
+      ...s,
+      children: removeEmptyGroups(s.children),
+    }));
+}
+
 export function convertSvgMarkupToSymbolData(
   filename: string,
   svgMarkup: string
@@ -91,8 +100,8 @@ export function convertSvgMarkupToSymbolData(
   const name = path.basename(filename, SVG_EXT).toLowerCase();
   const $ = cheerio.load(svgMarkup);
   const svgEl = $("svg");
-  const rawLayers = onlyTags(svgEl.children()).map((ch) =>
-    serializeSvgSymbolElement($, ch)
+  const rawLayers = removeEmptyGroups(
+    onlyTags(svgEl.children()).map((ch) => serializeSvgSymbolElement($, ch))
   );
   const [specs, layers] = extractSpecs(rawLayers);
   const bbox = getSvgBoundingBox(layers);
