@@ -1,5 +1,3 @@
-
-
 # If true, this indicates that the symbol should always have
 
 # a symbol nested within its nesting area(s).
@@ -21,5 +19,3 @@ always_be_nested = false
 # be nested inside another symbol's nesting area.
 
 never_be_nested = true
-
-
