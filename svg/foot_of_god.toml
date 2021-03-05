@@ -21,3 +21,11 @@ always_be_nested = false
 never_be_nested = false
 
 
+
+# If true, this indicates that the symbol nested on this
+
+# symbol’s nesting area should have its colors inverted.
+
+invert_nested = true
+
+

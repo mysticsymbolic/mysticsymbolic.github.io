@@ -11,3 +11,11 @@ always_nest = true
 # be nested inside another symbol's nesting area.
 
 always_be_nested = false
+
+
+
+# If true, this indicates that the symbol nested on this
+
+# symbol’s nesting area should have its colors inverted.
+
+invert_nested = false
