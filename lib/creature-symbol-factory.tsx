@@ -18,6 +18,7 @@ type SimpleCreatureSymbolProps = AttachmentIndices & {
   nestInside?: boolean;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
+  invert?: boolean;
   indices?: number[];
 };
 
@@ -129,6 +130,7 @@ function getCreatureSymbol(
     data,
     attachments: attachments.map(extractAttachedCreatureSymbol),
     nests: nests.map(extractNestedCreatureSymbol),
+    invertColors: props.invert ?? false,
   };
   return result;
 }

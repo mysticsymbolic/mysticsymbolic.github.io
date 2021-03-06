@@ -16,12 +16,19 @@ type SvgSymbolMetadataBooleans = {
    * be nested inside another symbol's nesting area.
    */
   never_be_nested?: boolean;
+
+  /**
+   * If true, this indicates that any symbols nested on this
+   * symbol’s nesting area should have their colors inverted.
+   */
+  invert_nested?: boolean;
 };
 
 const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
   "always_nest",
   "always_be_nested",
   "never_be_nested",
+  "invert_nested",
 ]);
 
 function isSvgSymbolMetadataBoolean(

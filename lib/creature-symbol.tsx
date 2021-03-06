@@ -9,6 +9,7 @@ import {
   SvgSymbolContent,
   SvgSymbolContext,
   SvgSymbolData,
+  swapColors,
 } from "./svg-symbol";
 
 const DEFAULT_ATTACHMENT_SCALE = 0.5;
@@ -76,6 +77,7 @@ export type NestedCreatureSymbol = CreatureSymbol & {
 
 export type CreatureSymbol = {
   data: SvgSymbolData;
+  invertColors: boolean;
   attachments: AttachedCreatureSymbol[];
   nests: NestedCreatureSymbol[];
 };
@@ -227,9 +229,13 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
 };
 
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
-  const ctx = useContext(CreatureContext);
+  let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const childCtx: CreatureContextType = { ...ctx, parent: data };
+
+  if (props.invertColors) {
+    ctx = swapColors(ctx);
+  }
 
   // The attachments should be before our symbol in the DOM so they
   // appear behind our symbol, while anything nested within our symbol

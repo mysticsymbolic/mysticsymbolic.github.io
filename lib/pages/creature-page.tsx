@@ -79,6 +79,7 @@ function getNestingChildren(
         attachments: [],
         nests: [],
         indices,
+        invertColors: meta?.invert_nested ?? false,
       },
     ];
   }
@@ -99,6 +100,7 @@ function getSymbolWithAttachments(
     data: root,
     attachments: [],
     nests: getNestingChildren(root, rng, true),
+    invertColors: false,
   };
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
@@ -116,6 +118,7 @@ function getSymbolWithAttachments(
         indices,
         attachments: [],
         nests: getNestingChildren(attachment, rng),
+        invertColors: false,
       });
     }
   }
@@ -160,7 +163,7 @@ const EYE_CREATURE = (
       </Hand>
     </Crown>
     <Leg attachTo="leg" left right />
-    <Tail attachTo="tail" />
+    <Tail attachTo="tail" invert />
   </Eye>
 );
 
