@@ -25,6 +25,13 @@ export class Random {
   }
 
   /**
+   * Create an exact replica of this instance.
+   */
+  clone(): Random {
+    return new Random(this.latestSeed, this.params);
+  }
+
+  /**
    * Return a random number that is greater than or equal to zero, and less
    * than one.
    */
@@ -33,6 +40,13 @@ export class Random {
       (this.params.multiplier * this.latestSeed + this.params.increment) %
       this.params.modulus;
     return this.latestSeed / this.params.modulus;
+  }
+
+  /**
+   * Return a random boolean with the given probability of being true.
+   */
+  bool(trueProbability: number = 0.5): boolean {
+    return this.next() < trueProbability;
   }
 
   /**
