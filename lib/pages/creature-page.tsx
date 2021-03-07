@@ -218,6 +218,7 @@ export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
+  const [randomlyInvert, setRandomlyInvert] = useState(false);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
@@ -233,6 +234,7 @@ export const CreaturePage: React.FC<{}> = () => {
       : COMPLEXITY_LEVEL_GENERATORS[complexity](new Random(randomSeed));
   const handleSvgExport = () =>
     exportSvg(getDownloadFilename(randomSeed), svgRef);
+  const isBonkers = complexity === MAX_COMPLEXITY_LEVEL;
 
   return (
     <>
@@ -258,8 +260,20 @@ export const CreaturePage: React.FC<{}> = () => {
             newRandomSeed();
           }}
         />{" "}
-        {complexity === MAX_COMPLEXITY_LEVEL ? "bonkers" : complexity}
+        {isBonkers ? "bonkers" : complexity}
       </p>
+      {!isBonkers && (
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              checked={randomlyInvert}
+              onChange={(e) => setRandomlyInvert(e.target.checked)}
+            />
+            Randomly invert symbols
+          </label>
+        </p>
+      )}
       <p>
         <button accessKey="r" onClick={newRandomSeed}>
           <u>R</u>andomize!
