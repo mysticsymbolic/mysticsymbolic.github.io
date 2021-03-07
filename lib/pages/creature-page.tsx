@@ -93,14 +93,17 @@ function getNestingChildren(
  */
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
-  rng: Random
+  { rng, randomlyInvert: randomlyInvertSymbols }: CreatureGeneratorOptions
 ): CreatureSymbol {
   const root = rng.choice(ROOT_SYMBOLS);
+  const randomlyInvertRng = rng.clone();
+  const shouldInvert = () =>
+    randomlyInvertSymbols ? randomlyInvertRng.bool() : false;
   const result: CreatureSymbol = {
     data: root,
     attachments: [],
     nests: getNestingChildren(root, rng, true),
-    invertColors: false,
+    invertColors: shouldInvert(),
   };
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
@@ -118,7 +121,7 @@ function getSymbolWithAttachments(
         indices,
         attachments: [],
         nests: getNestingChildren(attachment, rng),
-        invertColors: false,
+        invertColors: shouldInvert(),
       });
     }
   }
@@ -188,7 +191,12 @@ function randomlyReplaceParts<T extends CreatureSymbol>(
   return result;
 }
 
-type CreatureGenerator = (rng: Random) => CreatureSymbol;
+type CreatureGeneratorOptions = {
+  rng: Random;
+  randomlyInvert: boolean;
+};
+
+type CreatureGenerator = (options: CreatureGeneratorOptions) => CreatureSymbol;
 
 /**
  * Each index of this array represents the algorithm we use to
@@ -199,7 +207,7 @@ type CreatureGenerator = (rng: Random) => CreatureSymbol;
  */
 const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
   ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
-  (rng) => randomlyReplaceParts(rng, EYE_CREATURE_SYMBOL),
+  ({ rng }) => randomlyReplaceParts(rng, EYE_CREATURE_SYMBOL),
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
@@ -218,6 +226,7 @@ export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [randomSeed, setRandomSeed] = useState<number | null>(null);
+  const [randomlyInvert, setRandomlyInvert] = useState(false);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
@@ -230,9 +239,13 @@ export const CreaturePage: React.FC<{}> = () => {
   const creature =
     randomSeed === null
       ? EYE_CREATURE_SYMBOL
-      : COMPLEXITY_LEVEL_GENERATORS[complexity](new Random(randomSeed));
+      : COMPLEXITY_LEVEL_GENERATORS[complexity]({
+          rng: new Random(randomSeed),
+          randomlyInvert,
+        });
   const handleSvgExport = () =>
     exportSvg(getDownloadFilename(randomSeed), svgRef);
+  const isBonkers = complexity === MAX_COMPLEXITY_LEVEL;
 
   return (
     <>
@@ -258,8 +271,20 @@ export const CreaturePage: React.FC<{}> = () => {
             newRandomSeed();
           }}
         />{" "}
-        {complexity === MAX_COMPLEXITY_LEVEL ? "bonkers" : complexity}
+        {isBonkers ? "bonkers" : complexity}
       </p>
+      {!isBonkers && (
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              checked={randomlyInvert}
+              onChange={(e) => setRandomlyInvert(e.target.checked)}
+            />
+            Randomly invert symbols
+          </label>
+        </p>
+      )}
       <p>
         <button accessKey="r" onClick={newRandomSeed}>
           <u>R</u>andomize!
