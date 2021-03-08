@@ -3,6 +3,7 @@ import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { Specs } from "./specs";
+import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
 import { VisibleSpecs } from "./visible-specs";
 
 const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
@@ -11,6 +12,7 @@ export type SvgSymbolData = {
   name: string;
   bbox: BBox;
   layers: SvgSymbolElement[];
+  meta?: SvgSymbolMetadata;
   specs?: Specs;
 };
 
@@ -40,6 +42,14 @@ const DEFAULT_CONTEXT: SvgSymbolContext = {
   showSpecs: false,
   uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
 };
+
+export function swapColors<T extends SvgSymbolContext>(ctx: T): T {
+  return {
+    ...ctx,
+    fill: ctx.stroke,
+    stroke: ctx.fill,
+  };
+}
 
 export function createSvgSymbolContext(
   ctx: Partial<SvgSymbolContext> = {}
@@ -76,17 +86,18 @@ function reactifySvgSymbolElement(
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
   }
+  const props: typeof el.props = {
+    ...el.props,
+    id: undefined,
+    vectorEffect,
+    strokeWidth,
+    fill,
+    stroke,
+    key,
+  };
   return React.createElement(
     el.tagName,
-    {
-      ...el.props,
-      id: undefined,
-      vectorEffect,
-      strokeWidth,
-      fill,
-      stroke,
-      key,
-    },
+    props,
     el.children.map(reactifySvgSymbolElement.bind(null, ctx))
   );
 }
@@ -97,9 +108,9 @@ export const SvgSymbolContent: React.FC<
   const d = props.data;
 
   return (
-    <>
+    <g data-symbol-name={d.name}>
       {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
       {props.showSpecs && d.specs && <VisibleSpecs specs={d.specs} />}
-    </>
+    </g>
   );
 };

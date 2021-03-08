@@ -1,5 +1,5 @@
 import React from "react";
-import { SvgSymbolContext } from "./svg-symbol";
+import { SvgSymbolContext, swapColors } from "./svg-symbol";
 import { float } from "./util";
 
 export const SymbolContextWidget: React.FC<{
@@ -28,6 +28,9 @@ export const SymbolContextWidget: React.FC<{
         onChange={(e) => updateCtx({ fill: e.target.value })}
         id="fill"
       />{" "}
+      <button onClick={() => updateCtx(swapColors(ctx))}>
+        Swap stroke/fill
+      </button>{" "}
       <label>
         <input
           type="checkbox"

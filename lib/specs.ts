@@ -31,6 +31,7 @@ export type AttachmentPointType = keyof AttachmentPointSpecs;
 
 export type AttachmentPoint = PointWithNormal & {
   type: AttachmentPointType;
+  index: number;
 };
 
 export const ATTACHMENT_POINT_TYPES: AttachmentPointType[] = [
@@ -46,8 +47,10 @@ export function* iterAttachmentPoints(specs: Specs): Iterable<AttachmentPoint> {
   for (let type of ATTACHMENT_POINT_TYPES) {
     const points = specs[type];
     if (points) {
+      let index = 0;
       for (let point of points) {
-        yield { ...point, type };
+        yield { ...point, type, index };
+        index += 1;
       }
     }
   }
@@ -138,7 +141,11 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
     };
   }
 
-  throw new Error(`Not sure what to do with specs path with fill "${fill}"!`);
+  console.log(
+    `Not sure what to do with specs path with fill "${fill}", ignoring it.`
+  );
+
+  return specs;
 }
 
 function getSpecs(layers: SvgSymbolElement[]): Specs {

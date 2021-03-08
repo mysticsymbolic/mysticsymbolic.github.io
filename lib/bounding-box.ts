@@ -91,3 +91,18 @@ export function getSvgBoundingBox(
       return getPathBoundingBox(element.props);
   }
 }
+
+/**
+ * Assuming the origins of the giving boxes are aligned and
+ * the transform origin is set to their center, return the maximum
+ * amount the child needs to be scaled to fit within the parent.
+ */
+export function uniformlyScaleToFit(parent: BBox, child: BBox): number {
+  const [pWidth, pHeight] = getBoundingBoxSize(parent);
+  const [cWidth, cHeight] = getBoundingBoxSize(child);
+
+  const widthScale = pWidth / cWidth;
+  const heightScale = pHeight / cHeight;
+
+  return Math.min(widthScale, heightScale);
+}
