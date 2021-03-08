@@ -231,11 +231,15 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
-  const childCtx: CreatureContextType = { ...ctx, parent: data };
+  const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
   }
+
+  // If we're inverted, then pass our inverted colors on to our
+  // nested children, to maintain color balance in the composition.
+  const nestedCtx: CreatureContextType = { ...ctx, parent: data };
 
   // The attachments should be before our symbol in the DOM so they
   // appear behind our symbol, while anything nested within our symbol
@@ -243,7 +247,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   return (
     <>
       {attachments.length && (
-        <CreatureContext.Provider value={childCtx}>
+        <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
             <AttachedCreatureSymbol key={i} {...a} parent={data} />
           ))}
@@ -251,7 +255,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       )}
       <SvgSymbolContent data={data} {...ctx} />
       {nests.length && (
-        <CreatureContext.Provider value={childCtx}>
+        <CreatureContext.Provider value={nestedCtx}>
           {nests.map((n, i) => (
             <NestedCreatureSymbol key={i} {...n} parent={data} />
           ))}
