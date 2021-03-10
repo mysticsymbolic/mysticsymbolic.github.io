@@ -12,6 +12,8 @@ always_nest = false
 
 always_be_nested = false
 
+never_be_nested = true
+
 
 
 # If true, this indicates that the symbol nested on this
