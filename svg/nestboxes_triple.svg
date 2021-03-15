@@ -3,6 +3,9 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="nestboxes_triple">
+<g id="triple_nest">
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 360.000 494.051 C 366.130 494.051 371.075 498.995 371.075 505.125 C 371.075 511.255 366.130 516.200 360.000 516.200 C 353.870 516.200 348.925 511.255 348.925 505.125 C 348.925 498.995 353.870 494.051 360.000 494.051 Z"/>
+</g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 276.217 23.612 C 276.217 23.629 276.217 191.161 276.217 191.178 C 276.234 191.178 443.766 191.178 443.783 191.178 C 443.783 191.161 443.783 23.629 443.783 23.612 C 443.766 23.612 276.234 23.612 276.217 23.612 Z"/>
 <path fill="#ff0000" fill-rule="evenodd" stroke="none" d="M 360.000 679.188 C 360.001 679.192 372.177 713.286 372.179 713.289 C 372.177 713.288 360.001 701.958 360.000 701.957 C 359.999 701.958 347.823 713.288 347.821 713.289 C 347.823 713.286 359.999 679.192 360.000 679.188 Z"/>
