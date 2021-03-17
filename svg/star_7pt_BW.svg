@@ -32,7 +32,20 @@
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 308.379 251.413 C 325.572 287.003 359.954 358.173 359.959 358.183 "/>
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 359.959 358.183 C 359.959 358.150 360.049 136.101 360.094 25.059 "/>
 <path fill="#ffffff" fill-rule="evenodd" stroke="none" d="M 308.379 251.413 C 325.572 287.003 359.954 358.173 359.959 358.183 C 359.959 358.150 360.049 136.101 360.094 25.059 C 360.089 25.082 308.384 251.390 308.379 251.413 Z"/>
-<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 214.864 658.159 C 214.870 658.136 266.692 432.646 266.698 432.624 C 266.674 432.624 35.278 432.548 35.255 432.548 C 35.276 432.538 244.390 331.832 244.411 331.822 C 244.397 331.804 100.035 151.037 100.021 151.019 C 100.042 151.029 308.358 251.403 308.379 251.413 C 308.384 251.390 360.089 25.082 360.094 25.059 C 360.100 25.082 411.460 251.349 411.465 251.371 C 411.486 251.361 620.652 150.630 620.673 150.620 C 620.659 150.638 475.761 331.859 475.747 331.877 C 475.768 331.887 684.724 432.748 684.745 432.758 C 684.722 432.758 452.584 432.684 452.561 432.684 C 452.566 432.706 504.331 658.431 504.337 658.453 C 504.322 658.435 359.695 477.057 359.681 477.039 C 359.666 477.057 214.879 658.141 214.864 658.159 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.094 25.059 C 360.100 25.082 411.460 251.349 411.465 251.371 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 620.673 150.620 C 620.659 150.638 475.761 331.859 475.747 331.877 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 684.745 432.758 C 684.722 432.758 452.584 432.684 452.561 432.684 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 504.337 658.453 C 504.322 658.435 359.695 477.057 359.681 477.039 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 214.864 658.159 C 214.870 658.136 266.692 432.646 266.698 432.624 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 35.255 432.548 C 35.276 432.538 244.390 331.832 244.411 331.822 "/>
+<path fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 100.021 151.019 C 100.042 151.029 308.358 251.403 308.379 251.413 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 308.379 251.413 C 308.384 251.390 360.089 25.082 360.094 25.059 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 244.411 331.822 C 244.397 331.804 100.035 151.037 100.021 151.019 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 266.698 432.624 C 266.674 432.624 35.278 432.548 35.255 432.548 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 359.681 477.039 C 359.666 477.057 214.879 658.141 214.864 658.159 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 452.561 432.684 C 452.566 432.706 504.331 658.431 504.337 658.453 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 475.747 331.877 C 475.768 331.887 684.724 432.748 684.745 432.758 "/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 411.465 251.371 C 411.486 251.361 620.652 150.630 620.673 150.620 "/>
 </g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 236.145 480.407 C 236.170 480.407 483.830 480.407 483.855 480.407 C 483.855 480.383 483.855 232.722 483.855 232.697 C 483.830 232.697 236.170 232.697 236.145 232.697 C 236.145 232.722 236.145 480.383 236.145 480.407 Z"/>
