@@ -1,7 +1,11 @@
 import React, { useContext, useRef, useState } from "react";
 import { SvgVocabulary } from "../svg-vocabulary";
 import { createSvgSymbolContext, SvgSymbolData } from "../svg-symbol";
-import { iterAttachmentPoints } from "../specs";
+import {
+  AttachmentPointType,
+  ATTACHMENT_POINT_TYPES,
+  iterAttachmentPoints,
+} from "../specs";
 import { Random } from "../random";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
@@ -34,8 +38,41 @@ const ROOT_SYMBOLS = SvgVocabulary.filter(
   (data) => data.meta?.always_be_nested !== true
 );
 
-/** Symbols that can be attached to the main body of a creature. */
-const ATTACHMENT_SYMBOLS = ROOT_SYMBOLS;
+type AttachmentSymbolMap = {
+  [key in AttachmentPointType]: SvgSymbolData[];
+};
+
+/**
+ * Symbols that can be attached to the main body of a creature,
+ * at a particular attachment point.
+ */
+const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
+  const result = {} as AttachmentSymbolMap;
+
+  for (let type of ATTACHMENT_POINT_TYPES) {
+    result[type] = SvgVocabulary.filter((data) => {
+      const { meta } = data;
+
+      // If we have no metadata whatsoever, it can attach anywhere.
+      if (!meta) return true;
+
+      if (meta.always_be_nested === true) {
+        // This symbol should *only* ever be nested, so return false.
+        return false;
+      }
+
+      // If we have no "attach_to", it can attach anywhere.
+      if (!meta.attach_to) {
+        return true;
+      }
+
+      // Only attach to points listed in "attach_to".
+      return meta.attach_to.includes(type);
+    });
+  }
+
+  return result;
+})();
 
 /** Symbols that can be nested within any part of a creature. */
 const NESTED_SYMBOLS = SvgVocabulary.filter(
@@ -113,7 +150,7 @@ function getSymbolWithAttachments(
       numAttachmentKinds
     );
     for (let kind of attachmentKinds) {
-      const attachment = rng.choice(ATTACHMENT_SYMBOLS);
+      const attachment = rng.choice(ATTACHMENT_SYMBOLS[kind]);
       const indices = range(root.specs[kind]?.length ?? 0);
       result.attachments.push({
         data: attachment,
