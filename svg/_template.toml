@@ -23,3 +23,9 @@ never_be_nested = false
 # If true, this indicates that any symbols nested on this
 # symbol’s nesting area should have their colors inverted.
 invert_nested = false
+
+# If set to an array of strings, this indicates the kinds of
+# attachment points that this symbol can attach to.  If not
+# defined, this symbol will be able to attach to any attachment
+# point.
+attach_to = ["tail", "leg", "arm", "horn", "crown"]
