@@ -1,7 +1,11 @@
 import path from "path";
 import fs from "fs";
 import toml from "toml";
-import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
+import {
+  validateAttachTo,
+  validateSvgSymbolMetadata,
+} from "./svg-symbol-metadata";
+import { withMockConsoleLog } from "./test-util";
 
 const templatePath = path.join(__dirname, "..", "svg", "_template.toml");
 
@@ -49,5 +53,26 @@ describe("validateSvgSymbolMetadata()", () => {
       metadata: { always_nest: true },
       unknownProperties: ["blarp"],
     });
+  });
+});
+
+describe("validateAttachTo()", () => {
+  it("works", () => {
+    expect(validateAttachTo(["tail", "leg"])).toEqual(["tail", "leg"]);
+  });
+
+  it("works", () => {
+    withMockConsoleLog((mockLog) => {
+      expect(validateAttachTo(["beanbag"])).toEqual([]);
+      expect(mockLog).toHaveBeenCalledWith(
+        "Item 'beanbag' in \"attach_to\" is not a valid attachment point."
+      );
+    });
+  });
+
+  it("raises error when value is not an array", () => {
+    expect(() => validateAttachTo("blah")).toThrow(
+      'Expected "attach_to" to be an array, but it is a string!'
+    );
   });
 });
