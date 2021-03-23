@@ -11,7 +11,7 @@ const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
 
 const MY_DIR = __dirname;
-const SVG_DIR = path.join(MY_DIR, "..", "svg");
+const SVG_DIR = path.join(MY_DIR, "..", "data", "symbols");
 const VOCAB_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
 const SVG_EXT = ".svg";
 
