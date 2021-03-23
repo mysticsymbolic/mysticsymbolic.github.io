@@ -249,6 +249,8 @@ const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
+const INITIAL_COMPLEXITY_LEVEL = 2;
+
 function getDownloadFilename(randomSeed: number | null) {
   let downloadBasename = "mystic-symbolic-creature";
 
@@ -261,11 +263,17 @@ function getDownloadFilename(randomSeed: number | null) {
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const qs = new URLSearchParams(window.location.search);
+  const showEyeCreature = qs.get("eye") === "on";
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
-  const [randomSeed, setRandomSeed] = useState<number | null>(null);
-  const [randomlyInvert, setRandomlyInvert] = useState(false);
+  const [randomSeed, setRandomSeed] = useState<number | null>(
+    showEyeCreature ? null : Date.now()
+  );
+  const [randomlyInvert, setRandomlyInvert] = useState(true);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
-  const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
+  const [complexity, setComplexity] = useState(
+    showEyeCreature ? MAX_COMPLEXITY_LEVEL : INITIAL_COMPLEXITY_LEVEL
+  );
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = {
