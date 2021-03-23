@@ -6,8 +6,9 @@ import {
   validateSvgSymbolMetadata,
 } from "./svg-symbol-metadata";
 import { withMockConsoleLog } from "./test-util";
+import { SVG_SYMBOLS_DIR } from "./vocabulary-builder";
 
-const templatePath = path.join(__dirname, "..", "svg", "_template.toml");
+const templatePath = path.join(SVG_SYMBOLS_DIR, "_template.toml");
 
 test("metadata template is valid SVG symbol metadata", () => {
   validateSvgSymbolMetadata(

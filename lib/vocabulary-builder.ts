@@ -11,7 +11,7 @@ const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
 
 const MY_DIR = __dirname;
-const SVG_DIR = path.join(MY_DIR, "..", "svg");
+export const SVG_SYMBOLS_DIR = path.join(MY_DIR, "..", "data", "symbols");
 const VOCAB_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
 const SVG_EXT = ".svg";
 
@@ -116,14 +116,14 @@ export function convertSvgMarkupToSymbolData(
 }
 
 export function build() {
-  const filenames = fs.readdirSync(SVG_DIR);
+  const filenames = fs.readdirSync(SVG_SYMBOLS_DIR);
   const vocab: SvgSymbolData[] = [];
   for (let filename of filenames) {
     if (path.extname(filename) === SVG_EXT) {
       let filenames = filename;
       let metaToml: string | null = null;
       const metaFilename = `${path.basename(filename, SVG_EXT)}.toml`;
-      const metaFilepath = path.join(SVG_DIR, metaFilename);
+      const metaFilepath = path.join(SVG_SYMBOLS_DIR, metaFilename);
       if (fs.existsSync(metaFilepath)) {
         filenames += ` and ${metaFilename}`;
         metaToml = fs.readFileSync(metaFilepath, {
@@ -131,7 +131,7 @@ export function build() {
         });
       }
       console.log(`Adding ${filenames} to vocabulary.`);
-      const svgMarkup = fs.readFileSync(path.join(SVG_DIR, filename), {
+      const svgMarkup = fs.readFileSync(path.join(SVG_SYMBOLS_DIR, filename), {
         encoding: "utf-8",
       });
       const symbol = convertSvgMarkupToSymbolData(filename, svgMarkup);
