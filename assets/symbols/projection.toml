@@ -10,7 +10,7 @@ always_nest = true
 
 # be nested inside another symbol's nesting area.
 
-always_be_nested = true
+always_be_nested = false
 
 
 
