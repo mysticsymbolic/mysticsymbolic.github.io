@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { getBoundingBoxCenter } from "../bounding-box";
+import { HoverDebugHelper } from "../hover-debug-helper";
 import { reversePoint } from "../point";
 import {
   createSvgSymbolContext,
@@ -15,6 +16,7 @@ import {
   svgTranslate,
 } from "../svg-transform";
 import { getSvgSymbol } from "../svg-vocabulary";
+import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
 const EYE = getSvgSymbol("eye");
@@ -51,16 +53,24 @@ const MandalaCircle: React.FC<
 };
 
 export const MandalaPage: React.FC<{}> = () => {
-  const ctx = createSvgSymbolContext();
+  const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
 
   return (
     <>
       <h1>Mandala!</h1>
-      <AutoSizingSvg padding={20}>
-        <SvgTransforms transforms={[svgScale(0.5)]}>
-          <MandalaCircle data={EYE} radius={400} numSymbols={6} {...ctx} />
-        </SvgTransforms>
-      </AutoSizingSvg>
+      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+      <HoverDebugHelper>
+        <AutoSizingSvg padding={20}>
+          <SvgTransforms transforms={[svgScale(0.5)]}>
+            <MandalaCircle
+              data={EYE}
+              radius={400}
+              numSymbols={6}
+              {...symbolCtx}
+            />
+          </SvgTransforms>
+        </AutoSizingSvg>
+      </HoverDebugHelper>
     </>
   );
 };
