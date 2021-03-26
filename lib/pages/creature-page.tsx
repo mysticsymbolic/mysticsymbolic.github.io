@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { SvgVocabulary } from "../svg-vocabulary";
+import { getSvgSymbol, SvgVocabulary } from "../svg-vocabulary";
 import { createSvgSymbolContext, SvgSymbolData } from "../svg-symbol";
 import {
   AttachmentPointType,
@@ -25,13 +25,6 @@ import {
 import { HoverDebugHelper } from "../hover-debug-helper";
 
 const DEFAULT_BG_COLOR = "#858585";
-
-/**
- * Mapping from symbol names to symbol data, for quick and easy access.
- */
-const SYMBOL_MAP = new Map(
-  SvgVocabulary.map((symbol) => [symbol.name, symbol])
-);
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.filter(
@@ -81,18 +74,6 @@ const NESTED_SYMBOLS = SvgVocabulary.filter(
   (data) =>
     data.meta?.always_nest !== true && data.meta?.never_be_nested !== true
 );
-
-/**
- * Returns the data for the given symbol, throwing an error
- * if it doesn't exist.
- */
-function getSymbol(name: string): SvgSymbolData {
-  const symbol = SYMBOL_MAP.get(name);
-  if (!symbol) {
-    throw new Error(`Unable to find the symbol "${name}"!`);
-  }
-  return symbol;
-}
 
 /**
  * Given a parent symbol, return an array of random children to be nested within
@@ -165,7 +146,7 @@ function getSymbolWithAttachments(
   return result;
 }
 
-const symbol = createCreatureSymbolFactory(getSymbol);
+const symbol = createCreatureSymbolFactory(getSvgSymbol);
 
 const Eye = symbol("eye");
 
