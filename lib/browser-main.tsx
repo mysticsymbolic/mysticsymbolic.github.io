@@ -3,11 +3,13 @@ import ReactDOM from "react-dom";
 import { WavesPage } from "./pages/waves-page";
 import { VocabularyPage } from "./pages/vocabulary-page";
 import { CreaturePage } from "./pages/creature-page";
+import { MandalaPage } from "./pages/mandala-page";
 
 const Pages = {
   vocabulary: VocabularyPage,
   creature: CreaturePage,
   waves: WavesPage,
+  mandala: MandalaPage,
 };
 
 type PageName = keyof typeof Pages;
