@@ -14,6 +14,7 @@ import {
 import {
   svgRotate,
   svgScale,
+  svgTransformOrigin,
   SvgTransforms,
   svgTranslate,
 } from "./svg-transform";
@@ -120,16 +121,10 @@ const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
   <SvgTransforms
     transforms={[
       svgTranslate(props.translate),
-      /**
-       * We originally used "transform-origin" here but that's not currently
-       * supported by Safari. Instead, we'll set the origin of our symbol to
-       * the transform origin, do the transform, and then move our origin back to
-       * the original origin, which is equivalent to setting "transform-origin".
-       **/
-      svgTranslate(props.transformOrigin),
-      svgScale(props.scale),
-      svgRotate(props.rotate),
-      svgTranslate(reversePoint(props.transformOrigin)),
+      svgTransformOrigin(props.transformOrigin, [
+        svgScale(props.scale),
+        svgRotate(props.rotate),
+      ]),
     ]}
   >
     {props.children}
