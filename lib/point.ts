@@ -1,5 +1,10 @@
 import { Point } from "../vendor/bezier-js";
 
+/** Return the "reverse" of the given point/vector, i.e. scale it by -1. */
+export function reversePoint(p: Point): Point {
+  return { x: -p.x, y: -p.y };
+}
+
 export function scalePointXY(p: Point, xScale: number, yScale: number): Point {
   return {
     x: p.x * xScale,

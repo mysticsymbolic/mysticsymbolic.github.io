@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
-import { scalePointXY, subtractPoints } from "./point";
+import { reversePoint, scalePointXY, subtractPoints } from "./point";
 import { AttachmentPointType, PointWithNormal } from "./specs";
 import {
   createSvgSymbolContext,
@@ -11,6 +11,12 @@ import {
   SvgSymbolData,
   swapColors,
 } from "./svg-symbol";
+import {
+  svgRotate,
+  svgScale,
+  SvgTransforms,
+  svgTranslate,
+} from "./svg-transform";
 
 const DEFAULT_ATTACHMENT_SCALE = 0.5;
 
@@ -111,27 +117,23 @@ type AttachmentTransformProps = {
 };
 
 const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
-  <g transform={`translate(${props.translate.x} ${props.translate.y})`}>
-    {/**
-     * We originally used "transform-origin" here but that's not currently
-     * supported by Safari. Instead, we'll set the origin of our symbol to
-     * the transform origin, do the transform, and then move our origin back to
-     * the original origin, which is equivalent to setting "transform-origin".
-     **/}
-    <g
-      transform={`translate(${props.transformOrigin.x} ${props.transformOrigin.y})`}
-    >
-      <g
-        transform={`scale(${props.scale.x} ${props.scale.y}) rotate(${props.rotate})`}
-      >
-        <g
-          transform={`translate(-${props.transformOrigin.x} -${props.transformOrigin.y})`}
-        >
-          {props.children}
-        </g>
-      </g>
-    </g>
-  </g>
+  <SvgTransforms
+    transforms={[
+      svgTranslate(props.translate),
+      /**
+       * We originally used "transform-origin" here but that's not currently
+       * supported by Safari. Instead, we'll set the origin of our symbol to
+       * the transform origin, do the transform, and then move our origin back to
+       * the original origin, which is equivalent to setting "transform-origin".
+       **/
+      svgTranslate(props.transformOrigin),
+      svgScale(props.scale),
+      svgRotate(props.rotate),
+      svgTranslate(reversePoint(props.transformOrigin)),
+    ]}
+  >
+    {props.children}
+  </SvgTransforms>
 );
 
 const AttachedCreatureSymbol: React.FC<AttachedCreatureSymbolProps> = ({
