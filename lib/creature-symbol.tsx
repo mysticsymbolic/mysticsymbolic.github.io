@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
-import { reversePoint, scalePointXY, subtractPoints } from "./point";
+import { scalePointXY, subtractPoints } from "./point";
 import { AttachmentPointType, PointWithNormal } from "./specs";
 import {
   createSvgSymbolContext,
