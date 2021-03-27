@@ -13,7 +13,7 @@ export const SymbolContextWidget: React.FC<{
   };
 
   return (
-    <p>
+    <div className="thingy">
       {children}
       <ColorWidget
         label="Stroke"
@@ -49,6 +49,6 @@ export const SymbolContextWidget: React.FC<{
           />{" "}
         </>
       )}
-    </p>
+    </div>
   );
 };

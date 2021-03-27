@@ -71,7 +71,7 @@ export const MandalaPage: React.FC<{}> = () => {
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
         <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
-      <p>
+      <div className="thingy">
         <VocabularyWidget
           label="Symbol"
           value={symbol}
@@ -94,10 +94,10 @@ export const MandalaPage: React.FC<{}> = () => {
           max={30}
           step={1}
         />
-      </p>
-      <p>
+      </div>
+      <div className="thingy">
         <ExportSvgButton filename="mandala.svg" svgRef={svgRef} />
-      </p>
+      </div>
       <HoverDebugHelper>
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
           <SvgTransforms transforms={[svgScale(0.5)]}>

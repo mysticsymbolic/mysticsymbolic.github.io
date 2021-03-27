@@ -201,7 +201,7 @@ export const CreaturePage: React.FC<{}> = () => {
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
         <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
-      <p>
+      <div className="thingy">
         <NumericSlider
           label="Random creature complexity"
           min={0}
@@ -213,8 +213,8 @@ export const CreaturePage: React.FC<{}> = () => {
             newRandomSeed();
           }}
         />
-      </p>
-      <p>
+      </div>
+      <div className="thingy">
         <label>
           <input
             type="checkbox"
@@ -223,8 +223,8 @@ export const CreaturePage: React.FC<{}> = () => {
           />
           Randomly invert symbols
         </label>
-      </p>
-      <p>
+      </div>
+      <div className="thingy">
         <button accessKey="r" onClick={newRandomSeed}>
           <u>R</u>andomize!
         </button>{" "}
@@ -233,7 +233,7 @@ export const CreaturePage: React.FC<{}> = () => {
           filename={getDownloadFilename(randomSeed)}
           svgRef={svgRef}
         />
-      </p>
+      </div>
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
           <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>

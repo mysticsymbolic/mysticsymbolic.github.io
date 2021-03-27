@@ -16,7 +16,7 @@ export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
   const id = props.id || slugify(props.label);
 
   return (
-    <p>
+    <div className="thingy">
       <label htmlFor={id}>{props.label}: </label>
       <input
         type="range"
@@ -32,6 +32,6 @@ export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
         {props.value}
         {props.valueSuffix}
       </span>
-    </p>
+    </div>
   );
 };
