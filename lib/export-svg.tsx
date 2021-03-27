@@ -1,3 +1,5 @@
+import React from "react";
+
 function getSvgMarkup(el: SVGSVGElement): string {
   return [
     `<?xml version="1.0" encoding="utf-8"?>`,
@@ -30,3 +32,10 @@ export function exportSvg(
   anchor.click();
   document.body.removeChild(anchor);
 }
+
+export const ExportSvgButton: React.FC<{
+  svgRef: React.RefObject<SVGSVGElement>;
+  filename: string;
+}> = ({ svgRef, filename }) => (
+  <button onClick={() => exportSvg(filename, svgRef)}>Export SVG</button>
+);

@@ -11,7 +11,7 @@ import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { exportSvg } from "../export-svg";
+import { ExportSvgButton } from "../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
@@ -22,8 +22,7 @@ import { HoverDebugHelper } from "../hover-debug-helper";
 import { svgScale, SvgTransforms } from "../svg-transform";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
-
-const DEFAULT_BG_COLOR = "#858585";
+import { DEFAULT_BG_COLOR } from "../colors";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.filter(
@@ -195,8 +194,6 @@ export const CreaturePage: React.FC<{}> = () => {
     rng: new Random(randomSeed),
     randomlyInvert,
   });
-  const handleSvgExport = () =>
-    exportSvg(getDownloadFilename(randomSeed), svgRef);
 
   return (
     <>
@@ -238,7 +235,10 @@ export const CreaturePage: React.FC<{}> = () => {
           <u>R</u>andomize!
         </button>{" "}
         <button onClick={() => window.location.reload()}>Reset</button>{" "}
-        <button onClick={handleSvgExport}>Export SVG</button>
+        <ExportSvgButton
+          filename={getDownloadFilename(randomSeed)}
+          svgRef={svgRef}
+        />
       </p>
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>

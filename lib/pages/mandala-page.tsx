@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { getBoundingBoxCenter } from "../bounding-box";
+import { ColorWidget } from "../color-widget";
+import { DEFAULT_BG_COLOR } from "../colors";
+import { ExportSvgButton } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { NumericSlider } from "../numeric-slider";
 import { reversePoint } from "../point";
 import {
   createSvgSymbolContext,
@@ -53,19 +57,53 @@ const MandalaCircle: React.FC<
 };
 
 export const MandalaPage: React.FC<{}> = () => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
+  const [radius, setRadius] = useState(400);
+  const [numSymbols, setNumSymbols] = useState(6);
 
   return (
     <>
       <h1>Mandala!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
+        <ColorWidget
+          label="Background"
+          id="bgColor"
+          value={bgColor}
+          onChange={setBgColor}
+        />{" "}
+      </SymbolContextWidget>
+      <p>
+        <NumericSlider
+          id="radius"
+          label="Radius"
+          value={radius}
+          onChange={setRadius}
+          min={0}
+          max={1000}
+          step={1}
+        />
+        <NumericSlider
+          id="symbols"
+          label="Numer of symbols"
+          value={numSymbols}
+          onChange={setNumSymbols}
+          min={1}
+          max={30}
+          step={1}
+        />
+      </p>
+      <p>
+        <ExportSvgButton filename="mandala.svg" svgRef={svgRef} />
+      </p>
       <HoverDebugHelper>
-        <AutoSizingSvg padding={20}>
+        <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
           <SvgTransforms transforms={[svgScale(0.5)]}>
             <MandalaCircle
               data={EYE}
-              radius={400}
-              numSymbols={6}
+              radius={radius}
+              numSymbols={numSymbols}
               {...symbolCtx}
             />
           </SvgTransforms>

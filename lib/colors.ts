@@ -1,5 +1,6 @@
 import type { AttachmentPointType } from "./specs";
 
+export const DEFAULT_BG_COLOR = "#858585";
 export const STROKE_REPLACEMENT_COLOR = "#000000";
 export const FILL_REPLACEMENT_COLOR = "#ffffff";
 
