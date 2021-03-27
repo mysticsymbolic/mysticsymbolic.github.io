@@ -69,12 +69,7 @@ export const MandalaPage: React.FC<{}> = () => {
     <>
       <h1>Mandala!</h1>
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
-        <ColorWidget
-          label="Background"
-          id="bgColor"
-          value={bgColor}
-          onChange={setBgColor}
-        />{" "}
+        <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
       <p>
         <SvgSymbolWidget
@@ -84,7 +79,6 @@ export const MandalaPage: React.FC<{}> = () => {
           choices={SvgVocabulary}
         />
         <NumericSlider
-          id="radius"
           label="Radius"
           value={radius}
           onChange={setRadius}
@@ -93,7 +87,6 @@ export const MandalaPage: React.FC<{}> = () => {
           step={1}
         />
         <NumericSlider
-          id="symbols"
           label="Numer of symbols"
           value={numSymbols}
           onChange={setNumSymbols}

@@ -108,16 +108,10 @@ const Waves: React.FC<{}> = () => {
         {waves}
       </svg>
       <p>
-        <ColorWidget
-          id="stroke"
-          value={stroke}
-          onChange={setStroke}
-          label="Stroke"
-        />{" "}
-        <ColorWidget id="fill" value={fill} onChange={setFill} label="Fill" />
+        <ColorWidget value={stroke} onChange={setStroke} label="Stroke" />{" "}
+        <ColorWidget value={fill} onChange={setFill} label="Fill" />
       </p>
       <NumericSlider
-        id="numWaves"
         label="Number of waves"
         min={1}
         max={NUM_WAVES * 2}
@@ -126,7 +120,6 @@ const Waves: React.FC<{}> = () => {
         onChange={setNumWaves}
       />
       <NumericSlider
-        id="duration"
         label="Cycle duration"
         min={0.1}
         max={3}
@@ -136,7 +129,6 @@ const Waves: React.FC<{}> = () => {
         valueSuffix="s"
       />
       <NumericSlider
-        id="initialYVel"
         label="Initial y-velocity"
         min={1}
         max={WAVE_PARALLAX_TRANSLATE_VELOCITY * 4}
@@ -145,7 +137,6 @@ const Waves: React.FC<{}> = () => {
         onChange={setInitialYVel}
       />
       <NumericSlider
-        id="yAccel"
         label="Y-acceleration"
         min={1}
         max={WAVE_PARALLAX_TRANSLATE_ACCEL * 2}
@@ -154,7 +145,6 @@ const Waves: React.FC<{}> = () => {
         onChange={setYAccel}
       />
       <NumericSlider
-        id="scaleVel"
         label="Scale velocity"
         min={1.0}
         max={2}

@@ -16,13 +16,11 @@ export const SymbolContextWidget: React.FC<{
     <p>
       {children}
       <ColorWidget
-        id="stroke"
         label="Stroke"
         value={ctx.stroke}
         onChange={(stroke) => updateCtx({ stroke })}
       />{" "}
       <ColorWidget
-        id="fill"
         label="Fill"
         value={ctx.fill}
         onChange={(fill) => updateCtx({ fill })}
@@ -42,7 +40,6 @@ export const SymbolContextWidget: React.FC<{
         <>
           <br />
           <NumericSlider
-            id="strokeWidth"
             label="Stroke width"
             min={0}
             max={3}

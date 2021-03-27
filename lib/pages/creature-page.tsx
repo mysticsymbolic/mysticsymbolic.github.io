@@ -199,16 +199,10 @@ export const CreaturePage: React.FC<{}> = () => {
     <>
       <h1>Creature!</h1>
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
-        <ColorWidget
-          label="Background"
-          id="bgColor"
-          value={bgColor}
-          onChange={setBgColor}
-        />{" "}
+        <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
       <p>
         <NumericSlider
-          id="complexity"
           label="Random creature complexity"
           min={0}
           max={MAX_COMPLEXITY_LEVEL}

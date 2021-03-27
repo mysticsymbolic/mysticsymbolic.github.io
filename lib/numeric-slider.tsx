@@ -1,8 +1,8 @@
 import React from "react";
-import { float } from "./util";
+import { float, slugify } from "./util";
 
 export type NumericSliderProps = {
-  id: string;
+  id?: string;
   label: string;
   onChange: (value: number) => void;
   value: number;
@@ -13,12 +13,14 @@ export type NumericSliderProps = {
 };
 
 export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
+  const id = props.id || slugify(props.label);
+
   return (
     <p>
-      <label htmlFor={props.id}>{props.label}: </label>
+      <label htmlFor={id}>{props.label}: </label>
       <input
         type="range"
-        id={props.id}
+        id={id}
         min={props.min}
         max={props.max}
         value={props.value}
