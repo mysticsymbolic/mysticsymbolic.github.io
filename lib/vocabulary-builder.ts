@@ -12,7 +12,10 @@ const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
 
 const MY_DIR = __dirname;
 export const SVG_SYMBOLS_DIR = path.join(MY_DIR, "..", "assets", "symbols");
-const VOCAB_JSON_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
+const VOCAB_JSON_PATH = path.join(
+  MY_DIR,
+  "_svg-vocabulary-pretty-printed.json"
+);
 const VOCAB_TS_PATH = path.join(MY_DIR, "_svg-vocabulary.ts");
 const SVG_EXT = ".svg";
 
