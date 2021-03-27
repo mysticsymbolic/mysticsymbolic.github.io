@@ -13,13 +13,14 @@ import {
   SvgSymbolContext,
   SvgSymbolData,
 } from "../svg-symbol";
+import { SvgSymbolWidget } from "../svg-symbol-widget";
 import {
   svgRotate,
   svgScale,
   SvgTransforms,
   svgTranslate,
 } from "../svg-transform";
-import { getSvgSymbol } from "../svg-vocabulary";
+import { getSvgSymbol, SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
@@ -59,6 +60,7 @@ const MandalaCircle: React.FC<
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
+  const [symbol, setSymbol] = useState(EYE);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [radius, setRadius] = useState(400);
   const [numSymbols, setNumSymbols] = useState(6);
@@ -75,6 +77,12 @@ export const MandalaPage: React.FC<{}> = () => {
         />{" "}
       </SymbolContextWidget>
       <p>
+        <SvgSymbolWidget
+          label="Symbol"
+          value={symbol}
+          onChange={setSymbol}
+          choices={SvgVocabulary}
+        />
         <NumericSlider
           id="radius"
           label="Radius"
@@ -101,7 +109,7 @@ export const MandalaPage: React.FC<{}> = () => {
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
           <SvgTransforms transforms={[svgScale(0.5)]}>
             <MandalaCircle
-              data={EYE}
+              data={symbol}
               radius={radius}
               numSymbols={numSymbols}
               {...symbolCtx}
