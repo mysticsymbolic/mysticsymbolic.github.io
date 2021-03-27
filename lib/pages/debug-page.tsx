@@ -5,10 +5,10 @@ import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { createSvgSymbolContext } from "../svg-symbol";
 import { svgScale, SvgTransforms } from "../svg-transform";
-import { getSvgSymbol } from "../svg-vocabulary";
+import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 
-const symbol = createCreatureSymbolFactory(getSvgSymbol);
+const symbol = createCreatureSymbolFactory(SvgVocabulary);
 
 const Eye = symbol("eye");
 

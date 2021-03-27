@@ -44,7 +44,7 @@ export const VocabularyPage: React.FC<{}> = () => {
       <h1>Mystic Symbolic Vocabulary</h1>
       <SymbolContextWidget ctx={ctx} onChange={setCtx} />
       <HoverDebugHelper>
-        {SvgVocabulary.map((symbolData) => (
+        {SvgVocabulary.items.map((symbolData) => (
           <div
             key={symbolData.name}
             style={{

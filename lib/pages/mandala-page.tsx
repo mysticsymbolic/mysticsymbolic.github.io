@@ -13,18 +13,18 @@ import {
   SvgSymbolContext,
   SvgSymbolData,
 } from "../svg-symbol";
-import { SvgSymbolWidget } from "../svg-symbol-widget";
+import { VocabularyWidget } from "../vocabulary-widget";
 import {
   svgRotate,
   svgScale,
   SvgTransforms,
   svgTranslate,
 } from "../svg-transform";
-import { getSvgSymbol, SvgVocabulary } from "../svg-vocabulary";
+import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
-const EYE = getSvgSymbol("eye");
+const EYE = SvgVocabulary.get("eye");
 
 const MandalaCircle: React.FC<
   {
@@ -72,7 +72,7 @@ export const MandalaPage: React.FC<{}> = () => {
         <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
       <p>
-        <SvgSymbolWidget
+        <VocabularyWidget
           label="Symbol"
           value={symbol}
           onChange={setSymbol}

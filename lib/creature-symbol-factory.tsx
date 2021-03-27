@@ -6,6 +6,7 @@ import {
 } from "./creature-symbol";
 import { AttachmentPointType } from "./specs";
 import { SvgSymbolData } from "./svg-symbol";
+import { Vocabulary } from "./vocabulary";
 
 type AttachmentIndices = {
   left?: boolean;
@@ -71,7 +72,7 @@ type SimpleCreatureSymbolFC = React.FC<SimpleCreatureSymbolProps> & {
  * render a `<CreatureSymbol>`.
  */
 export function createCreatureSymbolFactory(
-  getSymbol: (name: string) => SvgSymbolData
+  vocabulary: Vocabulary<SvgSymbolData>
 ) {
   /**
    * Returns a React component that renders a `<CreatureSymbol>`, using the symbol
@@ -80,7 +81,7 @@ export function createCreatureSymbolFactory(
   return function createCreatureSymbol(
     name: string
   ): React.FC<SimpleCreatureSymbolProps> {
-    const data = getSymbol(name);
+    const data = vocabulary.get(name);
     const Component: SimpleCreatureSymbolFC = (props) => {
       const symbol = getCreatureSymbol(data, props);
       return <CreatureSymbol {...symbol} />;

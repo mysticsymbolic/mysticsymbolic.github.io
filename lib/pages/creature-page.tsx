@@ -25,7 +25,7 @@ import { NumericSlider } from "../numeric-slider";
 import { DEFAULT_BG_COLOR } from "../colors";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
-const ROOT_SYMBOLS = SvgVocabulary.filter(
+const ROOT_SYMBOLS = SvgVocabulary.items.filter(
   (data) => data.meta?.always_be_nested !== true
 );
 
@@ -41,7 +41,7 @@ const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
   const result = {} as AttachmentSymbolMap;
 
   for (let type of ATTACHMENT_POINT_TYPES) {
-    result[type] = SvgVocabulary.filter((data) => {
+    result[type] = SvgVocabulary.items.filter((data) => {
       const { meta } = data;
 
       // If we have no metadata whatsoever, it can attach anywhere.
@@ -66,7 +66,7 @@ const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
 })();
 
 /** Symbols that can be nested within any part of a creature. */
-const NESTED_SYMBOLS = SvgVocabulary.filter(
+const NESTED_SYMBOLS = SvgVocabulary.items.filter(
   // Since we don't currently support recursive nesting, ignore anything that
   // wants nested children.
   (data) =>
