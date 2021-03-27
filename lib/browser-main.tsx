@@ -4,12 +4,14 @@ import { WavesPage } from "./pages/waves-page";
 import { VocabularyPage } from "./pages/vocabulary-page";
 import { CreaturePage } from "./pages/creature-page";
 import { MandalaPage } from "./pages/mandala-page";
+import { DebugPage } from "./pages/debug-page";
 
 const Pages = {
   vocabulary: VocabularyPage,
   creature: CreaturePage,
   waves: WavesPage,
   mandala: MandalaPage,
+  debug: DebugPage,
 };
 
 type PageName = keyof typeof Pages;

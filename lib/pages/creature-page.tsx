@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { getSvgSymbol, SvgVocabulary } from "../svg-vocabulary";
+import { SvgVocabulary } from "../svg-vocabulary";
 import { createSvgSymbolContext, SvgSymbolData } from "../svg-symbol";
 import {
   AttachmentPointType,
@@ -12,10 +12,6 @@ import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { exportSvg } from "../export-svg";
-import {
-  createCreatureSymbolFactory,
-  extractCreatureSymbolFromElement,
-} from "../creature-symbol-factory";
 import {
   CreatureContext,
   CreatureContextType,
@@ -147,69 +143,6 @@ function getSymbolWithAttachments(
   return result;
 }
 
-const symbol = createCreatureSymbolFactory(getSvgSymbol);
-
-const Eye = symbol("eye");
-
-const Hand = symbol("hand");
-
-const Arm = symbol("arm");
-
-const Antler = symbol("antler");
-
-const Crown = symbol("crown");
-
-const Wing = symbol("wing");
-
-const MuscleArm = symbol("muscle_arm");
-
-const Leg = symbol("leg");
-
-const Tail = symbol("tail");
-
-const Lightning = symbol("lightning");
-
-const EYE_CREATURE = (
-  <Eye>
-    <Lightning nestInside />
-    <Arm attachTo="arm" left>
-      <Wing attachTo="arm" left right />
-    </Arm>
-    <Arm attachTo="arm" right>
-      <MuscleArm attachTo="arm" left right />
-    </Arm>
-    <Antler attachTo="horn" left right />
-    <Crown attachTo="crown">
-      <Hand attachTo="horn" left right>
-        <Arm attachTo="arm" left />
-      </Hand>
-    </Crown>
-    <Leg attachTo="leg" left right />
-    <Tail attachTo="tail" invert />
-  </Eye>
-);
-
-const EYE_CREATURE_SYMBOL = extractCreatureSymbolFromElement(EYE_CREATURE);
-
-/**
- * Randomly replace all the parts of the given creature. Note that this
- * might end up logging some console messages about not being able to find
- * attachment/nesting indices, because it doesn't really check to make
- * sure the final creature structure is fully valid.
- */
-function randomlyReplaceParts<T extends CreatureSymbol>(
-  rng: Random,
-  creature: T
-): T {
-  const result: T = {
-    ...creature,
-    data: rng.choice(SvgVocabulary),
-    attachments: creature.attachments.map((a) => randomlyReplaceParts(rng, a)),
-    nests: creature.nests.map((n) => randomlyReplaceParts(rng, n)),
-  };
-  return result;
-}
-
 type CreatureGeneratorOptions = {
   rng: Random;
   randomlyInvert: boolean;
@@ -226,7 +159,6 @@ type CreatureGenerator = (options: CreatureGeneratorOptions) => CreatureSymbol;
  */
 const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
   ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
-  ({ rng }) => randomlyReplaceParts(rng, EYE_CREATURE_SYMBOL),
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
@@ -245,17 +177,11 @@ function getDownloadFilename(randomSeed: number | null) {
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const qs = new URLSearchParams(window.location.search);
-  const showEyeCreature = qs.get("eye") === "on";
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
-  const [randomSeed, setRandomSeed] = useState<number | null>(
-    showEyeCreature ? null : Date.now()
-  );
+  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
   const [randomlyInvert, setRandomlyInvert] = useState(true);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
-  const [complexity, setComplexity] = useState(
-    showEyeCreature ? MAX_COMPLEXITY_LEVEL : INITIAL_COMPLEXITY_LEVEL
-  );
+  const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = {
@@ -263,16 +189,12 @@ export const CreaturePage: React.FC<{}> = () => {
     ...symbolCtx,
     fill: symbolCtx.showSpecs ? "none" : symbolCtx.fill,
   };
-  const creature =
-    randomSeed === null
-      ? EYE_CREATURE_SYMBOL
-      : COMPLEXITY_LEVEL_GENERATORS[complexity]({
-          rng: new Random(randomSeed),
-          randomlyInvert,
-        });
+  const creature = COMPLEXITY_LEVEL_GENERATORS[complexity]({
+    rng: new Random(randomSeed),
+    randomlyInvert,
+  });
   const handleSvgExport = () =>
     exportSvg(getDownloadFilename(randomSeed), svgRef);
-  const isBonkers = complexity === MAX_COMPLEXITY_LEVEL;
 
   return (
     <>
@@ -298,20 +220,18 @@ export const CreaturePage: React.FC<{}> = () => {
             newRandomSeed();
           }}
         />{" "}
-        {isBonkers ? "bonkers" : complexity}
+        {complexity}
       </p>
-      {!isBonkers && (
-        <p>
-          <label>
-            <input
-              type="checkbox"
-              checked={randomlyInvert}
-              onChange={(e) => setRandomlyInvert(e.target.checked)}
-            />
-            Randomly invert symbols
-          </label>
-        </p>
-      )}
+      <p>
+        <label>
+          <input
+            type="checkbox"
+            checked={randomlyInvert}
+            onChange={(e) => setRandomlyInvert(e.target.checked)}
+          />
+          Randomly invert symbols
+        </label>
+      </p>
       <p>
         <button accessKey="r" onClick={newRandomSeed}>
           <u>R</u>andomize!

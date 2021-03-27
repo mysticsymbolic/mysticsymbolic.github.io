@@ -135,9 +135,7 @@ function getCreatureSymbol(
   return result;
 }
 
-export function extractCreatureSymbolFromElement(
-  el: JSX.Element
-): CreatureSymbol {
+function extractCreatureSymbolFromElement(el: JSX.Element): CreatureSymbol {
   if (isSimpleCreatureSymbolFC(el.type)) {
     return getCreatureSymbol(el.type.creatureSymbolData, el.props);
   }
