@@ -23,6 +23,7 @@ import {
   NestedCreatureSymbol,
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { svgScale, SvgTransforms } from "../svg-transform";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -321,9 +322,9 @@ export const CreaturePage: React.FC<{}> = () => {
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
           <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-            <g transform="scale(0.5 0.5)">
+            <SvgTransforms transforms={[svgScale(0.5)]}>
               <CreatureSymbol {...creature} />
-            </g>
+            </SvgTransforms>
           </AutoSizingSvg>
         </HoverDebugHelper>
       </CreatureContext.Provider>
