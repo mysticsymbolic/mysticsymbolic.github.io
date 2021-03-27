@@ -1,14 +1,11 @@
 import React from "react";
-import { float, slugify } from "./util";
+import { float, NumericRange, slugify } from "./util";
 
-export type NumericSliderProps = {
+export type NumericSliderProps = NumericRange & {
   id?: string;
   label: string;
   onChange: (value: number) => void;
   value: number;
-  min: number;
-  max: number;
-  step: number;
   valueSuffix?: string;
 };
 

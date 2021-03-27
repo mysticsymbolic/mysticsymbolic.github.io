@@ -28,17 +28,31 @@ export function rad2deg(radians: number): number {
   return (radians * 180) / Math.PI;
 }
 
+export type NumericRange = {
+  min: number;
+  max: number;
+  step: number;
+};
+
+/**
+ * Return numbers within the given range, inclusive.
+ */
+export function inclusiveRange({ min, max, step }: NumericRange): number[] {
+  const result: number[] = [];
+
+  for (let i = min; i <= max; i += step) {
+    result.push(i);
+  }
+
+  return result;
+}
+
 /**
  * Return an array containing the numbers from 0 to one
  * less than the given value, increasing.
  */
 export function range(count: number): number[] {
-  const result: number[] = [];
-  for (let i = 0; i < count; i++) {
-    result.push(i);
-  }
-
-  return result;
+  return inclusiveRange({ min: 0, max: count - 1, step: 1 });
 }
 
 /**

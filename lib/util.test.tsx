@@ -1,4 +1,4 @@
-import { flatten, float, rad2deg, range } from "./util";
+import { flatten, float, inclusiveRange, rad2deg, range } from "./util";
 
 describe("float", () => {
   it("converts strings", () => {
@@ -30,4 +30,8 @@ test("range() works", () => {
   expect(range(0)).toEqual([]);
   expect(range(1)).toEqual([0]);
   expect(range(5)).toEqual([0, 1, 2, 3, 4]);
+});
+
+test("inclusiveRange() works", () => {
+  expect(inclusiveRange({ min: 0, max: 1, step: 0.5 })).toEqual([0, 0.5, 1]);
 });
