@@ -3,3 +3,4 @@ dist
 dist-watch
 .cache
 lib/_svg-vocabulary.json
+lib/_svg-vocabulary.ts

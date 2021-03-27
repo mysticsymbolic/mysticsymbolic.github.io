@@ -12,7 +12,8 @@ const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
 
 const MY_DIR = __dirname;
 export const SVG_SYMBOLS_DIR = path.join(MY_DIR, "..", "assets", "symbols");
-const VOCAB_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
+const VOCAB_JSON_PATH = path.join(MY_DIR, "_svg-vocabulary.json");
+const VOCAB_TS_PATH = path.join(MY_DIR, "_svg-vocabulary.ts");
 const SVG_EXT = ".svg";
 
 function onlyTags(
@@ -152,6 +153,24 @@ export function build() {
     }
   }
 
-  console.log(`Writing ${VOCAB_PATH}.`);
-  fs.writeFileSync(VOCAB_PATH, JSON.stringify(vocab, null, 2));
+  console.log(`Writing ${VOCAB_JSON_PATH} (for debugging output).`);
+  fs.writeFileSync(VOCAB_JSON_PATH, JSON.stringify(vocab, null, 2));
+
+  // Ugh, we need to write out a TypeScript file instead of importing
+  // the JSON directly because otherwise the TS compiler will spend
+  // a huge amount of resources doing type inference, which massively
+  // slows down type-checking (especially in IDEs and such).
+  console.log(`Writing ${VOCAB_TS_PATH} (for importing into code).`);
+  const stringified = JSON.stringify(vocab);
+  fs.writeFileSync(
+    VOCAB_TS_PATH,
+    [
+      "// This file is auto-generated, please do not modify it.",
+      `import type { SvgSymbolData } from "./svg-symbol";`,
+      `const _SvgVocabulary: SvgSymbolData[] = JSON.parse(${JSON.stringify(
+        stringified
+      )});`,
+      `export default _SvgVocabulary;`,
+    ].join("\n")
+  );
 }
