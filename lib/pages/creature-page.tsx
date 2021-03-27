@@ -21,6 +21,7 @@ import {
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { svgScale, SvgTransforms } from "../svg-transform";
 import { ColorWidget } from "../color-widget";
+import { NumericSlider } from "../numeric-slider";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -209,19 +210,18 @@ export const CreaturePage: React.FC<{}> = () => {
         />{" "}
       </SymbolContextWidget>
       <p>
-        <label htmlFor="complexity">Random creature complexity: </label>
-        <input
-          type="range"
+        <NumericSlider
+          id="complexity"
+          label="Random creature complexity"
           min={0}
           max={MAX_COMPLEXITY_LEVEL}
           step={1}
           value={complexity}
-          onChange={(e) => {
-            setComplexity(parseInt(e.target.value));
+          onChange={(value) => {
+            setComplexity(value);
             newRandomSeed();
           }}
-        />{" "}
-        {complexity}
+        />
       </p>
       <p>
         <label>

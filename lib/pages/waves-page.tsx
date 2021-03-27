@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ColorWidget } from "../color-widget";
+import { NumericSlider } from "../numeric-slider";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -61,37 +62,6 @@ const WAVE_PARALLAX_TRANSLATE_START = 10;
 const WAVE_PARALLAX_SCALE_VELOCITY = 1.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
 const WAVE_PARALLAX_TRANSLATE_ACCEL = 10;
-
-const NumericSlider: React.FC<{
-  id: string;
-  label: string;
-  onChange: (value: number) => void;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  valueSuffix?: string;
-}> = (props) => {
-  return (
-    <p>
-      <label htmlFor={props.id}>{props.label}</label>
-      <input
-        type="range"
-        id={props.id}
-        min={props.min}
-        max={props.max}
-        value={props.value}
-        step={props.step}
-        onChange={(e) => props.onChange(parseFloat(e.target.value))}
-      />
-      <span>
-        {" "}
-        {props.value}
-        {props.valueSuffix}
-      </span>
-    </p>
-  );
-};
 
 const Waves: React.FC<{}> = () => {
   const [stroke, setStroke] = useState(WAVE_STROKE);

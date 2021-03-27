@@ -1,7 +1,7 @@
 import React from "react";
 import { ColorWidget } from "./color-widget";
+import { NumericSlider } from "./numeric-slider";
 import { SvgSymbolContext, swapColors } from "./svg-symbol";
-import { float } from "./util";
 
 export const SymbolContextWidget: React.FC<{
   ctx: SvgSymbolContext;
@@ -41,18 +41,15 @@ export const SymbolContextWidget: React.FC<{
       {ctx.uniformStrokeWidth !== undefined && (
         <>
           <br />
-          <label htmlFor="strokeWidth">Stroke width: </label>
-          <input
-            type="range"
+          <NumericSlider
+            id="strokeWidth"
+            label="Stroke width"
             min={0}
             max={3}
             step={0.1}
             value={ctx.uniformStrokeWidth}
-            onChange={(e) =>
-              updateCtx({ uniformStrokeWidth: float(e.target.value) })
-            }
+            onChange={(uniformStrokeWidth) => updateCtx({ uniformStrokeWidth })}
           />{" "}
-          {ctx.uniformStrokeWidth}{" "}
         </>
       )}
     </p>
