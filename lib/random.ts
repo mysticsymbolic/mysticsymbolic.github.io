@@ -1,3 +1,5 @@
+import { inclusiveRange, NumericRange } from "./util";
+
 export type RandomParameters = {
   modulus: number;
   multiplier: number;
@@ -47,6 +49,13 @@ export class Random {
    */
   bool(trueProbability: number = 0.5): boolean {
     return this.next() < trueProbability;
+  }
+
+  /**
+   * Return a number in the given range, inclusive.
+   */
+  inRange(range: NumericRange): number {
+    return this.choice(inclusiveRange(range));
   }
 
   /**

@@ -22,7 +22,8 @@ import {
 } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
-import { range } from "../util";
+import { NumericRange, range } from "../util";
+import { Random } from "../random";
 
 const EYE = SvgVocabulary.get("eye");
 
@@ -57,13 +58,35 @@ const MandalaCircle: React.FC<
   return <>{symbols}</>;
 };
 
+type NumericParams = NumericRange & { default: number };
+
+const RADIUS: NumericParams = {
+  min: 0,
+  max: 1000,
+  step: 1,
+  default: 400,
+};
+
+const NUM_SYMBOLS: NumericParams = {
+  min: 1,
+  max: 30,
+  step: 1,
+  default: 6,
+};
+
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [symbol, setSymbol] = useState(EYE);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
-  const [radius, setRadius] = useState(400);
-  const [numSymbols, setNumSymbols] = useState(6);
+  const [radius, setRadius] = useState(RADIUS.default);
+  const [numSymbols, setNumSymbols] = useState(NUM_SYMBOLS.default);
+  const randomize = () => {
+    const rng = new Random(Date.now());
+    setRadius(rng.inRange(RADIUS));
+    setNumSymbols(rng.inRange(NUM_SYMBOLS));
+    setSymbol(rng.choice(SvgVocabulary.items));
+  };
 
   return (
     <>
@@ -82,20 +105,19 @@ export const MandalaPage: React.FC<{}> = () => {
           label="Radius"
           value={radius}
           onChange={setRadius}
-          min={0}
-          max={1000}
-          step={1}
+          {...RADIUS}
         />
         <NumericSlider
           label="Numer of symbols"
           value={numSymbols}
           onChange={setNumSymbols}
-          min={1}
-          max={30}
-          step={1}
+          {...NUM_SYMBOLS}
         />
       </div>
       <div className="thingy">
+        <button accessKey="r" onClick={randomize}>
+          <u>R</u>andomize!
+        </button>{" "}
         <ExportSvgButton filename="mandala.svg" svgRef={svgRef} />
       </div>
       <HoverDebugHelper>
