@@ -1,4 +1,5 @@
 import React from "react";
+import { ColorWidget } from "./color-widget";
 import { SvgSymbolContext, swapColors } from "./svg-symbol";
 import { float } from "./util";
 
@@ -14,19 +15,17 @@ export const SymbolContextWidget: React.FC<{
   return (
     <p>
       {children}
-      <label htmlFor="stroke">Stroke: </label>
-      <input
-        type="color"
-        value={ctx.stroke}
-        onChange={(e) => updateCtx({ stroke: e.target.value })}
+      <ColorWidget
         id="stroke"
+        label="Stroke"
+        value={ctx.stroke}
+        onChange={(stroke) => updateCtx({ stroke })}
       />{" "}
-      <label htmlFor="fill">Fill: </label>
-      <input
-        type="color"
-        value={ctx.fill}
-        onChange={(e) => updateCtx({ fill: e.target.value })}
+      <ColorWidget
         id="fill"
+        label="Fill"
+        value={ctx.fill}
+        onChange={(fill) => updateCtx({ fill })}
       />{" "}
       <button onClick={() => updateCtx(swapColors(ctx))}>
         Swap stroke/fill

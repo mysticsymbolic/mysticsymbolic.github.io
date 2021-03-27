@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ColorWidget } from "../color-widget";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -137,20 +138,13 @@ const Waves: React.FC<{}> = () => {
         {waves}
       </svg>
       <p>
-        <label htmlFor="stroke">Stroke: </label>
-        <input
-          type="color"
-          value={stroke}
-          onChange={(e) => setStroke(e.target.value)}
+        <ColorWidget
           id="stroke"
+          value={stroke}
+          onChange={setStroke}
+          label="Stroke"
         />{" "}
-        <label htmlFor="fill">Fill: </label>
-        <input
-          type="color"
-          value={fill}
-          onChange={(e) => setFill(e.target.value)}
-          id="fill"
-        />
+        <ColorWidget id="fill" value={fill} onChange={setFill} label="Fill" />
       </p>
       <NumericSlider
         id="numWaves"

@@ -20,6 +20,7 @@ import {
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { svgScale, SvgTransforms } from "../svg-transform";
+import { ColorWidget } from "../color-widget";
 
 const DEFAULT_BG_COLOR = "#858585";
 
@@ -200,11 +201,11 @@ export const CreaturePage: React.FC<{}> = () => {
     <>
       <h1>Creature!</h1>
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
-        <label htmlFor="bgColor">Background: </label>
-        <input
-          type="color"
+        <ColorWidget
+          label="Background"
+          id="bgColor"
           value={bgColor}
-          onChange={(e) => setBgColor(e.target.value)}
+          onChange={setBgColor}
         />{" "}
       </SymbolContextWidget>
       <p>
