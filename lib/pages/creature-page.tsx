@@ -23,6 +23,7 @@ import { svgScale, SvgTransform } from "../svg-transform";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { DEFAULT_BG_COLOR } from "../colors";
+import { Checkbox } from "../checkbox";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -209,14 +210,11 @@ export const CreaturePage: React.FC<{}> = () => {
         />
       </div>
       <div className="thingy">
-        <label>
-          <input
-            type="checkbox"
-            checked={randomlyInvert}
-            onChange={(e) => setRandomlyInvert(e.target.checked)}
-          />
-          Randomly invert symbols
-        </label>
+        <Checkbox
+          label="Randomly invert symbols"
+          value={randomlyInvert}
+          onChange={setRandomlyInvert}
+        />
       </div>
       <div className="thingy">
         <button accessKey="r" onClick={newRandomSeed}>

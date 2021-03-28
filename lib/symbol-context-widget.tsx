@@ -1,4 +1,5 @@
 import React from "react";
+import { Checkbox } from "./checkbox";
 import { ColorWidget } from "./color-widget";
 import { NumericSlider } from "./numeric-slider";
 import { SvgSymbolContext, swapColors } from "./svg-symbol";
@@ -28,14 +29,11 @@ export const SymbolContextWidget: React.FC<{
       <button onClick={() => updateCtx(swapColors(ctx))}>
         Swap stroke/fill
       </button>{" "}
-      <label>
-        <input
-          type="checkbox"
-          checked={ctx.showSpecs}
-          onChange={(e) => updateCtx({ showSpecs: e.target.checked })}
-        />{" "}
-        Show specs
-      </label>
+      <Checkbox
+        label="Show specs"
+        value={ctx.showSpecs}
+        onChange={(showSpecs) => updateCtx({ showSpecs })}
+      />
       {ctx.uniformStrokeWidth !== undefined && (
         <>
           <br />
