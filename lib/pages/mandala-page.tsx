@@ -29,6 +29,12 @@ import { getAttachmentTransforms } from "../attach";
 
 const EYE = SvgVocabulary.get("eye_vertical");
 
+/**
+ * Returns the anchor point of the given symbol; if it doesn't have
+ * an anchor point, return a reasonable default one by taking the
+ * center of the symbol and having the normal point along the positive
+ * x-axis.
+ */
 function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
   return (
     safeGetAttachmentPoint(symbol, "anchor") || {
