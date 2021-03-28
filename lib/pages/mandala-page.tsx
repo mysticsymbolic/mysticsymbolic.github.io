@@ -24,8 +24,20 @@ import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { NumericRange, range } from "../util";
 import { Random } from "../random";
+import { PointWithNormal } from "../specs";
+import { getAttachmentTransforms } from "../attach";
 
-const EYE = SvgVocabulary.get("eye");
+const EYE = SvgVocabulary.get("eye_vertical");
+
+function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
+  const anchors = symbol.specs?.anchor ?? [];
+  return anchors.length
+    ? anchors[0]
+    : {
+        point: getBoundingBoxCenter(symbol.bbox),
+        normal: { x: 1, y: 0 },
+      };
+}
 
 const MandalaCircle: React.FC<
   {
@@ -34,13 +46,21 @@ const MandalaCircle: React.FC<
     numSymbols: number;
   } & SvgSymbolContext
 > = (props) => {
-  const center = getBoundingBoxCenter(props.data.bbox);
   const degreesPerItem = 360 / props.numSymbols;
+  const { translation, rotation } = getAttachmentTransforms(
+    {
+      point: { x: 0, y: 0 },
+      normal: { x: 1, y: 0 },
+    },
+    getAnchorOrCenter(props.data)
+  );
+
   const symbol = (
     <SvgTransform
       transform={[
         svgTranslate({ x: props.radius, y: 0 }),
-        svgTranslate(reversePoint(center)),
+        svgRotate(rotation),
+        svgTranslate(translation),
       ]}
     >
       <SvgSymbolContent {...props} />
@@ -64,7 +84,7 @@ const RADIUS: NumericParams = {
   min: 0,
   max: 1000,
   step: 1,
-  default: 400,
+  default: 50,
 };
 
 const NUM_SYMBOLS: NumericParams = {
