@@ -106,13 +106,15 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
     </SvgTransform>
   );
 
-  const symbols = range(props.numSymbols).map((i) => (
-    <SvgTransform
-      key={i}
-      transform={svgRotate(degreesPerItem * i)}
-      children={symbol}
-    />
-  ));
+  const symbols = range(props.numSymbols)
+    .reverse()
+    .map((i) => (
+      <SvgTransform
+        key={i}
+        transform={svgRotate(degreesPerItem * i)}
+        children={symbol}
+      />
+    ));
 
   return <>{symbols}</>;
 };
