@@ -6,7 +6,6 @@ import { DEFAULT_BG_COLOR } from "../colors";
 import { ExportSvgButton } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
-import { reversePoint } from "../point";
 import {
   createSvgSymbolContext,
   SvgSymbolContent,
