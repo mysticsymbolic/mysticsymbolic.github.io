@@ -13,10 +13,7 @@ function getSvgMarkup(el: SVGSVGElement): string {
  * Initiates a download on the user's browser which downloads the given
  * SVG element under the given filename.
  */
-export function exportSvg(
-  filename: string,
-  svgRef: React.RefObject<SVGSVGElement>
-) {
+function exportSvg(filename: string, svgRef: React.RefObject<SVGSVGElement>) {
   const svgEl = svgRef.current;
   if (!svgEl) {
     alert("Oops, an error occurred! Please try again later.");
@@ -33,9 +30,44 @@ export function exportSvg(
   document.body.removeChild(anchor);
 }
 
+function exportPng(filename: string, svgRef: React.RefObject<SVGSVGElement>) {
+  const canvas = document.createElement("canvas");
+  const svgEl = svgRef.current;
+  if (!svgEl) {
+    alert("Oops, an error occurred! Please try again later.");
+    return;
+  }
+  const dataURL = `data:image/svg+xml;utf8,${encodeURIComponent(
+    getSvgMarkup(svgEl)
+  )}`;
+  const img = document.createElement("img");
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("blah");
+    ctx.drawImage(img, 0, 0);
+    const dataURL = canvas.toDataURL();
+    const anchor = document.createElement("a");
+    anchor.href = dataURL;
+    anchor.download = filename;
+    document.body.append(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
+  img.src = dataURL;
+}
+
 export const ExportSvgButton: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
   filename: string;
 }> = ({ svgRef, filename }) => (
-  <button onClick={() => exportSvg(filename, svgRef)}>Export SVG</button>
+  <>
+    <button onClick={() => exportSvg(filename, svgRef)}>Export SVG</button>{" "}
+    <button
+      onClick={() => exportPng(filename.replace(/\.svg$/, ".png"), svgRef)}
+    >
+      Export PNG
+    </button>
+  </>
 );
