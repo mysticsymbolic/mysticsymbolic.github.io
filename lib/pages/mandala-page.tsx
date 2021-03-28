@@ -32,6 +32,8 @@ import { Checkbox } from "../checkbox";
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
   rotation: number;
+  symbolScaling: number;
+  symbolRotation: number;
 };
 
 const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
@@ -40,6 +42,8 @@ const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   numSymbols: 6,
   scaling: 1,
   rotation: 0,
+  symbolScaling: 1,
+  symbolRotation: 0,
 };
 
 const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
@@ -48,6 +52,8 @@ const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
   numSymbols: 3,
   scaling: 0.5,
   rotation: 0,
+  symbolScaling: 1,
+  symbolRotation: 0,
 };
 
 const RADIUS: NumericRange = {
@@ -93,11 +99,12 @@ type MandalaCircleParams = {
   data: SvgSymbolData;
   radius: number;
   numSymbols: number;
+  symbolTransforms?: SvgTransform[];
 };
 
-const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
-  props
-) => {
+type MandalaCircleProps = MandalaCircleParams & SvgSymbolContext;
+
+const MandalaCircle: React.FC<MandalaCircleProps> = (props) => {
   const degreesPerItem = 360 / props.numSymbols;
   const { translation, rotation } = getAttachmentTransforms(
     {
@@ -110,7 +117,17 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
   const symbol = (
     <SvgTransform
       transform={[
+        // Remember that transforms are applied in reverse order,
+        // so read the following from the end first!
+
+        // Finally, move the symbol out along the radius of the circle.
         svgTranslate({ x: 0, y: -props.radius }),
+
+        // Then apply any individual symbol transformations.
+        ...(props.symbolTransforms || []),
+
+        // First, re-orient the symbol so its anchor point is at
+        // the origin and facing the proper direction.
         svgRotate(rotation),
         svgTranslate(translation),
       ]}
@@ -134,13 +151,18 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
 
 const ExtendedMandalaCircle: React.FC<
   ExtendedMandalaCircleParams & SvgSymbolContext
-> = (props) => (
-  <SvgTransform
-    transform={[svgScale(props.scaling), svgRotate(props.rotation)]}
-  >
-    <MandalaCircle {...props} />
-  </SvgTransform>
-);
+> = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
+  props = {
+    ...props,
+    symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
+  };
+
+  return (
+    <SvgTransform transform={[svgScale(scaling), svgRotate(rotation)]}>
+      <MandalaCircle {...props} />
+    </SvgTransform>
+  );
+};
 
 const ExtendedMandalaCircleParamsWidget: React.FC<{
   idPrefix: string;
@@ -182,6 +204,20 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
         label="Rotation"
         value={value.rotation}
         onChange={(rotation) => onChange({ ...value, rotation })}
+        {...ROTATION}
+      />
+      <NumericSlider
+        id={`${idPrefix}symbolScaling`}
+        label="Symbol scaling"
+        value={value.symbolScaling}
+        onChange={(symbolScaling) => onChange({ ...value, symbolScaling })}
+        {...SCALING}
+      />
+      <NumericSlider
+        id={`${idPrefix}symbolRotation`}
+        label="Symbol rotation"
+        value={value.symbolRotation}
+        onChange={(symbolRotation) => onChange({ ...value, symbolRotation })}
         {...ROTATION}
       />
     </div>

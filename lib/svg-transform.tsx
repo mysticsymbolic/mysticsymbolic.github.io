@@ -2,7 +2,7 @@ import React from "react";
 import { Point } from "../vendor/bezier-js";
 import { reversePoint } from "./point";
 
-type SvgTransform =
+export type SvgTransform =
   | {
       kind: "translate";
       amount: Point;
