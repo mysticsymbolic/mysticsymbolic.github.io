@@ -2,7 +2,7 @@ import React from "react";
 import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
-import { Specs } from "./specs";
+import { AttachmentPointType, PointWithNormal, Specs } from "./specs";
 import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
 import { VisibleSpecs } from "./visible-specs";
 
@@ -114,3 +114,44 @@ export const SvgSymbolContent: React.FC<
     </g>
   );
 };
+
+export class AttachmentPointError extends Error {}
+
+export function getAttachmentPoint(
+  s: SvgSymbolData,
+  type: AttachmentPointType,
+  idx: number = 0
+): PointWithNormal {
+  const { specs } = s;
+  if (!specs) {
+    throw new AttachmentPointError(`Symbol ${s.name} has no specs.`);
+  }
+  const points = specs[type];
+  if (!(points && points.length > idx)) {
+    throw new AttachmentPointError(
+      `Expected symbol ${s.name} to have at least ${
+        idx + 1
+      } ${type} attachment point(s).`
+    );
+  }
+
+  return points[idx];
+}
+
+export function safeGetAttachmentPoint(
+  s: SvgSymbolData,
+  type: AttachmentPointType,
+  idx: number = 0
+): PointWithNormal | null {
+  try {
+    return getAttachmentPoint(s, type, idx);
+  } catch (e) {
+    if (e instanceof AttachmentPointError) {
+      console.log(e.message);
+    } else {
+      throw e;
+    }
+  }
+
+  return null;
+}

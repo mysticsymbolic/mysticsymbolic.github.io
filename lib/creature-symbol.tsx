@@ -3,9 +3,10 @@ import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
 import { scalePointXY, subtractPoints } from "./point";
-import { AttachmentPointType, PointWithNormal } from "./specs";
+import { AttachmentPointType } from "./specs";
 import {
   createSvgSymbolContext,
+  safeGetAttachmentPoint,
   SvgSymbolContent,
   SvgSymbolContext,
   SvgSymbolData,
@@ -20,47 +21,6 @@ import {
 } from "./svg-transform";
 
 const DEFAULT_ATTACHMENT_SCALE = 0.5;
-
-function getAttachmentPoint(
-  s: SvgSymbolData,
-  type: AttachmentPointType,
-  idx: number = 0
-): PointWithNormal {
-  const { specs } = s;
-  if (!specs) {
-    throw new AttachmentPointError(`Symbol ${s.name} has no specs.`);
-  }
-  const points = specs[type];
-  if (!(points && points.length > idx)) {
-    throw new AttachmentPointError(
-      `Expected symbol ${s.name} to have at least ${
-        idx + 1
-      } ${type} attachment point(s).`
-    );
-  }
-
-  return points[idx];
-}
-
-class AttachmentPointError extends Error {}
-
-function safeGetAttachmentPoint(
-  s: SvgSymbolData,
-  type: AttachmentPointType,
-  idx: number = 0
-): PointWithNormal | null {
-  try {
-    return getAttachmentPoint(s, type, idx);
-  } catch (e) {
-    if (e instanceof AttachmentPointError) {
-      console.log(e.message);
-    } else {
-      throw e;
-    }
-  }
-
-  return null;
-}
 
 export type CreatureContextType = SvgSymbolContext & {
   attachmentScale: number;

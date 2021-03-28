@@ -6,9 +6,9 @@ import { DEFAULT_BG_COLOR } from "../colors";
 import { ExportSvgButton } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
-import { reversePoint } from "../point";
 import {
   createSvgSymbolContext,
+  safeGetAttachmentPoint,
   SvgSymbolContent,
   SvgSymbolContext,
   SvgSymbolData,
@@ -24,8 +24,25 @@ import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { NumericRange, range } from "../util";
 import { Random } from "../random";
+import { PointWithNormal } from "../specs";
+import { getAttachmentTransforms } from "../attach";
 
-const EYE = SvgVocabulary.get("eye");
+const EYE = SvgVocabulary.get("eye_vertical");
+
+/**
+ * Returns the anchor point of the given symbol; if it doesn't have
+ * an anchor point, return a reasonable default one by taking the
+ * center of the symbol and having the normal point along the positive
+ * x-axis.
+ */
+function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
+  return (
+    safeGetAttachmentPoint(symbol, "anchor") || {
+      point: getBoundingBoxCenter(symbol.bbox),
+      normal: { x: 1, y: 0 },
+    }
+  );
+}
 
 const MandalaCircle: React.FC<
   {
@@ -34,13 +51,21 @@ const MandalaCircle: React.FC<
     numSymbols: number;
   } & SvgSymbolContext
 > = (props) => {
-  const center = getBoundingBoxCenter(props.data.bbox);
   const degreesPerItem = 360 / props.numSymbols;
+  const { translation, rotation } = getAttachmentTransforms(
+    {
+      point: { x: 0, y: 0 },
+      normal: { x: 1, y: 0 },
+    },
+    getAnchorOrCenter(props.data)
+  );
+
   const symbol = (
     <SvgTransform
       transform={[
         svgTranslate({ x: props.radius, y: 0 }),
-        svgTranslate(reversePoint(center)),
+        svgRotate(rotation),
+        svgTranslate(translation),
       ]}
     >
       <SvgSymbolContent {...props} />
@@ -64,7 +89,7 @@ const RADIUS: NumericParams = {
   min: 0,
   max: 1000,
   step: 1,
-  default: 400,
+  default: 50,
 };
 
 const NUM_SYMBOLS: NumericParams = {
