@@ -70,20 +70,38 @@ function getNestingTransforms(parent: BBox, child: BBox) {
 }
 
 type AttachmentTransformProps = {
-  transformOrigin: Point;
+  /**
+   * Where to move the attachment once it has been
+   * scaled and rotated.
+   */
   translate: Point;
+
+  /** The origin from which scaling and rotation are done. */
+  transformOrigin: Point;
+
+  /** How much to scale the attachment, relative to `transformOrigin`. */
   scale: Point;
-  rotate: number;
+
+  /** How much to rotate the attachment, relative to `transformOrigin`. */
+  rotate?: number;
+
+  /** The attachment. */
   children: JSX.Element;
 };
 
+/**
+ * A wrapper for an attachment that rotates and/or scales it relative
+ * to the given origin point, and then translates it the given amount.
+ */
 const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
   <SvgTransform
     transform={[
+      // Remember that transforms are applied in reverse order,
+      // so read the following from the end first!
       svgTranslate(props.translate),
       svgTransformOrigin(props.transformOrigin, [
         svgScale(props.scale),
-        svgRotate(props.rotate),
+        svgRotate(props.rotate ?? 0),
       ]),
     ]}
   >
@@ -169,7 +187,6 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
         transformOrigin={t.transformOrigin}
         translate={t.translation}
         scale={t.scaling}
-        rotate={0}
       >
         <g
           data-attach-parent={parent.name}
