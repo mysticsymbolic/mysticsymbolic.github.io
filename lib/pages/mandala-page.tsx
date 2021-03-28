@@ -240,6 +240,7 @@ export const MandalaPage: React.FC<{}> = () => {
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
+  const [firstBehindSecond, setFirstBehindSecond] = useState(false);
   const randomize = () => {
     const rng = new Random(Date.now());
     setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
@@ -247,6 +248,19 @@ export const MandalaPage: React.FC<{}> = () => {
   };
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
+
+  const circles = [
+    <ExtendedMandalaCircle key="first" {...circle1} {...symbolCtx} />,
+  ];
+
+  if (useTwoCircles) {
+    circles.push(
+      <ExtendedMandalaCircle key="second" {...circle2} {...circle2SymbolCtx} />
+    );
+    if (firstBehindSecond) {
+      circles.reverse();
+    }
+  }
 
   return (
     <>
@@ -281,6 +295,11 @@ export const MandalaPage: React.FC<{}> = () => {
             label="Invert colors"
             value={invertCircle2}
             onChange={setInvertCircle2}
+          />{" "}
+          <Checkbox
+            label="Place behind first circle"
+            value={firstBehindSecond}
+            onChange={setFirstBehindSecond}
           />
         </fieldset>
       )}
@@ -292,12 +311,7 @@ export const MandalaPage: React.FC<{}> = () => {
       </div>
       <HoverDebugHelper>
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-          <SvgTransform transform={svgScale(0.5)}>
-            <ExtendedMandalaCircle {...circle1} {...symbolCtx} />
-            {useTwoCircles && (
-              <ExtendedMandalaCircle {...circle2} {...circle2SymbolCtx} />
-            )}
-          </SvgTransform>
+          <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
         </AutoSizingSvg>
       </HoverDebugHelper>
     </>
