@@ -4,7 +4,7 @@ import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { createSvgSymbolContext } from "../svg-symbol";
-import { svgScale, SvgTransforms } from "../svg-transform";
+import { svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
 
@@ -66,9 +66,9 @@ export const DebugPage: React.FC<{}> = () => {
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
           <AutoSizingSvg padding={20}>
-            <SvgTransforms transforms={[svgScale(0.5)]}>
+            <SvgTransform transform={svgScale(0.5)}>
               {EYE_CREATURE}
-            </SvgTransforms>
+            </SvgTransform>
           </AutoSizingSvg>
         </HoverDebugHelper>
       </CreatureContext.Provider>

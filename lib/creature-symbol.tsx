@@ -15,7 +15,7 @@ import {
   svgRotate,
   svgScale,
   svgTransformOrigin,
-  SvgTransforms,
+  SvgTransform,
   svgTranslate,
 } from "./svg-transform";
 
@@ -118,8 +118,8 @@ type AttachmentTransformProps = {
 };
 
 const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
-  <SvgTransforms
-    transforms={[
+  <SvgTransform
+    transform={[
       svgTranslate(props.translate),
       svgTransformOrigin(props.transformOrigin, [
         svgScale(props.scale),
@@ -128,7 +128,7 @@ const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
     ]}
   >
     {props.children}
-  </SvgTransforms>
+  </SvgTransform>
 );
 
 const AttachedCreatureSymbol: React.FC<AttachedCreatureSymbolProps> = ({

@@ -83,9 +83,13 @@ export function svgRotate(degrees: number): SvgTransform {
  * Like the SVG `transform` attribute, the transforms are applied in
  * the *reverse* order that they are specified.
  */
-export const SvgTransforms: React.FC<{
-  transforms: SvgTransform[];
+export const SvgTransform: React.FC<{
+  transform: SvgTransform[] | SvgTransform;
   children: any;
-}> = ({ transforms, children }) => {
-  return <g transform={getSvgCodeForTransforms(transforms)}>{children}</g>;
+}> = ({ transform, children }) => {
+  if (!Array.isArray(transform)) {
+    transform = [transform];
+  }
+
+  return <g transform={getSvgCodeForTransforms(transform)}>{children}</g>;
 };

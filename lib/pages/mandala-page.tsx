@@ -17,7 +17,7 @@ import { VocabularyWidget } from "../vocabulary-widget";
 import {
   svgRotate,
   svgScale,
-  SvgTransforms,
+  SvgTransform,
   svgTranslate,
 } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
@@ -37,20 +37,20 @@ const MandalaCircle: React.FC<
   const center = getBoundingBoxCenter(props.data.bbox);
   const degreesPerItem = 360 / props.numSymbols;
   const symbol = (
-    <SvgTransforms
-      transforms={[
+    <SvgTransform
+      transform={[
         svgTranslate({ x: props.radius, y: 0 }),
         svgTranslate(reversePoint(center)),
       ]}
     >
       <SvgSymbolContent {...props} />
-    </SvgTransforms>
+    </SvgTransform>
   );
 
   const symbols = range(props.numSymbols).map((i) => (
-    <SvgTransforms
+    <SvgTransform
       key={i}
-      transforms={[svgRotate(degreesPerItem * i)]}
+      transform={svgRotate(degreesPerItem * i)}
       children={symbol}
     />
   ));
@@ -122,14 +122,14 @@ export const MandalaPage: React.FC<{}> = () => {
       </div>
       <HoverDebugHelper>
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-          <SvgTransforms transforms={[svgScale(0.5)]}>
+          <SvgTransform transform={svgScale(0.5)}>
             <MandalaCircle
               data={symbol}
               radius={radius}
               numSymbols={numSymbols}
               {...symbolCtx}
             />
-          </SvgTransforms>
+          </SvgTransform>
         </AutoSizingSvg>
       </HoverDebugHelper>
     </>
