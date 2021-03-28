@@ -8,6 +8,7 @@ import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
   createSvgSymbolContext,
+  safeGetAttachmentPoint,
   SvgSymbolContent,
   SvgSymbolContext,
   SvgSymbolData,
@@ -29,13 +30,12 @@ import { getAttachmentTransforms } from "../attach";
 const EYE = SvgVocabulary.get("eye_vertical");
 
 function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
-  const anchors = symbol.specs?.anchor ?? [];
-  return anchors.length
-    ? anchors[0]
-    : {
-        point: getBoundingBoxCenter(symbol.bbox),
-        normal: { x: 1, y: 0 },
-      };
+  return (
+    safeGetAttachmentPoint(symbol, "anchor") || {
+      point: getBoundingBoxCenter(symbol.bbox),
+      normal: { x: 1, y: 0 },
+    }
+  );
 }
 
 const MandalaCircle: React.FC<
