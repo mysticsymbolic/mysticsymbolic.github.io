@@ -166,14 +166,8 @@ const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
 const INITIAL_COMPLEXITY_LEVEL = 2;
 
-function getDownloadFilename(randomSeed: number | null) {
-  let downloadBasename = "mystic-symbolic-creature";
-
-  if (randomSeed !== null) {
-    downloadBasename += `-${randomSeed}`;
-  }
-
-  return `${downloadBasename}.svg`;
+function getDownloadFilename(randomSeed: number) {
+  return `mystic-symbolic-creature-${randomSeed}.svg`;
 }
 
 export const CreaturePage: React.FC<{}> = () => {
