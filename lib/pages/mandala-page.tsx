@@ -29,23 +29,30 @@ import { PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { Checkbox } from "../checkbox";
 
-const CIRCLE_1_DEFAULTS: MandalaCircleParams = {
+type ExtendedMandalaCircleParams = MandalaCircleParams & {
+  scaling: number;
+  rotation: number;
+};
+
+const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   data: SvgVocabulary.get("eye_vertical"),
   radius: 50,
   numSymbols: 6,
+  scaling: 1,
+  rotation: 0,
 };
 
-const CIRCLE_2_DEFAULTS: MandalaCircleParams = {
+const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
   data: SvgVocabulary.get("leg"),
   radius: 0,
   numSymbols: 3,
+  scaling: 0.5,
+  rotation: 0,
 };
 
-const CIRCLE_2_DEFAULT_SCALE = 0.5;
-
 const RADIUS: NumericRange = {
-  min: -1000,
-  max: 1000,
+  min: -500,
+  max: 500,
   step: 1,
 };
 
@@ -55,10 +62,16 @@ const NUM_SYMBOLS: NumericRange = {
   step: 1,
 };
 
-const SCALE: NumericRange = {
+const SCALING: NumericRange = {
   min: 0.1,
-  max: 2,
-  step: 0.1,
+  max: 1,
+  step: 0.05,
+};
+
+const ROTATION: NumericRange = {
+  min: 0,
+  max: 359,
+  step: 1,
 };
 
 /**
@@ -119,10 +132,20 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
   return <>{symbols}</>;
 };
 
-const MandalaCircleParamsWidget: React.FC<{
+const ExtendedMandalaCircle: React.FC<
+  ExtendedMandalaCircleParams & SvgSymbolContext
+> = (props) => (
+  <SvgTransform
+    transform={[svgScale(props.scaling), svgRotate(props.rotation)]}
+  >
+    <MandalaCircle {...props} />
+  </SvgTransform>
+);
+
+const ExtendedMandalaCircleParamsWidget: React.FC<{
   idPrefix: string;
-  value: MandalaCircleParams;
-  onChange: (value: MandalaCircleParams) => void;
+  value: ExtendedMandalaCircleParams;
+  onChange: (value: ExtendedMandalaCircleParams) => void;
 }> = ({ idPrefix, value, onChange }) => {
   return (
     <div className="thingy">
@@ -147,6 +170,20 @@ const MandalaCircleParamsWidget: React.FC<{
         onChange={(numSymbols) => onChange({ ...value, numSymbols })}
         {...NUM_SYMBOLS}
       />
+      <NumericSlider
+        id={`${idPrefix}scaling`}
+        label="Scaling"
+        value={value.scaling}
+        onChange={(scaling) => onChange({ ...value, scaling })}
+        {...SCALING}
+      />
+      <NumericSlider
+        id={`${idPrefix}rotation`}
+        label="Rotation"
+        value={value.rotation}
+        onChange={(rotation) => onChange({ ...value, rotation })}
+        {...ROTATION}
+      />
     </div>
   );
 };
@@ -162,21 +199,15 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
-  const [circle1, setCircle1] = useState<MandalaCircleParams>(
-    CIRCLE_1_DEFAULTS
-  );
-  const [circle2, setCircle2] = useState<MandalaCircleParams>(
-    CIRCLE_2_DEFAULTS
-  );
+  const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
+  const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
-  const [circle2Scale, setCircle2Scale] = useState(CIRCLE_2_DEFAULT_SCALE);
   const randomize = () => {
     const rng = new Random(Date.now());
-    setCircle1(getRandomCircleParams(rng));
-    setCircle2(getRandomCircleParams(rng));
-    setCircle2Scale(rng.inRange(SCALE));
+    setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
+    setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
@@ -189,7 +220,7 @@ export const MandalaPage: React.FC<{}> = () => {
       </SymbolContextWidget>
       <fieldset>
         <legend>First circle</legend>
-        <MandalaCircleParamsWidget
+        <ExtendedMandalaCircleParamsWidget
           idPrefix="c1"
           value={circle1}
           onChange={setCircle1}
@@ -205,16 +236,10 @@ export const MandalaPage: React.FC<{}> = () => {
       {useTwoCircles && (
         <fieldset>
           <legend>Second circle</legend>
-          <MandalaCircleParamsWidget
+          <ExtendedMandalaCircleParamsWidget
             idPrefix="c2"
             value={circle2}
             onChange={setCircle2}
-          />
-          <NumericSlider
-            label="Scale"
-            value={circle2Scale}
-            onChange={setCircle2Scale}
-            {...SCALE}
           />
           <Checkbox
             label="Invert colors"
@@ -232,11 +257,9 @@ export const MandalaPage: React.FC<{}> = () => {
       <HoverDebugHelper>
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
           <SvgTransform transform={svgScale(0.5)}>
-            <MandalaCircle {...circle1} {...symbolCtx} />
+            <ExtendedMandalaCircle {...circle1} {...symbolCtx} />
             {useTwoCircles && (
-              <SvgTransform transform={svgScale(circle2Scale)}>
-                <MandalaCircle {...circle2} {...circle2SymbolCtx} />
-              </SvgTransform>
+              <ExtendedMandalaCircle {...circle2} {...circle2SymbolCtx} />
             )}
           </SvgTransform>
         </AutoSizingSvg>
