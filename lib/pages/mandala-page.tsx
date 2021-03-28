@@ -44,7 +44,7 @@ const CIRCLE_2_DEFAULTS: MandalaCircleParams = {
 const CIRCLE_2_DEFAULT_SCALE = 0.5;
 
 const RADIUS: NumericRange = {
-  min: 0,
+  min: -1000,
   max: 1000,
   step: 1,
 };
@@ -64,14 +64,14 @@ const SCALE: NumericRange = {
 /**
  * Returns the anchor point of the given symbol; if it doesn't have
  * an anchor point, return a reasonable default one by taking the
- * center of the symbol and having the normal point along the positive
- * x-axis.
+ * center of the symbol and having the normal point along the negative
+ * y-axis (i.e., up).
  */
 function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
   return (
     safeGetAttachmentPoint(symbol, "anchor") || {
       point: getBoundingBoxCenter(symbol.bbox),
-      normal: { x: 1, y: 0 },
+      normal: { x: 0, y: -1 },
     }
   );
 }
@@ -89,7 +89,7 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
   const { translation, rotation } = getAttachmentTransforms(
     {
       point: { x: 0, y: 0 },
-      normal: { x: 1, y: 0 },
+      normal: { x: 0, y: -1 },
     },
     getAnchorOrCenter(props.data)
   );
@@ -97,7 +97,7 @@ const MandalaCircle: React.FC<MandalaCircleParams & SvgSymbolContext> = (
   const symbol = (
     <SvgTransform
       transform={[
-        svgTranslate({ x: props.radius, y: 0 }),
+        svgTranslate({ x: 0, y: -props.radius }),
         svgRotate(rotation),
         svgTranslate(translation),
       ]}
