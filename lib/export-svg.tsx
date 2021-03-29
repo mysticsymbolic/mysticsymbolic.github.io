@@ -58,15 +58,15 @@ function exportPng(filename: string, svgRef: React.RefObject<SVGSVGElement>) {
   img.src = dataURL;
 }
 
-export const ExportSvgButton: React.FC<{
+export const ExportWidget: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
-  filename: string;
-}> = ({ svgRef, filename }) => (
+  basename: string;
+}> = ({ svgRef, basename }) => (
   <>
-    <button onClick={() => exportSvg(filename, svgRef)}>Export SVG</button>{" "}
-    <button
-      onClick={() => exportPng(filename.replace(/\.svg$/, ".png"), svgRef)}
-    >
+    <button onClick={() => exportSvg(`${basename}.svg`, svgRef)}>
+      Export SVG
+    </button>{" "}
+    <button onClick={() => exportPng(`${basename}.png`, svgRef)}>
       Export PNG
     </button>
   </>

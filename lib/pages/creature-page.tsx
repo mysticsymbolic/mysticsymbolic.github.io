@@ -11,7 +11,7 @@ import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportSvgButton } from "../export-svg";
+import { ExportWidget } from "../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
@@ -167,8 +167,8 @@ const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
 const INITIAL_COMPLEXITY_LEVEL = 2;
 
-function getDownloadFilename(randomSeed: number) {
-  return `mystic-symbolic-creature-${randomSeed}.svg`;
+function getDownloadBasename(randomSeed: number) {
+  return `mystic-symbolic-creature-${randomSeed}`;
 }
 
 export const CreaturePage: React.FC<{}> = () => {
@@ -221,8 +221,8 @@ export const CreaturePage: React.FC<{}> = () => {
           <u>R</u>andomize!
         </button>{" "}
         <button onClick={() => window.location.reload()}>Reset</button>{" "}
-        <ExportSvgButton
-          filename={getDownloadFilename(randomSeed)}
+        <ExportWidget
+          basename={getDownloadBasename(randomSeed)}
           svgRef={svgRef}
         />
       </div>
