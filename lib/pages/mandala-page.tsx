@@ -3,7 +3,7 @@ import { AutoSizingSvg } from "../auto-sizing-svg";
 import { getBoundingBoxCenter } from "../bounding-box";
 import { ColorWidget } from "../color-widget";
 import { DEFAULT_BG_COLOR } from "../colors";
-import { ExportSvgButton } from "../export-svg";
+import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
@@ -307,7 +307,7 @@ export const MandalaPage: React.FC<{}> = () => {
         <button accessKey="r" onClick={randomize}>
           <u>R</u>andomize!
         </button>{" "}
-        <ExportSvgButton filename="mandala.svg" svgRef={svgRef} />
+        <ExportWidget basename="mandala" svgRef={svgRef} />
       </div>
       <HoverDebugHelper>
         <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>

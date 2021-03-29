@@ -9,33 +9,78 @@ function getSvgMarkup(el: SVGSVGElement): string {
   ].join("\n");
 }
 
+type ImageExporter = (svgEl: SVGSVGElement) => Promise<string>;
+
 /**
  * Initiates a download on the user's browser which downloads the given
- * SVG element under the given filename.
+ * SVG element under the given filename, using the given export algorithm.
  */
-export function exportSvg(
-  filename: string,
-  svgRef: React.RefObject<SVGSVGElement>
+async function exportImage(
+  svgRef: React.RefObject<SVGSVGElement>,
+  basename: string,
+  ext: string,
+  exporter: ImageExporter
 ) {
   const svgEl = svgRef.current;
   if (!svgEl) {
     alert("Oops, an error occurred! Please try again later.");
     return;
   }
-  const dataURL = `data:image/svg+xml;utf8,${encodeURIComponent(
-    getSvgMarkup(svgEl)
-  )}`;
+  const url = await exporter(svgEl);
   const anchor = document.createElement("a");
-  anchor.href = dataURL;
-  anchor.download = filename;
+  anchor.href = url;
+  anchor.download = `${basename}.${ext}`;
   document.body.append(anchor);
   anchor.click();
   document.body.removeChild(anchor);
 }
 
-export const ExportSvgButton: React.FC<{
+function getCanvasContext2D(
+  canvas: HTMLCanvasElement
+): CanvasRenderingContext2D {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error(`Unable to get 2D context for canvas!`);
+  return ctx;
+}
+
+/**
+ * Exports the given SVG as an SVG in a data URL.
+ */
+const exportSvg: ImageExporter = async (svgEl) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(getSvgMarkup(svgEl))}`;
+
+/**
+ * Exports the given SVG as a PNG in a data URL.
+ */
+const exportPng: ImageExporter = async (svgEl) => {
+  const dataURL = await exportSvg(svgEl);
+
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const img = document.createElement("img");
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = getCanvasContext2D(canvas);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL());
+    };
+    img.onerror = reject;
+    img.src = dataURL;
+  });
+};
+
+export const ExportWidget: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
-  filename: string;
-}> = ({ svgRef, filename }) => (
-  <button onClick={() => exportSvg(filename, svgRef)}>Export SVG</button>
+  basename: string;
+}> = ({ svgRef, basename }) => (
+  <>
+    <button onClick={() => exportImage(svgRef, basename, "svg", exportSvg)}>
+      Export SVG
+    </button>{" "}
+    <button onClick={() => exportImage(svgRef, basename, "png", exportPng)}>
+      Export PNG
+    </button>
+  </>
 );
