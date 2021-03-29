@@ -37,9 +37,9 @@ type ExtendedMandalaCircleParams = MandalaCircleParams & {
 };
 
 const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
-  data: SvgVocabulary.get("eye_vertical"),
-  radius: 50,
-  numSymbols: 6,
+  data: SvgVocabulary.get("eye"),
+  radius: 300,
+  numSymbols: 5,
   scaling: 1,
   rotation: 0,
   symbolScaling: 1,
