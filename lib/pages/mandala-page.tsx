@@ -268,55 +268,65 @@ export const MandalaPage: React.FC<{}> = () => {
   return (
     <>
       <h1>Mandala!</h1>
-      <SymbolContextWidget ctx={baseSymbolCtx} onChange={setBaseSymbolCtx}>
-        <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
-      </SymbolContextWidget>
-      <fieldset>
-        <legend>First circle</legend>
-        <ExtendedMandalaCircleParamsWidget
-          idPrefix="c1"
-          value={circle1}
-          onChange={setCircle1}
-        />
-      </fieldset>
-      <div className="thingy">
-        <Checkbox
-          label="Add a second circle"
-          value={useTwoCircles}
-          onChange={setUseTwoCircles}
-        />
+      <div className="mandala-container" style={{ backgroundColor: bgColor }}>
+        <div className="sidebar">
+          <SymbolContextWidget ctx={baseSymbolCtx} onChange={setBaseSymbolCtx}>
+            <ColorWidget
+              label="Background"
+              value={bgColor}
+              onChange={setBgColor}
+            />{" "}
+          </SymbolContextWidget>
+          <fieldset>
+            <legend>First circle</legend>
+            <ExtendedMandalaCircleParamsWidget
+              idPrefix="c1"
+              value={circle1}
+              onChange={setCircle1}
+            />
+          </fieldset>
+          <div className="thingy">
+            <Checkbox
+              label="Add a second circle"
+              value={useTwoCircles}
+              onChange={setUseTwoCircles}
+            />
+          </div>
+          {useTwoCircles && (
+            <fieldset>
+              <legend>Second circle</legend>
+              <ExtendedMandalaCircleParamsWidget
+                idPrefix="c2"
+                value={circle2}
+                onChange={setCircle2}
+              />
+              <Checkbox
+                label="Invert colors"
+                value={invertCircle2}
+                onChange={setInvertCircle2}
+              />{" "}
+              <Checkbox
+                label="Place behind first circle"
+                value={firstBehindSecond}
+                onChange={setFirstBehindSecond}
+              />
+            </fieldset>
+          )}
+          <div className="thingy">
+            <button accessKey="r" onClick={randomize}>
+              <u>R</u>andomize!
+            </button>{" "}
+            <ExportWidget basename="mandala" svgRef={svgRef} />
+          </div>
+        </div>
+        <div className="canvas">
+          <HoverDebugHelper>
+            <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
+              <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
+            </AutoSizingSvg>
+          </HoverDebugHelper>
+        </div>
       </div>
-      {useTwoCircles && (
-        <fieldset>
-          <legend>Second circle</legend>
-          <ExtendedMandalaCircleParamsWidget
-            idPrefix="c2"
-            value={circle2}
-            onChange={setCircle2}
-          />
-          <Checkbox
-            label="Invert colors"
-            value={invertCircle2}
-            onChange={setInvertCircle2}
-          />{" "}
-          <Checkbox
-            label="Place behind first circle"
-            value={firstBehindSecond}
-            onChange={setFirstBehindSecond}
-          />
-        </fieldset>
-      )}
-      <div className="thingy">
-        <button accessKey="r" onClick={randomize}>
-          <u>R</u>andomize!
-        </button>{" "}
-        <ExportWidget basename="mandala" svgRef={svgRef} />
-      </div>
-      <HoverDebugHelper>
-        <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-          <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
-        </AutoSizingSvg>
-      </HoverDebugHelper>
     </>
   );
 };
