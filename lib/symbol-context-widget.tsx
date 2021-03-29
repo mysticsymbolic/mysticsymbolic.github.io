@@ -35,8 +35,7 @@ export const SymbolContextWidget: React.FC<{
         onChange={(showSpecs) => updateCtx({ showSpecs })}
       />
       {ctx.uniformStrokeWidth !== undefined && (
-        <>
-          <br />
+        <div className="thingy">
           <NumericSlider
             label="Stroke width"
             min={0}
@@ -44,8 +43,8 @@ export const SymbolContextWidget: React.FC<{
             step={0.1}
             value={ctx.uniformStrokeWidth}
             onChange={(uniformStrokeWidth) => updateCtx({ uniformStrokeWidth })}
-          />{" "}
-        </>
+          />
+        </div>
       )}
     </div>
   );

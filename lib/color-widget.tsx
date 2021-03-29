@@ -12,7 +12,7 @@ export const ColorWidget: React.FC<ColorWidgetProps> = (props) => {
   const id = props.id || slugify(props.label);
 
   return (
-    <>
+    <span className="color-widget">
       <label htmlFor={id}>{props.label}: </label>
       <input
         id={id}
@@ -20,6 +20,6 @@ export const ColorWidget: React.FC<ColorWidgetProps> = (props) => {
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
       />
-    </>
+    </span>
   );
 };

@@ -48,6 +48,49 @@ ul.navbar li {
 ul.navbar li:last-child {
   border-right: none;
 }
+
+.mandala-container {
+  position: relative;
+}
+
+.mandala-container .canvas {
+  display: flex;
+  width: 100%;
+  height: 85vh;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mandala-container .sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 8px;
+  width: 20em;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.mandala-container .color-widget {
+  display: flex;
+}
+
+.mandala-container .color-widget label {
+  flex-grow: 1;
+}
+
+.mandala-container .numeric-slider {
+  display: flex;
+  flex-direction: column;
+}
+
+.mandala-container .numeric-slider .slider {
+  display: flex;
+}
+
+.mandala-container .numeric-slider .slider input {
+  flex-basis: 90%;
+}
 </style>
 <noscript>
   <p>Alas, you need JavaScript to peruse this page.</p>
