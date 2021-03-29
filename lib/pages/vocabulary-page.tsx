@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { dilateBoundingBox, getBoundingBoxSize } from "../bounding-box";
 import {
   createSvgSymbolContext,
@@ -38,13 +38,31 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
 
 export const VocabularyPage: React.FC<{}> = () => {
   const [ctx, setCtx] = useState(createSvgSymbolContext());
+  const [filter, setFilter] = useState("");
+  const finalFilter = filter.toLowerCase().replace(/ /g, "_");
+  const items = useMemo(
+    () =>
+      SvgVocabulary.items.filter((item) =>
+        item.name.toLowerCase().includes(finalFilter)
+      ),
+    [finalFilter]
+  );
 
   return (
     <>
       <h1>Mystic Symbolic Vocabulary</h1>
+      <div className="thingy">
+        <label htmlFor="filter">Search: </label>
+        <input
+          type="text"
+          id="filter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </div>
       <SymbolContextWidget ctx={ctx} onChange={setCtx} />
       <HoverDebugHelper>
-        {SvgVocabulary.items.map((symbolData) => (
+        {items.map((symbolData) => (
           <div
             key={symbolData.name}
             style={{
