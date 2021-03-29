@@ -26,6 +26,20 @@ if (!appEl) {
   throw new Error(`Unable to find #${APP_ID}!`);
 }
 
+const Navbar: React.FC<{ currPageName: string }> = (props) => (
+  <ul className="navbar">
+    {pageNames.map((pageName) => (
+      <li key={pageName}>
+        {props.currPageName === pageName ? (
+          pageName
+        ) : (
+          <a href={`?p=${encodeURIComponent(pageName)}`}>{pageName}</a>
+        )}
+      </li>
+    ))}
+  </ul>
+);
+
 const App: React.FC<{}> = (props) => {
   const page = new URLSearchParams(window.location.search);
   const currPageName = toPageName(page.get("p") || "", "vocabulary");
@@ -33,22 +47,13 @@ const App: React.FC<{}> = (props) => {
 
   return (
     <>
+      <header>
+        <Navbar currPageName={currPageName} />
+      </header>
       <main>
         <PageComponent />
       </main>
       <footer>
-        <p>Other pages</p>
-        <ul>
-          {pageNames.map((pageName) => (
-            <li key={pageName}>
-              {currPageName === pageName ? (
-                pageName
-              ) : (
-                <a href={`?p=${encodeURIComponent(pageName)}`}>{pageName}</a>
-              )}
-            </li>
-          ))}
-        </ul>
         <p>
           For more details about this project, see its{" "}
           <a href="https://github.com/toolness/mystic-symbolic" target="_blank">
