@@ -8,6 +8,7 @@ import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
   createSvgSymbolContext,
+  noFillIfShowingSpecs,
   safeGetAttachmentPoint,
   SvgSymbolContent,
   SvgSymbolContext,
@@ -237,7 +238,7 @@ export const MandalaPage: React.FC<{}> = () => {
   const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
   const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
-  const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
+  const [baseSymbolCtx, setBaseSymbolCtx] = useState(createSvgSymbolContext());
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
   const [firstBehindSecond, setFirstBehindSecond] = useState(false);
@@ -246,6 +247,8 @@ export const MandalaPage: React.FC<{}> = () => {
     setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
     setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
+
+  const symbolCtx = noFillIfShowingSpecs(baseSymbolCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
@@ -265,7 +268,7 @@ export const MandalaPage: React.FC<{}> = () => {
   return (
     <>
       <h1>Mandala!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
+      <SymbolContextWidget ctx={baseSymbolCtx} onChange={setBaseSymbolCtx}>
         <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
       <fieldset>

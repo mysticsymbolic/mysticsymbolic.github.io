@@ -43,6 +43,13 @@ const DEFAULT_CONTEXT: SvgSymbolContext = {
   uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
 };
 
+export function noFillIfShowingSpecs<T extends SvgSymbolContext>(ctx: T): T {
+  return {
+    ...ctx,
+    fill: ctx.showSpecs ? "none" : ctx.fill,
+  };
+}
+
 export function swapColors<T extends SvgSymbolContext>(ctx: T): T {
   return {
     ...ctx,

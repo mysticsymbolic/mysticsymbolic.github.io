@@ -1,6 +1,10 @@
 import React, { useContext, useRef, useState } from "react";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { createSvgSymbolContext, SvgSymbolData } from "../svg-symbol";
+import {
+  createSvgSymbolContext,
+  noFillIfShowingSpecs,
+  SvgSymbolData,
+} from "../svg-symbol";
 import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
@@ -180,11 +184,10 @@ export const CreaturePage: React.FC<{}> = () => {
   const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
-  const ctx: CreatureContextType = {
+  const ctx: CreatureContextType = noFillIfShowingSpecs({
     ...defaultCtx,
     ...symbolCtx,
-    fill: symbolCtx.showSpecs ? "none" : symbolCtx.fill,
-  };
+  });
   const creature = COMPLEXITY_LEVEL_GENERATORS[complexity]({
     rng: new Random(randomSeed),
     randomlyInvert,
