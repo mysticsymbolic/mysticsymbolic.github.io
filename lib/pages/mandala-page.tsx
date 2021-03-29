@@ -45,6 +45,7 @@ const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   rotation: 0,
   symbolScaling: 1,
   symbolRotation: 0,
+  invertEveryOtherSymbol: false,
 };
 
 const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
@@ -55,6 +56,7 @@ const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
   rotation: 0,
   symbolScaling: 1,
   symbolRotation: 0,
+  invertEveryOtherSymbol: false,
 };
 
 const RADIUS: NumericRange = {
@@ -101,9 +103,14 @@ type MandalaCircleParams = {
   radius: number;
   numSymbols: number;
   symbolTransforms?: SvgTransform[];
+  invertEveryOtherSymbol: boolean;
 };
 
 type MandalaCircleProps = MandalaCircleParams & SvgSymbolContext;
+
+function isEvenNumber(value: number) {
+  return value % 2 === 0;
+}
 
 const MandalaCircle: React.FC<MandalaCircleProps> = (props) => {
   const degreesPerItem = 360 / props.numSymbols;
@@ -114,37 +121,38 @@ const MandalaCircle: React.FC<MandalaCircleProps> = (props) => {
     },
     getAnchorOrCenter(props.data)
   );
+  const transform: SvgTransform[] = [
+    // Remember that transforms are applied in reverse order,
+    // so read the following from the end first!
 
-  const symbol = (
-    <SvgTransform
-      transform={[
-        // Remember that transforms are applied in reverse order,
-        // so read the following from the end first!
+    // Finally, move the symbol out along the radius of the circle.
+    svgTranslate({ x: 0, y: -props.radius }),
 
-        // Finally, move the symbol out along the radius of the circle.
-        svgTranslate({ x: 0, y: -props.radius }),
+    // Then apply any individual symbol transformations.
+    ...(props.symbolTransforms || []),
 
-        // Then apply any individual symbol transformations.
-        ...(props.symbolTransforms || []),
+    // First, re-orient the symbol so its anchor point is at
+    // the origin and facing the proper direction.
+    svgRotate(rotation),
+    svgTranslate(translation),
+  ];
 
-        // First, re-orient the symbol so its anchor point is at
-        // the origin and facing the proper direction.
-        svgRotate(rotation),
-        svgTranslate(translation),
-      ]}
-    >
-      <SvgSymbolContent {...props} />
-    </SvgTransform>
-  );
+  const invertEveryOtherSymbol =
+    isEvenNumber(props.numSymbols) && props.invertEveryOtherSymbol;
 
   const symbols = range(props.numSymbols)
     .reverse()
     .map((i) => (
       <SvgTransform
         key={i}
-        transform={svgRotate(degreesPerItem * i)}
-        children={symbol}
-      />
+        transform={[svgRotate(degreesPerItem * i), ...transform]}
+      >
+        {invertEveryOtherSymbol && isEvenNumber(i) ? (
+          <SvgSymbolContent {...swapColors(props)} />
+        ) : (
+          <SvgSymbolContent {...props} />
+        )}
+      </SvgTransform>
     ));
 
   return <>{symbols}</>;
@@ -221,6 +229,13 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
         onChange={(symbolRotation) => onChange({ ...value, symbolRotation })}
         {...ROTATION}
       />
+      <Checkbox
+        label="Invert every other symbol (applies only to circles with an even number of symbols)"
+        value={value.invertEveryOtherSymbol}
+        onChange={(invertEveryOtherSymbol) =>
+          onChange({ ...value, invertEveryOtherSymbol })
+        }
+      />
     </div>
   );
 };
@@ -230,6 +245,7 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
     data: rng.choice(SvgVocabulary.items),
     radius: rng.inRange(RADIUS),
     numSymbols: rng.inRange(NUM_SYMBOLS),
+    invertEveryOtherSymbol: rng.bool(),
   };
 }
 
