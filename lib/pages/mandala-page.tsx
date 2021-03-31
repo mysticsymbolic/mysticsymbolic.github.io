@@ -29,6 +29,7 @@ import { Random } from "../random";
 import { PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { Checkbox } from "../checkbox";
+import { createRandomColorPalette } from "../random-colors";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -268,6 +269,12 @@ export const MandalaPage: React.FC<{}> = () => {
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
+  const randomizeColors = () => {
+    const [bgColor, stroke, fill] = createRandomColorPalette(3);
+    setBgColor(bgColor);
+    setBaseSymbolCtx({ ...baseSymbolCtx, stroke, fill });
+  };
+
   const circles = [
     <ExtendedMandalaCircle key="first" {...circle1} {...symbolCtx} />,
   ];
@@ -293,6 +300,11 @@ export const MandalaPage: React.FC<{}> = () => {
               onChange={setBgColor}
             />{" "}
           </SymbolContextWidget>
+          <div className="thingy">
+            <button accessKey="c" onClick={randomizeColors}>
+              Randomize <u>c</u>olors!
+            </button>
+          </div>
           <fieldset>
             <legend>First circle</legend>
             <ExtendedMandalaCircleParamsWidget

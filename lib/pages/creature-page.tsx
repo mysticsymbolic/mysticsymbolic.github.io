@@ -28,6 +28,7 @@ import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { DEFAULT_BG_COLOR } from "../colors";
 import { Checkbox } from "../checkbox";
+import { createRandomColorPalette } from "../random-colors";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -192,6 +193,11 @@ export const CreaturePage: React.FC<{}> = () => {
     rng: new Random(randomSeed),
     randomlyInvert,
   });
+  const randomizeColors = () => {
+    const [bgColor, stroke, fill] = createRandomColorPalette(3);
+    setBgColor(bgColor);
+    setSymbolCtx({ ...symbolCtx, stroke, fill });
+  };
 
   return (
     <>
@@ -199,6 +205,11 @@ export const CreaturePage: React.FC<{}> = () => {
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
         <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
       </SymbolContextWidget>
+      <div className="thingy">
+        <button accessKey="c" onClick={randomizeColors}>
+          Randomize <u>c</u>olors!
+        </button>
+      </div>
       <div className="thingy">
         <NumericSlider
           label="Random creature complexity"
