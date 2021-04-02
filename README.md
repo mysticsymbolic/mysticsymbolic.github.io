@@ -3,7 +3,7 @@ with procedural art.
 
 Right now there is no particular goal other than to explore various ideas.
 The project consists of a web site with multiple pages, each of which is
-and experiment of some kind.
+an experiment of some kind.
 
 It can be [viewed online][] or iterated on locally using the instructions below.
 
