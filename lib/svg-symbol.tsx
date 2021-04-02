@@ -30,9 +30,23 @@ export type SvgSymbolElement = (
 };
 
 export type SvgSymbolContext = {
+  /** The stroke color of the symbol, as a hex hash (e.g. '#ff0000'). */
   stroke: string;
+
+  /** The fill color of the symbol, as a hex hash (e.g. '#ff0000'). */
   fill: string;
+
+  /**
+   * Whether or not to visibly show the specifications for the symbol,
+   * e.g. its attachment points, nesting boxes, and so on.
+   */
   showSpecs: boolean;
+
+  /**
+   * Whether or not to forcibly apply a uniform stroke width to all
+   * the shapes in the symbol.  If defined, the stroke width will
+   * *not* vary as the symbol is scaled.
+   */
   uniformStrokeWidth?: number;
 };
 
@@ -43,6 +57,11 @@ const DEFAULT_CONTEXT: SvgSymbolContext = {
   uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
 };
 
+/**
+ * If the given symbol context is visibly showing its specifications,
+ * return one with its fill color set to "none" so that the specs can
+ * be seen more easily.
+ */
 export function noFillIfShowingSpecs<T extends SvgSymbolContext>(ctx: T): T {
   return {
     ...ctx,
@@ -50,6 +69,9 @@ export function noFillIfShowingSpecs<T extends SvgSymbolContext>(ctx: T): T {
   };
 }
 
+/**
+ * Return a symbol context with the stroke and fill colors swapped.
+ */
 export function swapColors<T extends SvgSymbolContext>(ctx: T): T {
   return {
     ...ctx,

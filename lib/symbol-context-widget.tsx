@@ -4,11 +4,19 @@ import { ColorWidget } from "./color-widget";
 import { NumericSlider } from "./numeric-slider";
 import { SvgSymbolContext, swapColors } from "./svg-symbol";
 
-export const SymbolContextWidget: React.FC<{
-  ctx: SvgSymbolContext;
-  onChange: (value: SvgSymbolContext) => void;
+export type SymbolContextWidgetProps<T extends SvgSymbolContext> = {
+  ctx: T;
+  onChange: (value: T) => void;
   children?: any;
-}> = ({ ctx, children, onChange }) => {
+  extraButtons?: JSX.Element;
+};
+
+export function SymbolContextWidget<T extends SvgSymbolContext>({
+  ctx,
+  children,
+  onChange,
+  extraButtons,
+}: SymbolContextWidgetProps<T>): JSX.Element {
   const updateCtx = (updates: Partial<SvgSymbolContext>) => {
     onChange({ ...ctx, ...updates });
   };
@@ -29,6 +37,7 @@ export const SymbolContextWidget: React.FC<{
       <button onClick={() => updateCtx(swapColors(ctx))}>
         Swap stroke/fill
       </button>{" "}
+      {extraButtons}
       <Checkbox
         label="Show specs"
         value={ctx.showSpecs}
@@ -48,4 +57,4 @@ export const SymbolContextWidget: React.FC<{
       )}
     </div>
   );
-};
+}
