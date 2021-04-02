@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { PageContext } from "./page";
+import { PageContext, PAGE_QUERY_ARG } from "./page";
 import { pageNames, Pages, toPageName, DEFAULT_PAGE } from "./pages";
 
 const APP_ID = "app";
@@ -13,7 +13,7 @@ if (!appEl) {
 
 const App: React.FC<{}> = (props) => {
   const page = new URLSearchParams(window.location.search);
-  const currPage = toPageName(page.get("p") || "", DEFAULT_PAGE);
+  const currPage = toPageName(page.get(PAGE_QUERY_ARG) || "", DEFAULT_PAGE);
   const PageComponent = Pages[currPage];
   const ctx: PageContext = {
     currPage,
