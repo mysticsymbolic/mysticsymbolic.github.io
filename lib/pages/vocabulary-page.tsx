@@ -52,13 +52,14 @@ export const VocabularyPage: React.FC<{}> = () => {
   return (
     <Page title="Mystic Symbolic Vocabulary">
       <div className="sidebar">
-        <div className="thingy">
-          <label htmlFor="filter">Search: </label>
+        <div className="flex-widget">
+          <label htmlFor="filter">Search for symbols: </label>
           <input
             type="text"
             id="filter"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
+            placeholder="🔎"
           />
         </div>
         <SymbolContextWidget ctx={ctx} onChange={setCtx} />

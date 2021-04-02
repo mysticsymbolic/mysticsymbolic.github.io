@@ -20,7 +20,7 @@ export function VocabularyWidget<T extends VocabularyType>({
   id = id || slugify(label);
 
   return (
-    <>
+    <div className="flex-widget">
       <label htmlFor={id}>{label}: </label>
       <select
         id={id}
@@ -33,6 +33,6 @@ export function VocabularyWidget<T extends VocabularyType>({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 }
