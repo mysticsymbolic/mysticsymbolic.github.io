@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import { ColorWidget } from "./color-widget";
 import { DEFAULT_BG_COLOR } from "./colors";
 import { createRandomColorPalette } from "./random-colors";
