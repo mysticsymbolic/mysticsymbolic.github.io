@@ -29,6 +29,7 @@ import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
+import { Page } from "../page";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -281,8 +282,7 @@ export const MandalaPage: React.FC<{}> = () => {
   }
 
   return (
-    <>
-      <h1>Mandala!</h1>
+    <Page title="Mandala!">
       <div className="mandala-container">
         <div className="sidebar">
           <CompositionContextWidget
@@ -346,6 +346,6 @@ export const MandalaPage: React.FC<{}> = () => {
           </HoverDebugHelper>
         </div>
       </div>
-    </>
+    </Page>
   );
 };

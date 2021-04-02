@@ -3,6 +3,7 @@ import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { Page } from "../page";
 import { createSvgSymbolContext } from "../svg-symbol";
 import { svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
@@ -60,8 +61,7 @@ export const DebugPage: React.FC<{}> = () => {
   };
 
   return (
-    <>
-      <h1>Debug!</h1>
+    <Page title="Debug!">
       <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
@@ -72,6 +72,6 @@ export const DebugPage: React.FC<{}> = () => {
           </AutoSizingSvg>
         </HoverDebugHelper>
       </CreatureContext.Provider>
-    </>
+    </Page>
   );
 };

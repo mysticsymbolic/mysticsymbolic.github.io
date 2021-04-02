@@ -9,6 +9,7 @@ import { SvgVocabulary } from "../svg-vocabulary";
 import { SvgSymbolContext } from "../svg-symbol";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { Page } from "../page";
 
 type SvgSymbolProps = {
   data: SvgSymbolData;
@@ -49,8 +50,7 @@ export const VocabularyPage: React.FC<{}> = () => {
   );
 
   return (
-    <>
-      <h1>Mystic Symbolic Vocabulary</h1>
+    <Page title="Mystic Symbolic Vocabulary">
       <div className="thingy">
         <label htmlFor="filter">Search: </label>
         <input
@@ -86,6 +86,6 @@ export const VocabularyPage: React.FC<{}> = () => {
           </div>
         ))}
       </HoverDebugHelper>
-    </>
+    </Page>
   );
 };

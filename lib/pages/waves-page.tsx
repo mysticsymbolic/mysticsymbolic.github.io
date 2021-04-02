@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
+import { Page } from "../page";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -157,8 +158,7 @@ const Waves: React.FC<{}> = () => {
 };
 
 export const WavesPage: React.FC<{}> = () => (
-  <>
-    <h1>Waves!</h1>
+  <Page title="Waves!">
     <Waves />
-  </>
+  </Page>
 );

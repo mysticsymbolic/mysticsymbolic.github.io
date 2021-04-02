@@ -25,6 +25,7 @@ import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
+import { Page } from "../page";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -190,8 +191,7 @@ export const CreaturePage: React.FC<{}> = () => {
   });
 
   return (
-    <>
-      <h1>Creature!</h1>
+    <Page title="Creature!">
       <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
       <div className="thingy"></div>
       <div className="thingy">
@@ -233,6 +233,6 @@ export const CreaturePage: React.FC<{}> = () => {
           </AutoSizingSvg>
         </HoverDebugHelper>
       </CreatureContext.Provider>
-    </>
+    </Page>
   );
 };
