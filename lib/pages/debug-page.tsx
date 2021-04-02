@@ -3,6 +3,7 @@ import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { Page } from "../page";
 import { createSvgSymbolContext } from "../svg-symbol";
 import { svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
@@ -60,18 +61,21 @@ export const DebugPage: React.FC<{}> = () => {
   };
 
   return (
-    <>
-      <h1>Debug!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
-      <CreatureContext.Provider value={ctx}>
-        <HoverDebugHelper>
-          <AutoSizingSvg padding={20}>
-            <SvgTransform transform={svgScale(0.5)}>
-              {EYE_CREATURE}
-            </SvgTransform>
-          </AutoSizingSvg>
-        </HoverDebugHelper>
-      </CreatureContext.Provider>
-    </>
+    <Page title="Debug!">
+      <div className="sidebar">
+        <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+      </div>
+      <div className="canvas">
+        <CreatureContext.Provider value={ctx}>
+          <HoverDebugHelper>
+            <AutoSizingSvg padding={20}>
+              <SvgTransform transform={svgScale(0.5)}>
+                {EYE_CREATURE}
+              </SvgTransform>
+            </AutoSizingSvg>
+          </HoverDebugHelper>
+        </CreatureContext.Provider>
+      </div>
+    </Page>
   );
 };
