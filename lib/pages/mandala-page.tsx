@@ -68,7 +68,7 @@ const RADIUS: NumericRange = {
 
 const NUM_SYMBOLS: NumericRange = {
   min: 1,
-  max: 30,
+  max: 20,
   step: 1,
 };
 
