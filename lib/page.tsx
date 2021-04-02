@@ -42,7 +42,7 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
   return (
     <div className="page">
       <header>
-        <h1>{title}</h1>
+        <h1>Mystic Symbolic {title}</h1>
         <Navbar />
       </header>
       {children}

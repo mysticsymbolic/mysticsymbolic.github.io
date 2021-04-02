@@ -50,7 +50,7 @@ export const VocabularyPage: React.FC<{}> = () => {
   );
 
   return (
-    <Page title="Mystic Symbolic Vocabulary">
+    <Page title="Vocabulary!">
       <div className="sidebar">
         <div className="flex-widget">
           <label htmlFor="filter">Search for symbols: </label>
