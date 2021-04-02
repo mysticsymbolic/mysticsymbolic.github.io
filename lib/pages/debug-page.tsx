@@ -62,16 +62,20 @@ export const DebugPage: React.FC<{}> = () => {
 
   return (
     <Page title="Debug!">
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
-      <CreatureContext.Provider value={ctx}>
-        <HoverDebugHelper>
-          <AutoSizingSvg padding={20}>
-            <SvgTransform transform={svgScale(0.5)}>
-              {EYE_CREATURE}
-            </SvgTransform>
-          </AutoSizingSvg>
-        </HoverDebugHelper>
-      </CreatureContext.Provider>
+      <div className="sidebar">
+        <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+      </div>
+      <div className="canvas">
+        <CreatureContext.Provider value={ctx}>
+          <HoverDebugHelper>
+            <AutoSizingSvg padding={20}>
+              <SvgTransform transform={svgScale(0.5)}>
+                {EYE_CREATURE}
+              </SvgTransform>
+            </AutoSizingSvg>
+          </HoverDebugHelper>
+        </CreatureContext.Provider>
+      </div>
     </Page>
   );
 };

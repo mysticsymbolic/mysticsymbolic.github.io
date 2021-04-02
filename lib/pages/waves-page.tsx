@@ -105,54 +105,58 @@ const Waves: React.FC<{}> = () => {
 
   return (
     <>
-      <svg width="1280px" height="720px" viewBox="0 0 1280 720">
-        {waves}
-      </svg>
-      <p>
-        <ColorWidget value={stroke} onChange={setStroke} label="Stroke" />{" "}
-        <ColorWidget value={fill} onChange={setFill} label="Fill" />
-      </p>
-      <NumericSlider
-        label="Number of waves"
-        min={1}
-        max={NUM_WAVES * 2}
-        value={numWaves}
-        step={1}
-        onChange={setNumWaves}
-      />
-      <NumericSlider
-        label="Cycle duration"
-        min={0.1}
-        max={3}
-        value={duration}
-        step={0.1}
-        onChange={setDuration}
-        valueSuffix="s"
-      />
-      <NumericSlider
-        label="Initial y-velocity"
-        min={1}
-        max={WAVE_PARALLAX_TRANSLATE_VELOCITY * 4}
-        value={initialYVel}
-        step={1}
-        onChange={setInitialYVel}
-      />
-      <NumericSlider
-        label="Y-acceleration"
-        min={1}
-        max={WAVE_PARALLAX_TRANSLATE_ACCEL * 2}
-        value={yAccel}
-        step={1}
-        onChange={setYAccel}
-      />
-      <NumericSlider
-        label="Scale velocity"
-        min={1.0}
-        max={2}
-        value={scaleVel}
-        step={0.025}
-        onChange={setScaleVel}
-      />
+      <div className="canvas">
+        <svg width="1280px" height="720px" viewBox="0 0 1280 720">
+          {waves}
+        </svg>
+      </div>
+      <div className="sidebar">
+        <div className="thingy">
+          <ColorWidget value={stroke} onChange={setStroke} label="Stroke" />{" "}
+          <ColorWidget value={fill} onChange={setFill} label="Fill" />
+        </div>
+        <NumericSlider
+          label="Number of waves"
+          min={1}
+          max={NUM_WAVES * 2}
+          value={numWaves}
+          step={1}
+          onChange={setNumWaves}
+        />
+        <NumericSlider
+          label="Cycle duration"
+          min={0.1}
+          max={3}
+          value={duration}
+          step={0.1}
+          onChange={setDuration}
+          valueSuffix="s"
+        />
+        <NumericSlider
+          label="Initial y-velocity"
+          min={1}
+          max={WAVE_PARALLAX_TRANSLATE_VELOCITY * 4}
+          value={initialYVel}
+          step={1}
+          onChange={setInitialYVel}
+        />
+        <NumericSlider
+          label="Y-acceleration"
+          min={1}
+          max={WAVE_PARALLAX_TRANSLATE_ACCEL * 2}
+          value={yAccel}
+          step={1}
+          onChange={setYAccel}
+        />
+        <NumericSlider
+          label="Scale velocity"
+          min={1.0}
+          max={2}
+          value={scaleVel}
+          step={0.025}
+          onChange={setScaleVel}
+        />
+      </div>
     </>
   );
 };

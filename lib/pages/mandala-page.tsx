@@ -283,68 +283,63 @@ export const MandalaPage: React.FC<{}> = () => {
 
   return (
     <Page title="Mandala!">
-      <div className="mandala-container">
-        <div className="sidebar">
-          <CompositionContextWidget
-            ctx={baseCompCtx}
-            onChange={setBaseCompCtx}
+      <div className="sidebar">
+        <CompositionContextWidget ctx={baseCompCtx} onChange={setBaseCompCtx} />
+        <fieldset>
+          <legend>First circle</legend>
+          <ExtendedMandalaCircleParamsWidget
+            idPrefix="c1"
+            value={circle1}
+            onChange={setCircle1}
           />
+        </fieldset>
+        <div className="thingy">
+          <Checkbox
+            label="Add a second circle"
+            value={useTwoCircles}
+            onChange={setUseTwoCircles}
+          />
+        </div>
+        {useTwoCircles && (
           <fieldset>
-            <legend>First circle</legend>
+            <legend>Second circle</legend>
             <ExtendedMandalaCircleParamsWidget
-              idPrefix="c1"
-              value={circle1}
-              onChange={setCircle1}
+              idPrefix="c2"
+              value={circle2}
+              onChange={setCircle2}
+            />
+            <Checkbox
+              label="Invert colors"
+              value={invertCircle2}
+              onChange={setInvertCircle2}
+            />{" "}
+            <Checkbox
+              label="Place behind first circle"
+              value={firstBehindSecond}
+              onChange={setFirstBehindSecond}
             />
           </fieldset>
-          <div className="thingy">
-            <Checkbox
-              label="Add a second circle"
-              value={useTwoCircles}
-              onChange={setUseTwoCircles}
-            />
-          </div>
-          {useTwoCircles && (
-            <fieldset>
-              <legend>Second circle</legend>
-              <ExtendedMandalaCircleParamsWidget
-                idPrefix="c2"
-                value={circle2}
-                onChange={setCircle2}
-              />
-              <Checkbox
-                label="Invert colors"
-                value={invertCircle2}
-                onChange={setInvertCircle2}
-              />{" "}
-              <Checkbox
-                label="Place behind first circle"
-                value={firstBehindSecond}
-                onChange={setFirstBehindSecond}
-              />
-            </fieldset>
-          )}
-          <div className="thingy">
-            <button accessKey="r" onClick={randomize}>
-              <u>R</u>andomize!
-            </button>{" "}
-            <ExportWidget basename="mandala" svgRef={svgRef} />
-          </div>
+        )}
+        <div className="thingy">
+          <button accessKey="r" onClick={randomize}>
+            <u>R</u>andomize!
+          </button>{" "}
+          <ExportWidget basename="mandala" svgRef={svgRef} />
         </div>
-        <div
-          className="canvas"
-          style={{ backgroundColor: baseCompCtx.background }}
-        >
-          <HoverDebugHelper>
-            <AutoSizingSvg
-              padding={20}
-              ref={svgRef}
-              bgColor={baseCompCtx.background}
-            >
-              <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
-            </AutoSizingSvg>
-          </HoverDebugHelper>
-        </div>
+      </div>
+      <div
+        className="canvas"
+        style={{ backgroundColor: baseCompCtx.background }}
+      >
+        <HoverDebugHelper>
+          <AutoSizingSvg
+            padding={20}
+            ref={svgRef}
+            bgColor={baseCompCtx.background}
+          >
+            <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
+          </AutoSizingSvg>
+        </HoverDebugHelper>
       </div>
     </Page>
   );

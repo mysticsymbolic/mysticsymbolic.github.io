@@ -21,13 +21,15 @@ const Navbar: React.FC<{}> = (props) => {
   const pc = useContext(PageContext);
 
   return (
-    <ul className="navbar">
-      {pc.allPages.map((pageName) => (
-        <li key={pageName}>
-          {pc.currPage === pageName ? pageName : <PageLink page={pageName} />}
-        </li>
-      ))}
-    </ul>
+    <nav>
+      <ul className="navbar">
+        {pc.allPages.map((pageName) => (
+          <li key={pageName}>
+            {pc.currPage === pageName ? pageName : <PageLink page={pageName} />}
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 
@@ -38,14 +40,12 @@ export type PageProps = {
 
 export const Page: React.FC<PageProps> = ({ title, children }) => {
   return (
-    <>
+    <div className="page">
       <header>
+        <h1>{title}</h1>
         <Navbar />
       </header>
-      <main>
-        <h1>{title}</h1>
-        {children}
-      </main>
+      {children}
       <footer>
         <p>
           For more details about this project, see its{" "}
@@ -55,6 +55,6 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
           .
         </p>
       </footer>
-    </>
+    </div>
   );
 };

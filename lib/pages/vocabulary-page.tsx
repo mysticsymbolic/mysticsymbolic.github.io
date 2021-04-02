@@ -51,41 +51,45 @@ export const VocabularyPage: React.FC<{}> = () => {
 
   return (
     <Page title="Mystic Symbolic Vocabulary">
-      <div className="thingy">
-        <label htmlFor="filter">Search: </label>
-        <input
-          type="text"
-          id="filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
+      <div className="sidebar">
+        <div className="thingy">
+          <label htmlFor="filter">Search: </label>
+          <input
+            type="text"
+            id="filter"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+        </div>
+        <SymbolContextWidget ctx={ctx} onChange={setCtx} />
       </div>
-      <SymbolContextWidget ctx={ctx} onChange={setCtx} />
-      <HoverDebugHelper>
-        {items.map((symbolData) => (
-          <div
-            key={symbolData.name}
-            style={{
-              display: "inline-block",
-              border: "1px solid black",
-              margin: "4px",
-            }}
-          >
+      <div className="canvas scrollable">
+        <HoverDebugHelper>
+          {items.map((symbolData) => (
             <div
+              key={symbolData.name}
               style={{
-                backgroundColor: "black",
-                color: "white",
-                padding: "4px",
+                display: "inline-block",
+                border: "1px solid black",
+                margin: "4px",
               }}
             >
-              {symbolData.name}
+              <div
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  padding: "4px",
+                }}
+              >
+                {symbolData.name}
+              </div>
+              <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
+                <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
+              </div>
             </div>
-            <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
-              <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
-            </div>
-          </div>
-        ))}
-      </HoverDebugHelper>
+          ))}
+        </HoverDebugHelper>
+      </div>
     </Page>
   );
 };

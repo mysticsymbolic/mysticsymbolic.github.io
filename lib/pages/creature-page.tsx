@@ -192,47 +192,53 @@ export const CreaturePage: React.FC<{}> = () => {
 
   return (
     <Page title="Creature!">
-      <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
-      <div className="thingy"></div>
-      <div className="thingy">
-        <NumericSlider
-          label="Random creature complexity"
-          min={0}
-          max={MAX_COMPLEXITY_LEVEL}
-          step={1}
-          value={complexity}
-          onChange={(value) => {
-            setComplexity(value);
-            newRandomSeed();
-          }}
-        />
+      <div className="sidebar">
+        <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
+        <div className="thingy">
+          <NumericSlider
+            label="Random creature complexity"
+            min={0}
+            max={MAX_COMPLEXITY_LEVEL}
+            step={1}
+            value={complexity}
+            onChange={(value) => {
+              setComplexity(value);
+              newRandomSeed();
+            }}
+          />
+        </div>
+        <div className="thingy">
+          <Checkbox
+            label="Randomly invert symbols"
+            value={randomlyInvert}
+            onChange={setRandomlyInvert}
+          />
+        </div>
+        <div className="thingy">
+          <button accessKey="r" onClick={newRandomSeed}>
+            <u>R</u>andomize!
+          </button>{" "}
+          <ExportWidget
+            basename={getDownloadBasename(randomSeed)}
+            svgRef={svgRef}
+          />
+        </div>
       </div>
-      <div className="thingy">
-        <Checkbox
-          label="Randomly invert symbols"
-          value={randomlyInvert}
-          onChange={setRandomlyInvert}
-        />
+      <div className="canvas" style={{ backgroundColor: compCtx.background }}>
+        <CreatureContext.Provider value={ctx}>
+          <HoverDebugHelper>
+            <AutoSizingSvg
+              padding={20}
+              ref={svgRef}
+              bgColor={compCtx.background}
+            >
+              <SvgTransform transform={svgScale(0.5)}>
+                <CreatureSymbol {...creature} />
+              </SvgTransform>
+            </AutoSizingSvg>
+          </HoverDebugHelper>
+        </CreatureContext.Provider>
       </div>
-      <div className="thingy">
-        <button accessKey="r" onClick={newRandomSeed}>
-          <u>R</u>andomize!
-        </button>{" "}
-        <button onClick={() => window.location.reload()}>Reset</button>{" "}
-        <ExportWidget
-          basename={getDownloadBasename(randomSeed)}
-          svgRef={svgRef}
-        />
-      </div>
-      <CreatureContext.Provider value={ctx}>
-        <HoverDebugHelper>
-          <AutoSizingSvg padding={20} ref={svgRef} bgColor={compCtx.background}>
-            <SvgTransform transform={svgScale(0.5)}>
-              <CreatureSymbol {...creature} />
-            </SvgTransform>
-          </AutoSizingSvg>
-        </HoverDebugHelper>
-      </CreatureContext.Provider>
     </Page>
   );
 };
