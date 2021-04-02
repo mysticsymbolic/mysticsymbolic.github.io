@@ -283,10 +283,7 @@ export const MandalaPage: React.FC<{}> = () => {
   return (
     <>
       <h1>Mandala!</h1>
-      <div
-        className="mandala-container"
-        style={{ backgroundColor: baseCompCtx.background }}
-      >
+      <div className="mandala-container">
         <div className="sidebar">
           <CompositionContextWidget
             ctx={baseCompCtx}
@@ -334,7 +331,10 @@ export const MandalaPage: React.FC<{}> = () => {
             <ExportWidget basename="mandala" svgRef={svgRef} />
           </div>
         </div>
-        <div className="canvas">
+        <div
+          className="canvas"
+          style={{ backgroundColor: baseCompCtx.background }}
+        >
           <HoverDebugHelper>
             <AutoSizingSvg
               padding={20}
