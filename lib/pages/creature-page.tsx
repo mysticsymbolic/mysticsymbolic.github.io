@@ -1,17 +1,12 @@
 import React, { useContext, useRef, useState } from "react";
 import { SvgVocabulary } from "../svg-vocabulary";
-import {
-  createSvgSymbolContext,
-  noFillIfShowingSpecs,
-  SvgSymbolData,
-} from "../svg-symbol";
+import { noFillIfShowingSpecs, SvgSymbolData } from "../svg-symbol";
 import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
   iterAttachmentPoints,
 } from "../specs";
 import { Random } from "../random";
-import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
@@ -24,11 +19,12 @@ import {
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { svgScale, SvgTransform } from "../svg-transform";
-import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
-import { DEFAULT_BG_COLOR } from "../colors";
 import { Checkbox } from "../checkbox";
-import { createRandomColorPalette } from "../random-colors";
+import {
+  CompositionContextWidget,
+  createSvgCompositionContext,
+} from "../svg-composition-context";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -178,38 +174,26 @@ function getDownloadBasename(randomSeed: number) {
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [randomSeed, setRandomSeed] = useState<number>(Date.now());
   const [randomlyInvert, setRandomlyInvert] = useState(true);
-  const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
+  const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
   const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = noFillIfShowingSpecs({
     ...defaultCtx,
-    ...symbolCtx,
+    ...compCtx,
   });
   const creature = COMPLEXITY_LEVEL_GENERATORS[complexity]({
     rng: new Random(randomSeed),
     randomlyInvert,
   });
-  const randomizeColors = () => {
-    const [bgColor, stroke, fill] = createRandomColorPalette(3);
-    setBgColor(bgColor);
-    setSymbolCtx({ ...symbolCtx, stroke, fill });
-  };
 
   return (
     <>
       <h1>Creature!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
-        <ColorWidget label="Background" value={bgColor} onChange={setBgColor} />{" "}
-      </SymbolContextWidget>
-      <div className="thingy">
-        <button accessKey="c" onClick={randomizeColors}>
-          Randomize <u>c</u>olors!
-        </button>
-      </div>
+      <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
+      <div className="thingy"></div>
       <div className="thingy">
         <NumericSlider
           label="Random creature complexity"
@@ -242,7 +226,7 @@ export const CreaturePage: React.FC<{}> = () => {
       </div>
       <CreatureContext.Provider value={ctx}>
         <HoverDebugHelper>
-          <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
+          <AutoSizingSvg padding={20} ref={svgRef} bgColor={compCtx.background}>
             <SvgTransform transform={svgScale(0.5)}>
               <CreatureSymbol {...creature} />
             </SvgTransform>

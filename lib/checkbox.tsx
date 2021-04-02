@@ -8,7 +8,7 @@ type CheckboxProps = {
 
 export const Checkbox: React.FC<CheckboxProps> = (props) => {
   return (
-    <label>
+    <label className="checkbox">
       <input
         type="checkbox"
         checked={props.value}

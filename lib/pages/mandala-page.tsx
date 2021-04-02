@@ -1,13 +1,10 @@
 import React, { useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { getBoundingBoxCenter } from "../bounding-box";
-import { ColorWidget } from "../color-widget";
-import { DEFAULT_BG_COLOR } from "../colors";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
-  createSvgSymbolContext,
   noFillIfShowingSpecs,
   safeGetAttachmentPoint,
   SvgSymbolContent,
@@ -23,13 +20,15 @@ import {
   svgTranslate,
 } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { SymbolContextWidget } from "../symbol-context-widget";
 import { NumericRange, range } from "../util";
 import { Random } from "../random";
 import { PointWithNormal } from "../specs";
 import { getAttachmentTransforms } from "../attach";
 import { Checkbox } from "../checkbox";
-import { createRandomColorPalette } from "../random-colors";
+import {
+  CompositionContextWidget,
+  createSvgCompositionContext,
+} from "../svg-composition-context";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -252,10 +251,9 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
 
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
   const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
-  const [baseSymbolCtx, setBaseSymbolCtx] = useState(createSvgSymbolContext());
+  const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
   const [firstBehindSecond, setFirstBehindSecond] = useState(false);
@@ -265,15 +263,9 @@ export const MandalaPage: React.FC<{}> = () => {
     setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
 
-  const symbolCtx = noFillIfShowingSpecs(baseSymbolCtx);
+  const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
-
-  const randomizeColors = () => {
-    const [bgColor, stroke, fill] = createRandomColorPalette(3);
-    setBgColor(bgColor);
-    setBaseSymbolCtx({ ...baseSymbolCtx, stroke, fill });
-  };
 
   const circles = [
     <ExtendedMandalaCircle key="first" {...circle1} {...symbolCtx} />,
@@ -291,20 +283,15 @@ export const MandalaPage: React.FC<{}> = () => {
   return (
     <>
       <h1>Mandala!</h1>
-      <div className="mandala-container" style={{ backgroundColor: bgColor }}>
+      <div
+        className="mandala-container"
+        style={{ backgroundColor: baseCompCtx.background }}
+      >
         <div className="sidebar">
-          <SymbolContextWidget ctx={baseSymbolCtx} onChange={setBaseSymbolCtx}>
-            <ColorWidget
-              label="Background"
-              value={bgColor}
-              onChange={setBgColor}
-            />{" "}
-          </SymbolContextWidget>
-          <div className="thingy">
-            <button accessKey="c" onClick={randomizeColors}>
-              Randomize <u>c</u>olors!
-            </button>
-          </div>
+          <CompositionContextWidget
+            ctx={baseCompCtx}
+            onChange={setBaseCompCtx}
+          />
           <fieldset>
             <legend>First circle</legend>
             <ExtendedMandalaCircleParamsWidget
@@ -349,7 +336,11 @@ export const MandalaPage: React.FC<{}> = () => {
         </div>
         <div className="canvas">
           <HoverDebugHelper>
-            <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
+            <AutoSizingSvg
+              padding={20}
+              ref={svgRef}
+              bgColor={baseCompCtx.background}
+            >
               <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
             </AutoSizingSvg>
           </HoverDebugHelper>
