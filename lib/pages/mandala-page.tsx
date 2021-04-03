@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { getBoundingBoxCenter } from "../bounding-box";
 import { ExportWidget } from "../export-svg";
@@ -177,6 +177,25 @@ const ExtendedMandalaCircle: React.FC<
   );
 };
 
+function animateMandalaCircleParams(
+  value: ExtendedMandalaCircleParams,
+  frameNumber: number
+): ExtendedMandalaCircleParams {
+  if (value.animateSymbolRotation) {
+    value = {
+      ...value,
+      symbolRotation: frameNumber % ROTATION.max,
+    };
+  }
+  return value;
+}
+
+function isAnyMandalaCircleAnimated(
+  values: ExtendedMandalaCircleParams[]
+): boolean {
+  return values.some((value) => value.animateSymbolRotation);
+}
+
 const ExtendedMandalaCircleParamsWidget: React.FC<{
   idPrefix: string;
   value: ExtendedMandalaCircleParams;
@@ -261,6 +280,28 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
   };
 }
 
+function useAnimation(isEnabled: boolean): number {
+  const [frameNumber, setFrameNumber] = useState(0);
+
+  useEffect(() => {
+    if (!isEnabled) {
+      setFrameNumber(0);
+      return;
+    }
+
+    const callback = () => {
+      setFrameNumber(frameNumber + 1);
+    };
+    const timeout = requestAnimationFrame(callback);
+
+    return () => {
+      cancelAnimationFrame(timeout);
+    };
+  }, [isEnabled, frameNumber]);
+
+  return frameNumber;
+}
+
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -275,18 +316,27 @@ export const MandalaPage: React.FC<{}> = () => {
     setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
     setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
-
+  const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
+  const frameNumber = useAnimation(isAnimated);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
   const circles = [
-    <ExtendedMandalaCircle key="first" {...circle1} {...symbolCtx} />,
+    <ExtendedMandalaCircle
+      key="first"
+      {...animateMandalaCircleParams(circle1, frameNumber)}
+      {...symbolCtx}
+    />,
   ];
 
   if (useTwoCircles) {
     circles.push(
-      <ExtendedMandalaCircle key="second" {...circle2} {...circle2SymbolCtx} />
+      <ExtendedMandalaCircle
+        key="second"
+        {...animateMandalaCircleParams(circle2, frameNumber)}
+        {...circle2SymbolCtx}
+      />
     );
     if (firstBehindSecond) {
       circles.reverse();
