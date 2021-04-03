@@ -1,35 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { getBoundingBoxCenter } from "../bounding-box";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
   noFillIfShowingSpecs,
-  safeGetAttachmentPoint,
-  SvgSymbolContent,
   SvgSymbolContext,
-  SvgSymbolData,
   swapColors,
 } from "../svg-symbol";
 import { VocabularyWidget } from "../vocabulary-widget";
-import {
-  svgRotate,
-  svgScale,
-  SvgTransform,
-  svgTranslate,
-} from "../svg-transform";
+import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { NumericRange, range } from "../util";
+import { NumericRange } from "../util";
 import { Random } from "../random";
-import { PointWithNormal } from "../specs";
-import { getAttachmentTransforms } from "../attach";
 import { Checkbox } from "../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
+import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -85,81 +75,6 @@ const ROTATION: NumericRange = {
   min: 0,
   max: 359,
   step: 1,
-};
-
-/**
- * Returns the anchor point of the given symbol; if it doesn't have
- * an anchor point, return a reasonable default one by taking the
- * center of the symbol and having the normal point along the negative
- * y-axis (i.e., up).
- */
-function getAnchorOrCenter(symbol: SvgSymbolData): PointWithNormal {
-  return (
-    safeGetAttachmentPoint(symbol, "anchor") || {
-      point: getBoundingBoxCenter(symbol.bbox),
-      normal: { x: 0, y: -1 },
-    }
-  );
-}
-
-type MandalaCircleParams = {
-  data: SvgSymbolData;
-  radius: number;
-  numSymbols: number;
-  symbolTransforms?: SvgTransform[];
-  invertEveryOtherSymbol: boolean;
-};
-
-type MandalaCircleProps = MandalaCircleParams & SvgSymbolContext;
-
-function isEvenNumber(value: number) {
-  return value % 2 === 0;
-}
-
-const MandalaCircle: React.FC<MandalaCircleProps> = (props) => {
-  const degreesPerItem = 360 / props.numSymbols;
-  const { translation, rotation } = getAttachmentTransforms(
-    {
-      point: { x: 0, y: 0 },
-      normal: { x: 0, y: -1 },
-    },
-    getAnchorOrCenter(props.data)
-  );
-  const transform: SvgTransform[] = [
-    // Remember that transforms are applied in reverse order,
-    // so read the following from the end first!
-
-    // Finally, move the symbol out along the radius of the circle.
-    svgTranslate({ x: 0, y: -props.radius }),
-
-    // Then apply any individual symbol transformations.
-    ...(props.symbolTransforms || []),
-
-    // First, re-orient the symbol so its anchor point is at
-    // the origin and facing the proper direction.
-    svgRotate(rotation),
-    svgTranslate(translation),
-  ];
-
-  const invertEveryOtherSymbol =
-    isEvenNumber(props.numSymbols) && props.invertEveryOtherSymbol;
-
-  const symbols = range(props.numSymbols)
-    .reverse()
-    .map((i) => (
-      <SvgTransform
-        key={i}
-        transform={[svgRotate(degreesPerItem * i), ...transform]}
-      >
-        {invertEveryOtherSymbol && isEvenNumber(i) ? (
-          <SvgSymbolContent {...swapColors(props)} />
-        ) : (
-          <SvgSymbolContent {...props} />
-        )}
-      </SvgTransform>
-    ));
-
-  return <>{symbols}</>;
 };
 
 const ExtendedMandalaCircle: React.FC<
