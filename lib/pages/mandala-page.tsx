@@ -36,6 +36,7 @@ type ExtendedMandalaCircleParams = MandalaCircleParams & {
   rotation: number;
   symbolScaling: number;
   symbolRotation: number;
+  animateSymbolRotation: boolean;
 };
 
 const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
@@ -47,6 +48,7 @@ const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   symbolScaling: 1,
   symbolRotation: 0,
   invertEveryOtherSymbol: false,
+  animateSymbolRotation: false,
 };
 
 const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
@@ -58,6 +60,7 @@ const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
   symbolScaling: 1,
   symbolRotation: 0,
   invertEveryOtherSymbol: false,
+  animateSymbolRotation: false,
 };
 
 const RADIUS: NumericRange = {
@@ -226,9 +229,17 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
       <NumericSlider
         id={`${idPrefix}symbolRotation`}
         label="Symbol rotation"
+        disabled={value.animateSymbolRotation}
         value={value.symbolRotation}
         onChange={(symbolRotation) => onChange({ ...value, symbolRotation })}
         {...ROTATION}
+      />
+      <Checkbox
+        label="Animate symbol rotation"
+        value={value.animateSymbolRotation}
+        onChange={(animateSymbolRotation) =>
+          onChange({ ...value, animateSymbolRotation })
+        }
       />
       <Checkbox
         label="Invert every other symbol (applies only to circles with an even number of symbols)"
