@@ -252,6 +252,7 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
 
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
   const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
   const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
@@ -330,12 +331,14 @@ export const MandalaPage: React.FC<{}> = () => {
       <div
         className="canvas"
         style={{ backgroundColor: baseCompCtx.background }}
+        ref={canvasRef}
       >
         <HoverDebugHelper>
           <AutoSizingSvg
             padding={20}
             ref={svgRef}
             bgColor={baseCompCtx.background}
+            sizeToElement={canvasRef}
           >
             <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
           </AutoSizingSvg>
