@@ -1,21 +1,42 @@
-import React, { useContext } from "react";
+import React, { MouseEvent, useContext } from "react";
 import type { PageName } from "./pages";
 
 export type PageContext = {
   currPage: PageName;
   allPages: PageName[];
+  pushState: (href: string) => void;
 };
 
 export const PageContext = React.createContext<PageContext>({
   currPage: "vocabulary",
   allPages: [],
+  pushState: () => {
+    throw new Error("No page context is defined!");
+  },
 });
 
 export const PAGE_QUERY_ARG = "p";
 
-const PageLink: React.FC<{ page: PageName }> = ({ page }) => (
-  <a href={`?${PAGE_QUERY_ARG}=${encodeURIComponent(page)}`}>{page}</a>
-);
+function isNormalLinkClick(e: MouseEvent): boolean {
+  return !e.shiftKey && !e.altKey && !e.metaKey && !e.ctrlKey && e.button === 0;
+}
+
+const PageLink: React.FC<{ page: PageName }> = ({ page }) => {
+  const href = `?${PAGE_QUERY_ARG}=${encodeURIComponent(page)}`;
+  const { pushState } = useContext(PageContext);
+  const handleClick = (e: MouseEvent) => {
+    if (isNormalLinkClick(e)) {
+      pushState(href);
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <a href={href} onClick={handleClick}>
+      {page}
+    </a>
+  );
+};
 
 const Navbar: React.FC<{}> = (props) => {
   const pc = useContext(PageContext);
