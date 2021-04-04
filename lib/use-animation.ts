@@ -14,24 +14,24 @@ import { useEffect, useState } from "react";
  * reset to zero once it has finished.
  */
 export function useAnimation(durationMs: number): number {
-  const [msElapsed, setMsElapsed] = useState(0);
+  const [pct, setPct] = useState(0);
   const [lastTimestamp, setLastTimestamp] = useState<number | undefined>(
     undefined
   );
 
   useEffect(() => {
     if (!durationMs) {
-      setMsElapsed(0);
+      setPct(0);
       setLastTimestamp(undefined);
       return;
     }
 
     const callback = (timestamp: number) => {
-      let timeDelta = 0;
       if (typeof lastTimestamp === "number") {
-        timeDelta = timestamp - lastTimestamp;
+        const timeDelta = timestamp - lastTimestamp;
+        const pctDelta = timeDelta / durationMs;
+        setPct((pct + pctDelta) % 1.0);
       }
-      setMsElapsed(msElapsed + timeDelta);
       setLastTimestamp(timestamp);
     };
     const timeout = requestAnimationFrame(callback);
@@ -39,7 +39,7 @@ export function useAnimation(durationMs: number): number {
     return () => {
       cancelAnimationFrame(timeout);
     };
-  }, [durationMs, msElapsed, lastTimestamp]);
+  }, [durationMs, pct, lastTimestamp]);
 
-  return durationMs > 0 ? (msElapsed % durationMs) / durationMs : 0;
+  return pct;
 }
