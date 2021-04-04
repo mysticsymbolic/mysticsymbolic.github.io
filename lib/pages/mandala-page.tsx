@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
@@ -20,6 +20,7 @@ import {
 } from "../svg-composition-context";
 import { Page } from "../page";
 import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
+import { useAnimation } from "../use-animation";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -77,6 +78,14 @@ const ROTATION: NumericRange = {
   step: 1,
 };
 
+const DURATION_SECS: NumericRange = {
+  min: 0.5,
+  max: 10,
+  step: 0.1,
+};
+
+const DEFAULT_DURATION_SECS = 2;
+
 const ExtendedMandalaCircle: React.FC<
   ExtendedMandalaCircleParams & SvgSymbolContext
 > = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
@@ -94,12 +103,12 @@ const ExtendedMandalaCircle: React.FC<
 
 function animateMandalaCircleParams(
   value: ExtendedMandalaCircleParams,
-  frameNumber: number
+  animPct: number
 ): ExtendedMandalaCircleParams {
   if (value.animateSymbolRotation) {
     value = {
       ...value,
-      symbolRotation: frameNumber % ROTATION.max,
+      symbolRotation: animPct * ROTATION.max,
     };
   }
   return value;
@@ -195,33 +204,12 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
   };
 }
 
-function useAnimation(isEnabled: boolean): number {
-  const [frameNumber, setFrameNumber] = useState(0);
-
-  useEffect(() => {
-    if (!isEnabled) {
-      setFrameNumber(0);
-      return;
-    }
-
-    const callback = () => {
-      setFrameNumber(frameNumber + 1);
-    };
-    const timeout = requestAnimationFrame(callback);
-
-    return () => {
-      cancelAnimationFrame(timeout);
-    };
-  }, [isEnabled, frameNumber]);
-
-  return frameNumber;
-}
-
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
   const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
+  const [durationSecs, setDurationSecs] = useState(DEFAULT_DURATION_SECS);
   const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
@@ -232,7 +220,7 @@ export const MandalaPage: React.FC<{}> = () => {
     setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
-  const frameNumber = useAnimation(isAnimated);
+  const animPct = useAnimation(isAnimated ? durationSecs * 1000 : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
@@ -240,7 +228,7 @@ export const MandalaPage: React.FC<{}> = () => {
   const circles = [
     <ExtendedMandalaCircle
       key="first"
-      {...animateMandalaCircleParams(circle1, frameNumber)}
+      {...animateMandalaCircleParams(circle1, animPct)}
       {...symbolCtx}
     />,
   ];
@@ -249,7 +237,7 @@ export const MandalaPage: React.FC<{}> = () => {
     circles.push(
       <ExtendedMandalaCircle
         key="second"
-        {...animateMandalaCircleParams(circle2, frameNumber)}
+        {...animateMandalaCircleParams(circle2, animPct)}
         {...circle2SymbolCtx}
       />
     );
@@ -296,6 +284,15 @@ export const MandalaPage: React.FC<{}> = () => {
               onChange={setFirstBehindSecond}
             />
           </fieldset>
+        )}
+        {isAnimated && (
+          <NumericSlider
+            label="Animation loop duration"
+            valueSuffix="s"
+            value={durationSecs}
+            onChange={(duration) => setDurationSecs(duration)}
+            {...DURATION_SECS}
+          />
         )}
         <div className="thingy">
           <button accessKey="r" onClick={randomize}>
