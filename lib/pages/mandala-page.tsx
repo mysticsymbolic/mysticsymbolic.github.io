@@ -11,7 +11,7 @@ import {
 import { VocabularyWidget } from "../vocabulary-widget";
 import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { NumericRange } from "../util";
+import { isEvenNumber, NumericRange } from "../util";
 import { Random } from "../random";
 import { Checkbox } from "../checkbox";
 import {
@@ -186,6 +186,7 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
       />
       <Checkbox
         label="Invert every other symbol (applies only to circles with an even number of symbols)"
+        disabled={!isEvenNumber(value.numSymbols)}
         value={value.invertEveryOtherSymbol}
         onChange={(invertEveryOtherSymbol) =>
           onChange({ ...value, invertEveryOtherSymbol })

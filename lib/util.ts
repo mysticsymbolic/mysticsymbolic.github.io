@@ -70,3 +70,8 @@ export function slugify(text: string) {
     .replace(/^-+/, "") // Trim - from start of text
     .replace(/-+$/, ""); // Trim - from end of text
 }
+
+/** Returns whether the given number is even (as opposed to odd). */
+export function isEvenNumber(value: number) {
+  return value % 2 === 0;
+}

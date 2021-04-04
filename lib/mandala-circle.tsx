@@ -11,7 +11,7 @@ import {
   swapColors,
 } from "./svg-symbol";
 import { svgRotate, SvgTransform, svgTranslate } from "./svg-transform";
-import { range } from "./util";
+import { isEvenNumber, range } from "./util";
 
 /**
  * Returns the anchor point of the given symbol; if it doesn't have
@@ -37,10 +37,6 @@ export type MandalaCircleParams = {
 };
 
 export type MandalaCircleProps = MandalaCircleParams & SvgSymbolContext;
-
-function isEvenNumber(value: number) {
-  return value % 2 === 0;
-}
 
 export const MandalaCircle: React.FC<MandalaCircleProps> = (props) => {
   const degreesPerItem = 360 / props.numSymbols;
