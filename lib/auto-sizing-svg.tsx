@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 type AutoSizingSvgProps = {
-  padding: number;
+  padding?: number;
   bgColor?: string;
   sizeToElement?: React.RefObject<HTMLElement>;
   children: JSX.Element | JSX.Element[];
@@ -25,7 +25,7 @@ function useResizeHandler(onResize: () => void) {
  */
 export const AutoSizingSvg = React.forwardRef(
   (props: AutoSizingSvgProps, ref: React.ForwardedRef<SVGSVGElement>) => {
-    const { bgColor, padding, sizeToElement } = props;
+    const { bgColor, sizeToElement } = props;
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [width, setWidth] = useState(1);
@@ -50,6 +50,7 @@ export const AutoSizingSvg = React.forwardRef(
         const svgEl = gRef.current;
         if (svgEl) {
           const bbox = svgEl.getBBox();
+          const padding = props.padding || 0;
           setX(bbox.x - padding);
           setY(bbox.y - padding);
           setWidth(bbox.width + padding * 2);
