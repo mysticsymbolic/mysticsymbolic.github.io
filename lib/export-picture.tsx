@@ -84,7 +84,7 @@ const exportPng: ImageExporter = async (svgMarkup) => {
   });
 };
 
-export const ExportWidget: React.FC<{
+export const ExportPictureWidget: React.FC<{
   svg: SvgRefOrRenderProp;
   basename: string;
 }> = ({ svg: svgRef, basename }) => (

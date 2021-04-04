@@ -10,7 +10,7 @@ import { Random } from "../random";
 import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
+import { ExportPictureWidget } from "../export-picture";
 import {
   CreatureContext,
   CreatureContextType,
@@ -218,7 +218,7 @@ export const CreaturePage: React.FC<{}> = () => {
           <button accessKey="r" onClick={newRandomSeed}>
             <u>R</u>andomize!
           </button>{" "}
-          <ExportWidget
+          <ExportPictureWidget
             basename={getDownloadBasename(randomSeed)}
             svg={svgRef}
           />

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
+import { ExportPictureWidget } from "../export-picture";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
@@ -299,7 +299,7 @@ export const MandalaPage: React.FC<{}> = () => {
           <button accessKey="r" onClick={randomize}>
             <u>R</u>andomize!
           </button>{" "}
-          <ExportWidget basename="mandala" svg={svgRef} />
+          <ExportPictureWidget basename="mandala" svg={svgRef} />
         </div>
       </div>
       <div
