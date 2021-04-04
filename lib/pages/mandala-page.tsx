@@ -84,7 +84,7 @@ const DURATION_SECS: NumericRange = {
   step: 0.1,
 };
 
-const DEFAULT_DURATION_SECS = 2;
+const DEFAULT_DURATION_SECS = 3;
 
 const ExtendedMandalaCircle: React.FC<
   ExtendedMandalaCircleParams & SvgSymbolContext
