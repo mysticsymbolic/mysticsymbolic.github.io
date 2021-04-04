@@ -1,4 +1,5 @@
 import React from "react";
+import { createGIF } from "./animated-gif";
 
 function getSvgMarkup(el: SVGSVGElement): string {
   return [
@@ -71,6 +72,33 @@ const exportPng: ImageExporter = async (svgEl) => {
   });
 };
 
+/**
+ * Exports the given SVG as a GIF in a data URL.
+ */
+const exportGif: ImageExporter = async (svgEl) => {
+  const dataURL = await exportSvg(svgEl);
+
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const img = document.createElement("img");
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = getCanvasContext2D(canvas);
+      ctx.drawImage(img, 0, 0);
+      const gif = createGIF();
+      gif.addFrame(canvas);
+      gif.on("finished", function (blob) {
+        resolve(URL.createObjectURL(blob));
+      });
+      gif.render();
+    };
+    img.onerror = reject;
+    img.src = dataURL;
+  });
+};
+
 export const ExportWidget: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
   basename: string;
@@ -81,6 +109,9 @@ export const ExportWidget: React.FC<{
     </button>{" "}
     <button onClick={() => exportImage(svgRef, basename, "png", exportPng)}>
       Export PNG
+    </button>
+    <button onClick={() => exportImage(svgRef, basename, "gif", exportGif)}>
+      Export GIF
     </button>
   </>
 );
