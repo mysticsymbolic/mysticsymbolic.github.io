@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
  * Assumes that the animation is looping, so the percentage will
  * reset to zero once it has finished.
  */
-export function useAnimation(durationMs: number): number {
+export function useAnimationPct(durationMs: number): number {
   const [pct, setPct] = useState(0);
   const [lastTimestamp, setLastTimestamp] = useState<number | undefined>(
     undefined

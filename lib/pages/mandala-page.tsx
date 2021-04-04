@@ -20,7 +20,7 @@ import {
 } from "../svg-composition-context";
 import { Page } from "../page";
 import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
-import { useAnimation } from "../use-animation";
+import { useAnimationPct } from "../animation";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -220,7 +220,7 @@ export const MandalaPage: React.FC<{}> = () => {
     setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
   };
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
-  const animPct = useAnimation(isAnimated ? durationSecs * 1000 : 0);
+  const animPct = useAnimationPct(isAnimated ? durationSecs * 1000 : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
