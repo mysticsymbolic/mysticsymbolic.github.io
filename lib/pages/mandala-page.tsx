@@ -299,7 +299,7 @@ export const MandalaPage: React.FC<{}> = () => {
           <button accessKey="r" onClick={randomize}>
             <u>R</u>andomize!
           </button>{" "}
-          <ExportWidget basename="mandala" svgRef={svgRef} />
+          <ExportWidget basename="mandala" svg={svgRef} />
         </div>
       </div>
       <div
@@ -309,7 +309,6 @@ export const MandalaPage: React.FC<{}> = () => {
       >
         <HoverDebugHelper>
           <AutoSizingSvg
-            padding={20}
             ref={svgRef}
             bgColor={baseCompCtx.background}
             sizeToElement={canvasRef}

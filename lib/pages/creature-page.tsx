@@ -220,7 +220,7 @@ export const CreaturePage: React.FC<{}> = () => {
           </button>{" "}
           <ExportWidget
             basename={getDownloadBasename(randomSeed)}
-            svgRef={svgRef}
+            svg={svgRef}
           />
         </div>
       </div>
