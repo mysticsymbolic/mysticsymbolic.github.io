@@ -24,7 +24,7 @@ never_be_nested = false
 
 
 
-a
+
 # If true, this indicates that the symbol nested on this
 
 # symbol’s nesting area should have its colors inverted.
