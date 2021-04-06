@@ -1,5 +1,6 @@
 import { Random } from "./random";
 import { range } from "./util";
+import { hsluvToHex } from "hsluv";
 
 /**
  * Clamp the given number to be between 0 and 255, then
@@ -18,9 +19,19 @@ export function clampedByteToHex(value: number): string {
   return hex;
 }
 
+/*
 function createRandomColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
   return "#" + rgb.map(clampedByteToHex).join("");
+}
+*/
+
+function createRandomColor(rng: Random): string {
+    let hue: number = rng.inRange({ min: 0, max: 360, step: 1 });
+    let saturation: number = rng.inRange({ min: 0, max: 100, step: 1 });
+    let lightness: number = rng.inRange({ min: 0, max: 100, step: 1 });
+    let randcol_hex: string = hsluvToHex([hue, saturation, lightness]);
+    return randcol_hex;
 }
 
 /**
