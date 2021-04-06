@@ -8,7 +8,7 @@
     "typecheck": "tsc --noemit",
     "test:watch": "jest --watch",
     "test": "jest",
-    "build": "node build-vocabulary.js && rm -rf dist && parcel build index.html -d dist --public-url .",
+    "build": "node build-vocabulary.js && rimraf dist && parcel build index.html -d dist --public-url .",
     "watch": "node build-vocabulary.js && parcel index.html -d dist-watch"
   },
   "author": "",
@@ -37,5 +37,9 @@
   },
   "browserslist": [
     "since 2017-06"
-  ]
+  ],
+  "devDependencies": {
+    "mkdirp": "^1.0.4",
+    "rimraf": "^3.0.2"
+  }
 }
