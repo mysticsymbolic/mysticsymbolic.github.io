@@ -38,7 +38,7 @@ function createRandomColor(rng: Random): string {
 function createRandomColor(rng: Random): string {
     const max_luv_samples = 100;
     let luv_sample_failed = true;
-    let rand_color_hex:string;
+    let rand_color_hex:string = "0x000000";
 
     //See if we can pull out a sample inside the LUV solid
     for (let i=0; i<max_luv_samples; i++) {
