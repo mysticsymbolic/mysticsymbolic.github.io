@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
+    "prettier:check": "prettier --check lib/**/*.ts lib/**/*.ts",
+    "prettier:fix": "prettier --write   lib/**/*.ts lib/**/*.ts",
     "typecheck": "tsc --noemit",
     "test:watch": "jest --watch",
     "test": "jest",
