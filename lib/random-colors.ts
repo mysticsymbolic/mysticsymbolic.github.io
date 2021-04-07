@@ -19,26 +19,10 @@ export function clampedByteToHex(value: number): string {
   return hex;
 }
 
-/*
-function createRandomColor(rng: Random): string {
-  const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
-  return "#" + rgb.map(clampedByteToHex).join("");
-}
-*/
-/*
-function createRandomColor(rng: Random): string {
-    let hue: number = rng.inRange({ min: 0, max: 360, step: 1 });
-    let saturation: number = rng.inRange({ min: 0, max: 100, step: 1 });
-    let lightness: number = rng.inRange({ min: 0, max: 100, step: 1 });
-    let randcol_hex: string = hsluvToHex([hue, saturation, lightness]);
-    return randcol_hex;
-}
-*/
-
 function createRandomColor(rng: Random): string {
     const max_luv_samples = 100;
     let luv_sample_failed = true;
-    let rand_color_hex:string = "0x000000";
+    let rand_color_hex:string = "#000000";
 
     //See if we can pull out a sample inside the LUV solid
     for (let i=0; i<max_luv_samples; i++) {
@@ -48,7 +32,6 @@ function createRandomColor(rng: Random): string {
 	let rand_color = colorspaces.make_color('CIELUV', [L, u, v]);
 	
 	if(rand_color.is_displayable()) {
-	    //console.log(`Displayable: ${L}, ${u}, ${v} on iter ${i}`);
 	    rand_color_hex = rand_color.as('hex');
 	    luv_sample_failed = false;
 	    break;
@@ -59,11 +42,11 @@ function createRandomColor(rng: Random): string {
     if(luv_sample_failed) {
 	console.log("Sampling sRGB")
 	let rgb = (new Array<number>(3)).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
-	//console.log(rgb)
+	console.log(rgb)
 	for(let i=0; i<rgb.length; i++) {
-	    rgb[i] = rgb[i]/255;
+	    rgb[i] = rgb[i]/255.0;
 	}
-	//console.log(rgb)
+	console.log(rgb)
 	let rand_color = colorspaces.make_color('sRGB',rgb);
 	rand_color_hex = rand_color.as('hex');
     }
