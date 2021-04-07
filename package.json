@@ -39,7 +39,6 @@
     "since 2017-06"
   ],
   "devDependencies": {
-    "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2"
   }
 }
