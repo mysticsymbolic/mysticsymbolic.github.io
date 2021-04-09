@@ -26,6 +26,7 @@ import {
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
+import { RandomizerWidget } from "../randomizer-widget";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -214,10 +215,11 @@ export const CreaturePage: React.FC<{}> = () => {
             onChange={setRandomlyInvert}
           />
         </div>
+        <RandomizerWidget
+          onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
+          onSymbolsChange={newRandomSeed}
+        />
         <div className="thingy">
-          <button accessKey="r" onClick={newRandomSeed}>
-            <u>R</u>andomize!
-          </button>{" "}
           <ExportWidget
             basename={getDownloadBasename(randomSeed)}
             svgRef={svgRef}
