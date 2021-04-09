@@ -1,7 +1,6 @@
 import React from "react";
 import { ColorWidget } from "./color-widget";
 import { DEFAULT_BG_COLOR } from "./colors";
-import { createRandomColorPalette } from "./random-colors";
 import { createSvgSymbolContext, SvgSymbolContext } from "./svg-symbol";
 import {
   SymbolContextWidget,
@@ -36,19 +35,8 @@ export function CompositionContextWidget<T extends SvgCompositionContext>({
   onChange,
   children,
 }: CompositionContextWidgetProps<T>): JSX.Element {
-  const randomizeColors = () => {
-    const [background, stroke, fill] = createRandomColorPalette(3);
-    onChange({ ...ctx, background, stroke, fill });
-  };
-
-  const extra = (
-    <button accessKey="c" onClick={randomizeColors}>
-      Randomize <u>c</u>olors!
-    </button>
-  );
-
   return (
-    <SymbolContextWidget ctx={ctx} onChange={onChange} extraButtons={extra}>
+    <SymbolContextWidget ctx={ctx} onChange={onChange}>
       {children}
       <ColorWidget
         label="Background"

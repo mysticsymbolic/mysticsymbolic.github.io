@@ -21,6 +21,7 @@ import {
 import { Page } from "../page";
 import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
+import { RandomizerWidget } from "../randomizer-widget";
 
 type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -215,11 +216,6 @@ export const MandalaPage: React.FC<{}> = () => {
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
   const [firstBehindSecond, setFirstBehindSecond] = useState(false);
-  const randomize = () => {
-    const rng = new Random(Date.now());
-    setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
-    setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
-  };
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
   const animPct = useAnimationPct(isAnimated ? durationSecs * 1000 : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
@@ -295,10 +291,16 @@ export const MandalaPage: React.FC<{}> = () => {
             {...DURATION_SECS}
           />
         )}
+        <RandomizerWidget
+          onColorsChange={(colors) =>
+            setBaseCompCtx({ ...baseCompCtx, ...colors })
+          }
+          onSymbolsChange={(rng) => {
+            setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
+            setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
+          }}
+        />
         <div className="thingy">
-          <button accessKey="r" onClick={randomize}>
-            <u>R</u>andomize!
-          </button>{" "}
           <ExportWidget basename="mandala" svgRef={svgRef} />
         </div>
       </div>
