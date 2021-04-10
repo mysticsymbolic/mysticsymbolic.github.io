@@ -120,11 +120,7 @@ async function exportGif(
     const markup = renderToStaticMarkup(render(animPct));
     const url = getSvgUrl(markup);
     await drawImage(canvas, url);
-    if (i === 0) {
-      gif.addFrame(canvas);
-    } else {
-      gif.addFrame(canvas, { delay: msecPerFrame });
-    }
+    gif.addFrame(canvas, { delay: msecPerFrame });
   }
 
   return new Promise((resolve, reject) => {
