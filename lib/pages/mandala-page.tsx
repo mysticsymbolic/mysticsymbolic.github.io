@@ -216,32 +216,37 @@ export const MandalaPage: React.FC<{}> = () => {
   const [useTwoCircles, setUseTwoCircles] = useState(false);
   const [invertCircle2, setInvertCircle2] = useState(true);
   const [firstBehindSecond, setFirstBehindSecond] = useState(false);
+  const durationMsecs = durationSecs * 1000;
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
-  const animPct = useAnimationPct(isAnimated ? durationSecs * 1000 : 0);
+  const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
-  const circles = [
-    <ExtendedMandalaCircle
-      key="first"
-      {...animateMandalaCircleParams(circle1, animPct)}
-      {...symbolCtx}
-    />,
-  ];
-
-  if (useTwoCircles) {
-    circles.push(
+  const makeMandala = (animPct: number): JSX.Element => {
+    const circles = [
       <ExtendedMandalaCircle
-        key="second"
-        {...animateMandalaCircleParams(circle2, animPct)}
-        {...circle2SymbolCtx}
-      />
-    );
-    if (firstBehindSecond) {
-      circles.reverse();
+        key="first"
+        {...animateMandalaCircleParams(circle1, animPct)}
+        {...symbolCtx}
+      />,
+    ];
+
+    if (useTwoCircles) {
+      circles.push(
+        <ExtendedMandalaCircle
+          key="second"
+          {...animateMandalaCircleParams(circle2, animPct)}
+          {...circle2SymbolCtx}
+        />
+      );
+      if (firstBehindSecond) {
+        circles.reverse();
+      }
     }
-  }
+
+    return <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>;
+  };
 
   return (
     <Page title="Mandala!">
@@ -301,7 +306,13 @@ export const MandalaPage: React.FC<{}> = () => {
           }}
         />
         <div className="thingy">
-          <ExportWidget basename="mandala" svgRef={svgRef} />
+          <ExportWidget
+            basename="mandala"
+            svgRef={svgRef}
+            animate={
+              isAnimated && { duration: durationMsecs, render: makeMandala }
+            }
+          />
         </div>
       </div>
       <div
@@ -311,12 +322,11 @@ export const MandalaPage: React.FC<{}> = () => {
       >
         <HoverDebugHelper>
           <AutoSizingSvg
-            padding={20}
             ref={svgRef}
             bgColor={baseCompCtx.background}
             sizeToElement={canvasRef}
           >
-            <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>
+            {makeMandala(animPct)}
           </AutoSizingSvg>
         </HoverDebugHelper>
       </div>

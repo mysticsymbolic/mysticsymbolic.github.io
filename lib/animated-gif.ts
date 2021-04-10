@@ -9,5 +9,6 @@ export function createGIF(): GIF {
     workers: 2,
     workerScript: URL.createObjectURL(workerBlob),
     quality: 10,
+    repeat: 0,
   });
 }
