@@ -4,10 +4,13 @@ import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { Page } from "../page";
+import { Random } from "../random";
+import { createRandomColorPalette } from "../random-colors";
 import { createSvgSymbolContext } from "../svg-symbol";
 import { svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
 import { SymbolContextWidget } from "../symbol-context-widget";
+import { range } from "../util";
 
 const symbol = createCreatureSymbolFactory(SvgVocabulary);
 
@@ -51,6 +54,35 @@ const EYE_CREATURE = (
   </Eye>
 );
 
+const RandomColorSampling: React.FC<{}> = () => {
+  const [seed, setSeed] = useState(Date.now());
+  const NUM_COLORS = 100;
+  const rng = new Random(seed);
+  const palette = createRandomColorPalette(NUM_COLORS, rng);
+
+  return (
+    <>
+      <div className="thingy">
+        <div style={{ fontSize: 0 }}>
+          {range(NUM_COLORS).map((i) => (
+            <div
+              style={{
+                backgroundColor: palette[i],
+                width: "1rem",
+                height: "1rem",
+                display: "inline-block",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="thingy">
+        <button onClick={() => setSeed(Date.now())}>Regenerate colors</button>
+      </div>
+    </>
+  );
+};
+
 export const DebugPage: React.FC<{}> = () => {
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
@@ -64,6 +96,8 @@ export const DebugPage: React.FC<{}> = () => {
     <Page title="Debug!">
       <div className="sidebar">
         <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
+        <h2>Random color sampling</h2>
+        <RandomColorSampling />
       </div>
       <div className="canvas">
         <CreatureContext.Provider value={ctx}>

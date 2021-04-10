@@ -29,6 +29,20 @@ To run tests interactively, run:
 npm run test:watch
 ```
 
+## Code style
+
+All code styling is managed by [Prettier][].
+
+To format the code automatically, run:
+
+```
+npm run prettier:fix
+```
+
+You can alternatively install a Prettier extension for your editor; see its website for more details.
+
+[Prettier]: https://prettier.io/
+
 ## Deployment
 
 To deploy the project to GitHub Pages, run:
