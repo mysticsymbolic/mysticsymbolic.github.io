@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createGIF } from "./animated-gif";
 import { getSvgMetadata, SvgWithBackground } from "./auto-sizing-svg";
-import { inclusiveRange } from "./util";
 
 function getSvgDocument(svgMarkup: string): string {
   return [
