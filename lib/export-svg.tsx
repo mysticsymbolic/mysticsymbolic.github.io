@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createGIF } from "./animated-gif";
 import { getSvgMetadata, SvgWithBackground } from "./auto-sizing-svg";
@@ -13,7 +13,12 @@ function getSvgDocument(svgMarkup: string): string {
   ].join("\n");
 }
 
-type ImageExporter = (svgEl: SVGSVGElement) => Promise<string>;
+type ProgressHandler = (value: number | null) => void;
+
+type ImageExporter = (
+  svgEl: SVGSVGElement,
+  onProgress: ProgressHandler
+) => Promise<string>;
 
 /**
  * Initiates a download on the user's browser which downloads the given
@@ -23,6 +28,7 @@ async function exportImage(
   svgRef: React.RefObject<SVGSVGElement>,
   basename: string,
   ext: string,
+  onProgress: ProgressHandler,
   exporter: ImageExporter
 ) {
   const svgEl = svgRef.current;
@@ -30,13 +36,14 @@ async function exportImage(
     alert("Oops, an error occurred! Please try again later.");
     return;
   }
-  const url = await exporter(svgEl);
+  const url = await exporter(svgEl, onProgress);
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = `${basename}.${ext}`;
   document.body.append(anchor);
   anchor.click();
   document.body.removeChild(anchor);
+  onProgress(null);
 }
 
 function getCanvasContext2D(
@@ -61,8 +68,8 @@ const exportSvg: ImageExporter = async (svgEl) => getSvgUrl(svgEl.outerHTML);
 /**
  * Exports the given SVG as a PNG in a data URL.
  */
-const exportPng: ImageExporter = async (svgEl) => {
-  const dataURL = await exportSvg(svgEl);
+const exportPng: ImageExporter = async (svgEl, onProgress) => {
+  const dataURL = await exportSvg(svgEl, onProgress);
 
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
@@ -101,7 +108,8 @@ function drawImage(canvas: HTMLCanvasElement, dataURL: string): Promise<void> {
  */
 async function exportGif(
   animate: ExportableAnimation,
-  svgEl: SVGSVGElement
+  svgEl: SVGSVGElement,
+  onProgress: (value: number) => void
 ): Promise<string> {
   const fps = animate.fps || 15;
   const msecPerFrame = 1000 / fps;
@@ -115,6 +123,7 @@ async function exportGif(
   const gif = createGIF();
 
   for (let i = 0; i < numFrames; i++) {
+    onProgress(i / numFrames);
     const canvas = document.createElement("canvas");
     const animPct = i / numFrames;
     const markup = renderToStaticMarkup(render(animPct));
@@ -125,6 +134,7 @@ async function exportGif(
 
   return new Promise((resolve, reject) => {
     gif.on("finished", function (blob) {
+      onProgress(1);
       resolve(URL.createObjectURL(blob));
     });
     gif.render();
@@ -141,22 +151,49 @@ export const ExportWidget: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
   animate?: ExportableAnimation | false;
   basename: string;
-}> = ({ svgRef, basename, animate }) => (
-  <>
-    <button onClick={() => exportImage(svgRef, basename, "svg", exportSvg)}>
-      Export SVG
-    </button>{" "}
-    <button onClick={() => exportImage(svgRef, basename, "png", exportPng)}>
-      Export PNG
-    </button>{" "}
-    {animate && (
+}> = ({ svgRef, basename, animate }) => {
+  const [progress, setProgress] = useState<number | null>(null);
+
+  if (progress !== null) {
+    return (
+      <div className="overlay-wrapper">
+        <p>Exporting&hellip;</p>
+        <progress value={progress} />
+      </div>
+    );
+  }
+
+  return (
+    <>
       <button
         onClick={() =>
-          exportImage(svgRef, basename, "gif", exportGif.bind(null, animate))
+          exportImage(svgRef, basename, "svg", setProgress, exportSvg)
         }
       >
-        Export GIF
-      </button>
-    )}
-  </>
-);
+        Export SVG
+      </button>{" "}
+      <button
+        onClick={() =>
+          exportImage(svgRef, basename, "png", setProgress, exportPng)
+        }
+      >
+        Export PNG
+      </button>{" "}
+      {animate && (
+        <button
+          onClick={() =>
+            exportImage(
+              svgRef,
+              basename,
+              "gif",
+              setProgress,
+              exportGif.bind(null, animate)
+            )
+          }
+        >
+          Export GIF
+        </button>
+      )}
+    </>
+  );
+};
