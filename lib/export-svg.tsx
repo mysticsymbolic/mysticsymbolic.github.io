@@ -1,6 +1,4 @@
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import { BBox } from "../vendor/bezier-js";
 import { createGIF } from "./animated-gif";
 
 function getSvgMarkup(el: SVGSVGElement): string {
@@ -117,18 +115,3 @@ export const ExportWidget: React.FC<{
     </button>
   </>
 );
-
-function getSvgBbox(children: JSX.Element): BBox {
-  const markup = renderToStaticMarkup(<svg>{children}</svg>);
-  const div = document.createElement("div");
-  document.body.appendChild(div);
-  div.innerHTML = markup;
-  const svg = div.firstChild as SVGSVGElement;
-  const bbox = svg.getBBox();
-  const result: BBox = {
-    x: { min: bbox.left, max: bbox.right },
-    y: { min: bbox.top, max: bbox.bottom },
-  };
-  document.body.removeChild(div);
-  return result;
-}
