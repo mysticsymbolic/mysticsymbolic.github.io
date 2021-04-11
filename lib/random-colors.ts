@@ -1,6 +1,7 @@
 import { Random } from "./random";
 import { range } from "./util";
-import * as colorspaces from 'colorspaces';
+import * as colorspaces from "colorspaces";
+
 
 /**
  * Clamp the given number to be between 0 and 255, then
@@ -20,6 +21,7 @@ export function clampedByteToHex(value: number): string {
 }
 
 function createRandomColor(rng: Random): string {
+
     const max_luv_samples = 100;
     let luv_sample_failed = true;
     let rand_color_hex:string = "#000000";

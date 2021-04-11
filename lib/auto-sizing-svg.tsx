@@ -69,10 +69,58 @@ export const AutoSizingSvg = React.forwardRef(
         ref={ref}
       >
         {bgColor && (
-          <rect x={x} y={y} width={width} height={height} fill={bgColor} />
+          <rect
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            fill={bgColor}
+            data-is-background
+          />
         )}
         <g ref={gRef}>{props.children}</g>
       </svg>
     );
   }
+);
+
+export function getSvgMetadata(svgEl: SVGSVGElement) {
+  let bgColor: string | undefined = undefined;
+  const backgroundEl = svgEl.querySelector("[data-is-background]");
+  if (backgroundEl) {
+    bgColor = backgroundEl.getAttribute("fill") ?? undefined;
+  }
+  const { x, y, width, height } = svgEl.viewBox.baseVal;
+  return { x, y, width, height, bgColor };
+}
+
+export type SvgMetadata = ReturnType<typeof getSvgMetadata>;
+
+export const SvgWithBackground: React.FC<SvgMetadata & { children?: any }> = ({
+  x,
+  y,
+  width,
+  height,
+  bgColor,
+  children,
+}) => (
+  <svg
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    width={`${width}px`}
+    height={`${height}px`}
+    viewBox={`${x} ${y} ${width} ${height}`}
+  >
+    {bgColor && (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={bgColor}
+        data-is-background
+      />
+    )}
+    {children}
+  </svg>
 );

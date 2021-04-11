@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
+    "prettier:check": "prettier --check lib/**/*.ts lib/**/*.ts",
+    "prettier:fix": "prettier --write   lib/**/*.ts lib/**/*.ts",
     "typecheck": "tsc --noemit",
     "test:watch": "jest --watch",
     "test": "jest",
-    "build": "node build-vocabulary.js && rm -rf dist && parcel build index.html -d dist --public-url .",
+    "build": "node build-vocabulary.js && rimraf dist && parcel build index.html -d dist --public-url .",
     "watch": "node build-vocabulary.js && parcel index.html -d dist-watch"
   },
   "author": "",
@@ -39,6 +41,10 @@
     "since 2017-06"
   ],
   "devDependencies": {
+<<<<<<< HEAD
     "prettier": "2.2.1"
+=======
+    "rimraf": "^3.0.2"
+>>>>>>> f9b1dec03db3cf80e7c32298ec17f5841877711d
   }
 }
