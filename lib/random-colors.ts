@@ -44,7 +44,7 @@ function createRandomColor(rng: Random): string {
   if (luv_sample_failed) {
     //console.log("Sampling sRGB");
     let rgb = new Array<number>(3)
-      .fill()
+      .fill(0)
       .map(() => rng.inRange({ min: 0, max: 255, step: 1 }) / 255.0);
     //console.log(rgb);
     let rand_color = colorspaces.make_color("sRGB", rgb);
