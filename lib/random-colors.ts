@@ -26,12 +26,14 @@ function createRandomColor(rng: Random): string {
 
   //See if we can pull out a sample inside the LUV solid
   for (let i = 0; i < max_luv_samples; i++) {
-    let L = rng.inRange({ min: 0, max: 100, step: 1 });
-    let u = rng.inRange({ min: -128, max: 128, step: 1 });
-    let v = rng.inRange({ min: -128, max: 128, step: 1 });
+    //bounds from https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
+    let L = rng.inRange({ min: 0, max: 100, step: 0.1 });
+    let u = rng.inRange({ min: -134, max: 220, step: 0.1 });
+    let v = rng.inRange({ min: -140, max: 122, step: 0.1 });
     let rand_color = colorspaces.make_color("CIELUV", [L, u, v]);
 
-    if (rand_color.is_displayable()) {
+    //console.log(`L:${L},u${u},v${v}`);
+    if (rand_color.is_displayable() && !(L == 0.0 && (u != 0 || v != 0))) {
       rand_color_hex = rand_color.as("hex");
       luv_sample_failed = false;
       break;
@@ -40,15 +42,11 @@ function createRandomColor(rng: Random): string {
 
   //just sample sRGB if I couldn't sample a random LUV color
   if (luv_sample_failed) {
-    console.log("Sampling sRGB");
-    let rgb = new Array<number>(3).map(() =>
-      rng.inRange({ min: 0, max: 255, step: 1 })
+    //console.log("Sampling sRGB");
+    let rgb = [0, 0, 0].map(
+      () => rng.inRange({ min: 0, max: 255, step: 1 }) / 255.0
     );
-    console.log(rgb);
-    for (let i = 0; i < rgb.length; i++) {
-      rgb[i] = rgb[i] / 255.0;
-    }
-    console.log(rgb);
+    //console.log(rgb);
     let rand_color = colorspaces.make_color("sRGB", rgb);
     rand_color_hex = rand_color.as("hex");
   }
