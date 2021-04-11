@@ -30,8 +30,10 @@ function createRandomColor(rng: Random): string {
 	let u = rng.inRange({ min: -128, max: 128, step: 1 });
 	let v = rng.inRange({ min: -128, max: 128, step: 1 });
 	let rand_color = colorspaces.make_color('CIELUV', [L, u, v]);
+
+	console.log(`L:${L},u${u},v${v}`)
 	
-	if(rand_color.is_displayable()) {
+	if(rand_color.is_displayable() && !(L==0.0 && (u!=0 || v!= 0)) {
 	    rand_color_hex = rand_color.as('hex');
 	    luv_sample_failed = false;
 	    break;

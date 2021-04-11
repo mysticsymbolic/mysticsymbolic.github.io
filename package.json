@@ -30,7 +30,6 @@
     "gh-pages": "^3.1.0",
     "jest": "^26.6.3",
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "toml": "^3.0.0",
@@ -38,5 +37,8 @@
   },
   "browserslist": [
     "since 2017-06"
-  ]
+  ],
+  "devDependencies": {
+    "prettier": "2.2.1"
+  }
 }
