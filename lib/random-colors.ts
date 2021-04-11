@@ -42,15 +42,11 @@ function createRandomColor(rng: Random): string {
 
   //just sample sRGB if I couldn't sample a random LUV color
   if (luv_sample_failed) {
-    //console.log("Sampling sRGB");
-    let rgb = new Array<number>(3).map(() =>
-      rng.inRange({ min: 0, max: 255, step: 1 })
+    console.log("Sampling sRGB");
+    let rgb = new Array<number>(3).fill().map(() =>
+      rng.inRange({ min: 0, max: 255, step: 1 })/255.0
     );
     console.log(rgb);
-    for (let i = 0; i < rgb.length; i++) {
-      rgb[i] = rgb[i] / 255.0;
-    }
-    //console.log(rgb);
     let rand_color = colorspaces.make_color("sRGB", rgb);
     rand_color_hex = rand_color.as("hex");
   }
