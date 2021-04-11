@@ -2,7 +2,6 @@ import { Random } from "./random";
 import { range } from "./util";
 import * as colorspaces from "colorspaces";
 
-
 /**
  * Clamp the given number to be between 0 and 255, then
  * convert it to hexadecimal.
@@ -21,41 +20,42 @@ export function clampedByteToHex(value: number): string {
 }
 
 function createRandomColor(rng: Random): string {
+  const max_luv_samples = 100;
+  let luv_sample_failed = true;
+  let rand_color_hex: string = "#000000";
 
-    const max_luv_samples = 100;
-    let luv_sample_failed = true;
-    let rand_color_hex:string = "#000000";
+  //See if we can pull out a sample inside the LUV solid
+  for (let i = 0; i < max_luv_samples; i++) {
+    let L = rng.inRange({ min: 0, max: 100, step: 0.1 });
+    let u = rng.inRange({ min: -128, max: 128, step: 0.1 });
+    let v = rng.inRange({ min: -128, max: 128, step: 0.1 });
+    let rand_color = colorspaces.make_color("CIELUV", [L, u, v]);
 
-    //See if we can pull out a sample inside the LUV solid
-    for (let i=0; i<max_luv_samples; i++) {
-	let L = rng.inRange({ min: 0, max: 100, step: 1 });
-	let u = rng.inRange({ min: -128, max: 128, step: 1 });
-	let v = rng.inRange({ min: -128, max: 128, step: 1 });
-	let rand_color = colorspaces.make_color('CIELUV', [L, u, v]);
+    console.log(`L:${L},u${u},v${v}`);
 
-	console.log(`L:${L},u${u},v${v}`)
-	
-	if(rand_color.is_displayable() && !(L==0.0 && (u!=0 || v!= 0)) {
-	    rand_color_hex = rand_color.as('hex');
-	    luv_sample_failed = false;
-	    break;
-	}
+    if (rand_color.is_displayable() && !(L == 0.0 && (u != 0 || v != 0))) {
+      rand_color_hex = rand_color.as("hex");
+      luv_sample_failed = false;
+      break;
     }
+  }
 
-    //just sample sRGB if I couldn't sample a random LUV color
-    if(luv_sample_failed) {
-	console.log("Sampling sRGB")
-	let rgb = (new Array<number>(3)).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
-	console.log(rgb)
-	for(let i=0; i<rgb.length; i++) {
-	    rgb[i] = rgb[i]/255.0;
-	}
-	console.log(rgb)
-	let rand_color = colorspaces.make_color('sRGB',rgb);
-	rand_color_hex = rand_color.as('hex');
+  //just sample sRGB if I couldn't sample a random LUV color
+  if (luv_sample_failed) {
+    //console.log("Sampling sRGB");
+    let rgb = new Array<number>(3).map(() =>
+      rng.inRange({ min: 0, max: 255, step: 1 })
+    );
+    console.log(rgb);
+    for (let i = 0; i < rgb.length; i++) {
+      rgb[i] = rgb[i] / 255.0;
     }
+    //console.log(rgb);
+    let rand_color = colorspaces.make_color("sRGB", rgb);
+    rand_color_hex = rand_color.as("hex");
+  }
 
-    return rand_color_hex;
+  return rand_color_hex;
 }
 
 /**

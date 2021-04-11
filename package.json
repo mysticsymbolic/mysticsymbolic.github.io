@@ -41,10 +41,7 @@
     "since 2017-06"
   ],
   "devDependencies": {
-<<<<<<< HEAD
-    "prettier": "2.2.1"
-=======
+    "prettier": "2.2.1",
     "rimraf": "^3.0.2"
->>>>>>> f9b1dec03db3cf80e7c32298ec17f5841877711d
   }
 }
