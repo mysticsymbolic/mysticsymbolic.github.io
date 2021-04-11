@@ -31,7 +31,7 @@ function createRandomColor(rng: Random): string {
     let v = rng.inRange({ min: -128, max: 128, step: 0.1 });
     let rand_color = colorspaces.make_color("CIELUV", [L, u, v]);
 
-    console.log(`L:${L},u${u},v${v}`);
+    //console.log(`L:${L},u${u},v${v}`);
 
     if (rand_color.is_displayable() && !(L == 0.0 && (u != 0 || v != 0))) {
       rand_color_hex = rand_color.as("hex");
@@ -42,11 +42,11 @@ function createRandomColor(rng: Random): string {
 
   //just sample sRGB if I couldn't sample a random LUV color
   if (luv_sample_failed) {
-    console.log("Sampling sRGB");
+    //console.log("Sampling sRGB");
     let rgb = new Array<number>(3).fill().map(() =>
       rng.inRange({ min: 0, max: 255, step: 1 })/255.0
     );
-    console.log(rgb);
+    //console.log(rgb);
     let rand_color = colorspaces.make_color("sRGB", rgb);
     rand_color_hex = rand_color.as("hex");
   }
