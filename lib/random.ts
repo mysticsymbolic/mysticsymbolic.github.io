@@ -1,4 +1,4 @@
-import { inclusiveRange, NumericRange } from "./util";
+import { inclusiveRange, NumericInterval, NumericRange } from "./util";
 
 export type RandomParameters = {
   modulus: number;
