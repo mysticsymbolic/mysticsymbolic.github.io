@@ -28,9 +28,12 @@ export function rad2deg(radians: number): number {
   return (radians * 180) / Math.PI;
 }
 
-export type NumericRange = {
+export type NumericInterval = {
   min: number;
   max: number;
+};
+
+export type NumericRange = NumericInterval & {
   step: number;
 };
 

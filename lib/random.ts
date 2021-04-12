@@ -58,6 +58,10 @@ export class Random {
     return this.choice(inclusiveRange(range));
   }
 
+  inInterval({ min, max }: NumericInterval): number {
+    return this.next() * (max - min) + min;
+  }
+
   /**
    * Return a random item from the given array. If the array is
    * empty, an exception is thrown.
