@@ -58,8 +58,11 @@ export class Random {
     return this.choice(inclusiveRange(range));
   }
 
-  inInterval({ min, max }: NumericInterval): number {
-    return this.next() * (max - min) + min;
+  /**
+   * Return a number in the interval, second argument is supremum which return value is always less than
+   */
+  inInterval({ min, sup }: NumericInterval): number {
+    return this.next() * (sup - min) + min;
   }
 
   /**

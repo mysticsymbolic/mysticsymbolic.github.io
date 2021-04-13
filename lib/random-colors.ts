@@ -27,9 +27,9 @@ function createRandomColor(rng: Random): string {
   //See if we can pull out a sample inside the LUV solid
   for (let i = 0; i < max_luv_samples; i++) {
     //bounds from https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
-    let L = rng.inInterval({ min: 0, max: 100 });
-    let u = rng.inInterval({ min: -134, max: 220 });
-    let v = rng.inInterval({ min: -140, max: 122 });
+    let L = rng.inInterval({ min: 0, sup: 100 });
+    let u = rng.inInterval({ min: -134, sup: 220 });
+    let v = rng.inInterval({ min: -140, sup: 122 });
     let rand_color = colorspaces.make_color("CIELUV", [L, u, v]);
 
     //console.log(`L:${L},u${u},v${v}`);
