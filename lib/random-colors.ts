@@ -27,14 +27,15 @@ function createRandomColor(rng: Random): string {
   //See if we can pull out a sample inside the LUV solid
   for (let i = 0; i < max_luv_samples; i++) {
     //bounds from https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
-    let L = rng.inRange({ min: 0, max: 100, step: 0.1 });
-    let u = rng.inRange({ min: -134, max: 220, step: 0.1 });
-    let v = rng.inRange({ min: -140, max: 122, step: 0.1 });
+    let L = rng.inInterval({ min: 0, max: 100 });
+    let u = rng.inInterval({ min: -134, max: 220 });
+    let v = rng.inInterval({ min: -140, max: 122 });
     let rand_color = colorspaces.make_color("CIELUV", [L, u, v]);
 
     //console.log(`L:${L},u${u},v${v}`);
     if (rand_color.is_displayable() && !(L == 0.0 && (u != 0 || v != 0))) {
       rand_color_hex = rand_color.as("hex");
+      //console.log(rand_color_hex);
       luv_sample_failed = false;
       break;
     }

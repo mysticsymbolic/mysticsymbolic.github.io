@@ -1,4 +1,4 @@
-import { inclusiveRange, NumericRange } from "./util";
+import { inclusiveRange, NumericInterval, NumericRange } from "./util";
 
 export type RandomParameters = {
   modulus: number;
@@ -56,6 +56,13 @@ export class Random {
    */
   inRange(range: NumericRange): number {
     return this.choice(inclusiveRange(range));
+  }
+
+  /**
+   * Return a number in the interval, second argument is really supremum which return value is always less than
+   */
+  inInterval({ min, max }: NumericInterval): number {
+    return this.next() * (max - min) + min;
   }
 
   /**
