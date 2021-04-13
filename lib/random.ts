@@ -59,10 +59,10 @@ export class Random {
   }
 
   /**
-   * Return a number in the interval, second argument is supremum which return value is always less than
+   * Return a number in the interval, second argument is really supremum which return value is always less than
    */
-  inInterval({ min, sup }: NumericInterval): number {
-    return this.next() * (sup - min) + min;
+  inInterval({ min, max }: NumericInterval): number {
+    return this.next() * (max - min) + min;
   }
 
   /**
