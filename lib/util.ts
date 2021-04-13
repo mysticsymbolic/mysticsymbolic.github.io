@@ -30,7 +30,7 @@ export function rad2deg(radians: number): number {
 
 export type NumericInterval = {
   min: number;
-  sup: number;
+  max: number;
 };
 
 export type NumericRange = NumericInterval & {
