@@ -17,12 +17,13 @@ import { Checkbox } from "../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
+  SvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
 import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
-import { AvroInferredSchema } from "../serialization";
+import { AvroRecordSchema } from "../serialization";
 
 type CircleConfig = {
   symbol: string;
@@ -236,7 +237,40 @@ const defaults = {
   firstBehindSecond: false,
 };
 
-const configType = new AvroInferredSchema(defaults);
+type ManalaPageConfig = typeof defaults;
+
+const circleType = new AvroRecordSchema<CircleConfig>("CircleConfig", {
+  symbol: "string",
+  radius: "int",
+  numSymbols: "int",
+  invertEveryOtherSymbol: "boolean",
+  scaling: "float",
+  rotation: "int",
+  symbolScaling: "float",
+  symbolRotation: "int",
+  animateSymbolRotation: "boolean",
+});
+
+const compType = new AvroRecordSchema<SvgCompositionContext>(
+  "SvgCompositionContext",
+  {
+    stroke: "string",
+    fill: "string",
+    background: "string",
+    showSpecs: "boolean",
+    uniformStrokeWidth: "float",
+  }
+);
+
+const configType = new AvroRecordSchema<ManalaPageConfig>("MandalaPageConfig", {
+  circle1: circleType.type,
+  circle2: circleType.type,
+  durationSecs: "float",
+  baseCompCtx: compType.type,
+  useTwoCircles: "boolean",
+  invertCircle2: "boolean",
+  firstBehindSecond: "boolean",
+});
 
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);

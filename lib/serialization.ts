@@ -1,10 +1,24 @@
 import avro from "avsc";
 
-export class AvroInferredSchema<T extends object> {
+export class AvroRecordSchema<T> {
   readonly type: avro.Type;
+  readonly schema: avro.Schema;
 
-  constructor(readonly defaultValue: T) {
-    this.type = avro.Type.forValue(defaultValue);
+  constructor(name: string, fieldTypes: { [k in keyof T]: avro.Schema }) {
+    const schema: avro.Schema = {
+      name,
+      type: "record",
+      fields: [],
+    };
+    for (let name in fieldTypes) {
+      const type = fieldTypes[name];
+      schema.fields.push({
+        name,
+        type,
+      });
+    }
+    this.type = avro.Type.forSchema(schema);
+    this.schema = schema;
   }
 
   fromBuffer(buffer: Buffer): T {
