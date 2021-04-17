@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
@@ -19,11 +19,16 @@ import {
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
-import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
+import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
+import { AvroInferredSchema } from "../serialization";
 
-type ExtendedMandalaCircleParams = MandalaCircleParams & {
+type CircleConfig = {
+  symbol: string;
+  radius: number;
+  numSymbols: number;
+  invertEveryOtherSymbol: boolean;
   scaling: number;
   rotation: number;
   symbolScaling: number;
@@ -31,8 +36,8 @@ type ExtendedMandalaCircleParams = MandalaCircleParams & {
   animateSymbolRotation: boolean;
 };
 
-const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
-  data: SvgVocabulary.get("eye"),
+const CIRCLE_1_DEFAULTS: CircleConfig = {
+  symbol: "eye",
   radius: 300,
   numSymbols: 5,
   scaling: 1,
@@ -43,8 +48,8 @@ const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   animateSymbolRotation: false,
 };
 
-const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
-  data: SvgVocabulary.get("leg"),
+const CIRCLE_2_DEFAULTS: CircleConfig = {
+  symbol: "leg",
   radius: 0,
   numSymbols: 3,
   scaling: 0.5,
@@ -93,25 +98,31 @@ const DURATION_SECS: NumericRange = {
 
 const DEFAULT_DURATION_SECS = 3;
 
-const ExtendedMandalaCircle: React.FC<
-  ExtendedMandalaCircleParams & SvgSymbolContext
-> = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
-  props = {
+const ExtendedMandalaCircle: React.FC<CircleConfig & SvgSymbolContext> = ({
+  symbol,
+  scaling,
+  rotation,
+  symbolScaling,
+  symbolRotation,
+  ...props
+}) => {
+  const circleProps: MandalaCircleProps = {
     ...props,
     symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
+    data: SvgVocabulary.get(symbol),
   };
 
   return (
     <SvgTransform transform={[svgScale(scaling), svgRotate(rotation)]}>
-      <MandalaCircle {...props} />
+      <MandalaCircle {...circleProps} />
     </SvgTransform>
   );
 };
 
 function animateMandalaCircleParams(
-  value: ExtendedMandalaCircleParams,
+  value: CircleConfig,
   animPct: number
-): ExtendedMandalaCircleParams {
+): CircleConfig {
   if (value.animateSymbolRotation) {
     value = {
       ...value,
@@ -121,24 +132,22 @@ function animateMandalaCircleParams(
   return value;
 }
 
-function isAnyMandalaCircleAnimated(
-  values: ExtendedMandalaCircleParams[]
-): boolean {
+function isAnyMandalaCircleAnimated(values: CircleConfig[]): boolean {
   return values.some((value) => value.animateSymbolRotation);
 }
 
 const ExtendedMandalaCircleParamsWidget: React.FC<{
   idPrefix: string;
-  value: ExtendedMandalaCircleParams;
-  onChange: (value: ExtendedMandalaCircleParams) => void;
+  value: CircleConfig;
+  onChange: (value: CircleConfig) => void;
 }> = ({ idPrefix, value, onChange }) => {
   return (
     <div className="thingy">
       <VocabularyWidget
         id={`${idPrefix}symbol`}
         label="Symbol"
-        value={value.data}
-        onChange={(data) => onChange({ ...value, data })}
+        value={SvgVocabulary.get(value.symbol)}
+        onChange={(data) => onChange({ ...value, symbol: data.name })}
         choices={SvgVocabulary}
       />
       <NumericSlider
@@ -203,29 +212,64 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
   );
 };
 
-function getRandomCircleParams(rng: Random): MandalaCircleParams {
+function getRandomCircleParams(
+  rng: Random
+): Pick<
+  CircleConfig,
+  "symbol" | "radius" | "numSymbols" | "invertEveryOtherSymbol"
+> {
   return {
-    data: rng.choice(SvgVocabulary.items),
+    symbol: rng.choice(SvgVocabulary.items).name,
     radius: rng.inRange(RADIUS_RANDOM),
     numSymbols: rng.inRange(NUM_SYMBOLS),
     invertEveryOtherSymbol: rng.bool(),
   };
 }
 
+const defaults = {
+  circle1: CIRCLE_1_DEFAULTS,
+  circle2: CIRCLE_2_DEFAULTS,
+  durationSecs: DEFAULT_DURATION_SECS,
+  baseCompCtx: createSvgCompositionContext(),
+  useTwoCircles: false,
+  invertCircle2: true,
+  firstBehindSecond: false,
+};
+
+const configType = new AvroInferredSchema(defaults);
+
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
-  const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
-  const [durationSecs, setDurationSecs] = useState(DEFAULT_DURATION_SECS);
-  const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
-  const [useTwoCircles, setUseTwoCircles] = useState(false);
-  const [invertCircle2, setInvertCircle2] = useState(true);
-  const [firstBehindSecond, setFirstBehindSecond] = useState(false);
+  const [circle1, setCircle1] = useState(defaults.circle1);
+  const [circle2, setCircle2] = useState(defaults.circle2);
+  const [durationSecs, setDurationSecs] = useState(defaults.durationSecs);
+  const [baseCompCtx, setBaseCompCtx] = useState(defaults.baseCompCtx);
+  const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
+  const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
+  const [firstBehindSecond, setFirstBehindSecond] = useState(
+    defaults.firstBehindSecond
+  );
   const durationMsecs = durationSecs * 1000;
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
   const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
+  const exportConfig = () => {
+    const buf = configType.toBuffer({
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehindSecond,
+    });
+    console.log(`exported config is ${buf.length} bytes.`);
+  };
+
+  useEffect(() => {
+    exportConfig();
+  });
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
