@@ -75,6 +75,7 @@ const RandomColorSampling: React.FC<{}> = () => {
         <div style={{ fontSize: 0 }}>
           {range(NUM_COLORS).map((i) => (
             <div
+              key={i}
               style={{
                 backgroundColor: palette[i],
                 width: "1rem",
