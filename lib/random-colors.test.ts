@@ -1,4 +1,8 @@
-import { clampedByteToHex, createRandomColorPalette } from "./random-colors";
+import {
+  clampedByteToHex,
+  createRandomColorPalette,
+  RANDOM_PALETTE_ALGORITHMS,
+} from "./random-colors";
 
 describe("clampedByteToHex", () => {
   it("clamps values over 255 to 255", () => {
@@ -18,10 +22,14 @@ describe("clampedByteToHex", () => {
   });
 });
 
-test("createRandomColorPalette() works", () => {
-  const palette = createRandomColorPalette(3);
-  expect(palette).toHaveLength(3);
-  for (let color of palette) {
-    expect(color).toMatch(/^\#[0-9a-f]{6}$/);
+describe("createRandomColorPalette()", () => {
+  for (let alg of RANDOM_PALETTE_ALGORITHMS) {
+    it(`works using the '${alg}' algorithm`, () => {
+      const palette = createRandomColorPalette(3, undefined, alg);
+      expect(palette).toHaveLength(3);
+      for (let color of palette) {
+        expect(color).toMatch(/^\#[0-9a-f]{6}$/);
+      }
+    });
   }
 });
