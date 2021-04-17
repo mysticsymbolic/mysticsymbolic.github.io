@@ -4,8 +4,13 @@ import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { Page } from "../page";
+import { PaletteAlgorithmWidget } from "../palette-algorithm-widget";
 import { Random } from "../random";
-import { createRandomColorPalette } from "../random-colors";
+import {
+  createRandomColorPalette,
+  DEFAULT_RANDOM_PALETTE_ALGORITHM,
+  RandomPaletteAlgorithm,
+} from "../random-colors";
 import { createSvgSymbolContext } from "../svg-symbol";
 import { svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
@@ -55,17 +60,22 @@ const EYE_CREATURE = (
 );
 
 const RandomColorSampling: React.FC<{}> = () => {
+  const [paletteAlg, setPaletteAlg] = useState<RandomPaletteAlgorithm>(
+    DEFAULT_RANDOM_PALETTE_ALGORITHM
+  );
   const [seed, setSeed] = useState(Date.now());
   const NUM_COLORS = 100;
   const rng = new Random(seed);
-  const palette = createRandomColorPalette(NUM_COLORS, rng);
+  const palette = createRandomColorPalette(NUM_COLORS, rng, paletteAlg);
 
   return (
     <>
+      <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
       <div className="thingy">
         <div style={{ fontSize: 0 }}>
           {range(NUM_COLORS).map((i) => (
             <div
+              key={i}
               style={{
                 backgroundColor: palette[i],
                 width: "1rem",
