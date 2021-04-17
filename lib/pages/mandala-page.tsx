@@ -298,7 +298,8 @@ export const MandalaPage: React.FC<{}> = () => {
       invertCircle2,
       firstBehindSecond,
     });
-    console.log(`exported config is ${buf.length} bytes.`);
+    const b64 = btoa(String.fromCharCode(...buf));
+    console.log(`exported config is ${b64.length} characters.`);
   };
 
   useEffect(() => {
