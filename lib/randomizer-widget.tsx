@@ -1,6 +1,11 @@
 import React, { useState } from "react";
+import { PaletteAlgorithmWidget } from "./palette-algorithm-widget";
 import { Random } from "./random";
-import { createRandomColorPalette } from "./random-colors";
+import {
+  createRandomColorPalette,
+  DEFAULT_RANDOM_PALETTE_ALGORITHM,
+  RandomPaletteAlgorithm,
+} from "./random-colors";
 import { SvgCompositionContext } from "./svg-composition-context";
 
 type SvgCompositionColors = Pick<
@@ -8,8 +13,14 @@ type SvgCompositionColors = Pick<
   "background" | "fill" | "stroke"
 >;
 
-function createRandomCompositionColors(): SvgCompositionColors {
-  const [background, stroke, fill] = createRandomColorPalette(3);
+function createRandomCompositionColors(
+  alg: RandomPaletteAlgorithm
+): SvgCompositionColors {
+  const [background, stroke, fill] = createRandomColorPalette(
+    3,
+    undefined,
+    alg
+  );
   return { background, stroke, fill };
 }
 
@@ -20,10 +31,13 @@ export type RandomizerWidgetProps = {
 
 export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
   type RandType = "colors" | "symbols" | "colors and symbols";
+  const [paletteAlg, setPaletteAlg] = useState<RandomPaletteAlgorithm>(
+    DEFAULT_RANDOM_PALETTE_ALGORITHM
+  );
   const [randType, setRandType] = useState<RandType>("colors and symbols");
   const randomize = () => {
     if (randType === "colors" || randType === "colors and symbols") {
-      props.onColorsChange(createRandomCompositionColors());
+      props.onColorsChange(createRandomCompositionColors(paletteAlg));
     }
     if (randType === "symbols" || randType === "colors and symbols") {
       props.onSymbolsChange(new Random(Date.now()));
@@ -48,6 +62,9 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
       {makeRadio("colors")}
       {makeRadio("symbols")}
       {makeRadio("colors and symbols")}
+      {randType !== "symbols" && (
+        <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
+      )}
       <button accessKey="r" onClick={randomize}>
         <u>R</u>andomize!
       </button>
