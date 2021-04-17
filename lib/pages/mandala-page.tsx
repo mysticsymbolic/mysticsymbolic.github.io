@@ -237,7 +237,7 @@ const defaults = {
   firstBehindSecond: false,
 };
 
-type ManalaPageConfig = typeof defaults;
+type MandalaPageConfig = typeof defaults;
 
 const circleType = new AvroRecordSchema<CircleConfig>("CircleConfig", {
   symbol: "string",
@@ -262,15 +262,18 @@ const compType = new AvroRecordSchema<SvgCompositionContext>(
   }
 );
 
-const configType = new AvroRecordSchema<ManalaPageConfig>("MandalaPageConfig", {
-  circle1: circleType.type,
-  circle2: circleType.type,
-  durationSecs: "float",
-  baseCompCtx: compType.type,
-  useTwoCircles: "boolean",
-  invertCircle2: "boolean",
-  firstBehindSecond: "boolean",
-});
+const configType = new AvroRecordSchema<MandalaPageConfig>(
+  "MandalaPageConfig",
+  {
+    circle1: circleType.type,
+    circle2: circleType.type,
+    durationSecs: "float",
+    baseCompCtx: compType.type,
+    useTwoCircles: "boolean",
+    invertCircle2: "boolean",
+    firstBehindSecond: "boolean",
+  }
+);
 
 export const MandalaPage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
