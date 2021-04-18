@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
@@ -250,17 +250,21 @@ export const MandalaPage: React.FC<{}> = () => {
   const [key, setKey] = useState(0);
   const [isInUpdate, setIsInUpdate] = useState(false);
   const defaults = parseJsonWithDefault(s || "", DEFAULTS);
-  const onChange = (defaults: Defaults) => {
-    const newS = JSON.stringify(defaults);
-    if (s !== newS) {
-      const newSearch = new URLSearchParams(search);
-      newSearch.set("s", newS);
-      setIsInUpdate(true);
-      setLatestS(newS);
-      pushState("?" + newSearch.toString());
-      setIsInUpdate(false);
-    }
-  };
+  const onChange = useMemo(
+    () => (defaults: Defaults) => {
+      console.log("onChange!", defaults.circle1.animateSymbolRotation);
+      const newS = JSON.stringify(defaults);
+      if (s !== newS) {
+        const newSearch = new URLSearchParams(search);
+        newSearch.set("s", newS);
+        setIsInUpdate(true);
+        setLatestS(newS);
+        pushState("?" + newSearch.toString());
+        setIsInUpdate(false);
+      }
+    },
+    [s]
+  );
 
   useEffect(() => {
     if (!isInUpdate && latestS !== s) {
@@ -287,7 +291,7 @@ function useDebouncedEffect(
     const timeout = setTimeout(effect, ms);
 
     return () => clearTimeout(timeout);
-  }, [effect, ...deps, ms]);
+  }, [...deps, ms]);
 }
 
 const MandalaPageWithDefaults: React.FC<{
@@ -307,24 +311,18 @@ const MandalaPageWithDefaults: React.FC<{
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
   const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
-
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
-
-  useDebouncedEffect(
-    250,
-    () => {
-      onChange({
-        circle1,
-        circle2,
-        durationSecs,
-        baseCompCtx,
-        useTwoCircles,
-        invertCircle2,
-        firstBehind,
-      });
-    },
+  const newDefaults = useMemo(
+    () => ({
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    }),
     [
-      onChange,
       circle1,
       circle2,
       durationSecs,
@@ -334,6 +332,8 @@ const MandalaPageWithDefaults: React.FC<{
       firstBehind,
     ]
   );
+
+  useDebouncedEffect(250, () => onChange(newDefaults), [onChange, newDefaults]);
 
   const makeMandala = (animPct: number): JSX.Element => {
     const circles = [
