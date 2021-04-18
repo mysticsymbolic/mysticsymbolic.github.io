@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
+import { AnimationRenderer, ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { NumericSlider } from "../numeric-slider";
 import {
@@ -130,10 +130,6 @@ function animateMandalaCircleParams(
     };
   }
   return value;
-}
-
-function isAnyMandalaCircleAnimated(values: CircleConfig[]): boolean {
-  return values.some((value) => value.animateSymbolRotation);
 }
 
 const ExtendedMandalaCircleParamsWidget: React.FC<{
@@ -271,48 +267,22 @@ export const MandalaPage: React.FC<{}> = () => {
   );
 };
 
-const MandalaPageWithDefaults: React.FC<{
-  defaults: Defaults;
-  onChange: (defaults: Defaults) => void;
-}> = ({ defaults, onChange }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const [circle1, setCircle1] = useState(defaults.circle1);
-  const [circle2, setCircle2] = useState(defaults.circle2);
-  const [durationSecs, setDurationSecs] = useState(defaults.durationSecs);
-  const [baseCompCtx, setBaseCompCtx] = useState(defaults.baseCompCtx);
-  const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
-  const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
-  const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
-  const durationMsecs = durationSecs * 1000;
-  const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
-  const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
+function isDesignAnimated({ circle1, circle2 }: Defaults): boolean {
+  return [circle1, circle2].some((value) => value.animateSymbolRotation);
+}
+
+function createAnimationRenderer({
+  baseCompCtx,
+  invertCircle2,
+  circle1,
+  circle2,
+  useTwoCircles,
+  firstBehind,
+}: Defaults): AnimationRenderer {
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
-  const newDefaults: Defaults = useMemo(
-    () => ({
-      circle1,
-      circle2,
-      durationSecs,
-      baseCompCtx,
-      useTwoCircles,
-      invertCircle2,
-      firstBehind,
-    }),
-    [
-      circle1,
-      circle2,
-      durationSecs,
-      baseCompCtx,
-      useTwoCircles,
-      invertCircle2,
-      firstBehind,
-    ]
-  );
 
-  useDebouncedEffect(250, () => onChange(newDefaults), [onChange, newDefaults]);
-
-  const makeMandala = (animPct: number): JSX.Element => {
+  return (animPct) => {
     const circles = [
       <ExtendedMandalaCircle
         key="first"
@@ -336,6 +306,58 @@ const MandalaPageWithDefaults: React.FC<{
 
     return <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>;
   };
+}
+
+const AnimatedMandala: React.FC<{
+  config: Defaults;
+  render: AnimationRenderer;
+}> = ({ config, render }) => {
+  const durationMsecs = config.durationSecs * 1000;
+  const animPct = useAnimationPct(isDesignAnimated(config) ? durationMsecs : 0);
+
+  return <>{render(animPct)}</>;
+};
+
+const MandalaPageWithDefaults: React.FC<{
+  defaults: Defaults;
+  onChange: (defaults: Defaults) => void;
+}> = ({ defaults, onChange }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [circle1, setCircle1] = useState(defaults.circle1);
+  const [circle2, setCircle2] = useState(defaults.circle2);
+  const [durationSecs, setDurationSecs] = useState(defaults.durationSecs);
+  const [baseCompCtx, setBaseCompCtx] = useState(defaults.baseCompCtx);
+  const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
+  const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
+  const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
+  const durationMsecs = durationSecs * 1000;
+  const newDefaults: Defaults = useMemo(
+    () => ({
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    }),
+    [
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    ]
+  );
+  const isAnimated = isDesignAnimated(newDefaults);
+  const render = useMemo(() => createAnimationRenderer(newDefaults), [
+    newDefaults,
+  ]);
+
+  useDebouncedEffect(250, () => onChange(newDefaults), [onChange, newDefaults]);
 
   return (
     <Page title="Mandala!">
@@ -398,9 +420,7 @@ const MandalaPageWithDefaults: React.FC<{
           <ExportWidget
             basename="mandala"
             svgRef={svgRef}
-            animate={
-              isAnimated && { duration: durationMsecs, render: makeMandala }
-            }
+            animate={isAnimated && { duration: durationMsecs, render }}
           />
         </div>
       </div>
@@ -415,7 +435,7 @@ const MandalaPageWithDefaults: React.FC<{
             bgColor={baseCompCtx.background}
             sizeToElement={canvasRef}
           >
-            {makeMandala(animPct)}
+            <AnimatedMandala config={defaults} render={render} />
           </AutoSizingSvg>
         </HoverDebugHelper>
       </div>
