@@ -11,7 +11,12 @@ import {
 import { VocabularyWidget } from "../vocabulary-widget";
 import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { isEvenNumber, NumericRange, parseJsonWithDefault } from "../util";
+import {
+  isEvenNumber,
+  NumericRange,
+  parseJsonWithDefault,
+  secsToMsecs,
+} from "../util";
 import { Random } from "../random";
 import { Checkbox } from "../checkbox";
 import {
@@ -312,8 +317,9 @@ const AnimatedMandala: React.FC<{
   config: Defaults;
   render: AnimationRenderer;
 }> = ({ config, render }) => {
-  const durationMsecs = config.durationSecs * 1000;
-  const animPct = useAnimationPct(isDesignAnimated(config) ? durationMsecs : 0);
+  const animPct = useAnimationPct(
+    isDesignAnimated(config) ? secsToMsecs(config.durationSecs) : 0
+  );
 
   return <>{render(animPct)}</>;
 };
@@ -331,7 +337,6 @@ const MandalaPageWithDefaults: React.FC<{
   const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
   const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
   const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
-  const durationMsecs = durationSecs * 1000;
   const newDefaults: Defaults = useMemo(
     () => ({
       circle1,
@@ -420,7 +425,9 @@ const MandalaPageWithDefaults: React.FC<{
           <ExportWidget
             basename="mandala"
             svgRef={svgRef}
-            animate={isAnimated && { duration: durationMsecs, render }}
+            animate={
+              isAnimated && { duration: secsToMsecs(durationSecs), render }
+            }
           />
         </div>
       </div>

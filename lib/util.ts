@@ -93,3 +93,10 @@ export function parseJsonWithDefault(value: string, defaultValue: any): any {
 
   return result;
 }
+
+/**
+ * Convert the given number of seconds (float) to milliseconds (integer).
+ */
+export function secsToMsecs(secs: number): number {
+  return Math.floor(secs * 1000);
+}
