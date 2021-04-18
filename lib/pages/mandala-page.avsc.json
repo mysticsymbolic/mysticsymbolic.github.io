@@ -1,0 +1,26 @@
+{
+  "type": "record",
+  "name": "AvroMandalaDesign",
+  "fields": [
+    {
+      "name": "circles",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "AvroCircle",
+          "type": "record",
+          "fields": [{ "name": "numSymbols", "type": "int" }]
+        }
+      }
+    },
+    {
+      "name": "baseCompCtx",
+      "type": {
+        "name": "AvroSvgCompositionContext",
+        "type": "record",
+        "fields": [{ "name": "stroke", "type": "string" }]
+      }
+    },
+    { "name": "durationSecs", "type": "float" }
+  ]
+}

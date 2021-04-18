@@ -29,6 +29,24 @@ import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
 import { useDebouncedEffect } from "../use-debounced-effect";
 import { createPageWithShareableState } from "../page-with-shareable-state";
+import MandalaAvsc from "./mandala-page.avsc.json";
+import type { AvroMandalaDesign } from "./mandala-page.avsc";
+import * as avro from "avro-js";
+
+const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
+
+console.log(
+  "avro test",
+  avroType.toBuffer({
+    durationSecs: 10,
+    circles: [
+      {
+        numSymbols: 1,
+      },
+    ],
+    baseCompCtx: { stroke: "#f0f0f0" },
+  })
+);
 
 type CircleConfig = {
   symbol: string;
