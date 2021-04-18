@@ -212,16 +212,27 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
   };
 }
 
+const DEFAULTS = {
+  circle1: CIRCLE_1_DEFAULTS,
+  circle2: CIRCLE_2_DEFAULTS,
+  durationSecs: DEFAULT_DURATION_SECS,
+  baseCompCtx: createSvgCompositionContext(),
+  useTwoCircles: false,
+  invertCircle2: true,
+  firstBehind: false,
+};
+
 export const MandalaPage: React.FC<{}> = () => {
+  const def = DEFAULTS;
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
-  const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
-  const [durationSecs, setDurationSecs] = useState(DEFAULT_DURATION_SECS);
-  const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
-  const [useTwoCircles, setUseTwoCircles] = useState(false);
-  const [invertCircle2, setInvertCircle2] = useState(true);
-  const [firstBehindSecond, setFirstBehindSecond] = useState(false);
+  const [circle1, setCircle1] = useState(def.circle1);
+  const [circle2, setCircle2] = useState(def.circle2);
+  const [durationSecs, setDurationSecs] = useState(def.durationSecs);
+  const [baseCompCtx, setBaseCompCtx] = useState(def.baseCompCtx);
+  const [useTwoCircles, setUseTwoCircles] = useState(def.useTwoCircles);
+  const [invertCircle2, setInvertCircle2] = useState(def.invertCircle2);
+  const [firstBehind, setFirstBehind] = useState(def.firstBehind);
   const durationMsecs = durationSecs * 1000;
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
   const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
@@ -246,7 +257,7 @@ export const MandalaPage: React.FC<{}> = () => {
           {...circle2SymbolCtx}
         />
       );
-      if (firstBehindSecond) {
+      if (firstBehind) {
         circles.reverse();
       }
     }
@@ -288,8 +299,8 @@ export const MandalaPage: React.FC<{}> = () => {
             />{" "}
             <Checkbox
               label="Place behind first circle"
-              value={firstBehindSecond}
-              onChange={setFirstBehindSecond}
+              value={firstBehind}
+              onChange={setFirstBehind}
             />
           </fieldset>
         )}
