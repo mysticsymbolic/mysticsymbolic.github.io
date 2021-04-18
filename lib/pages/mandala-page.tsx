@@ -215,9 +215,9 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
   );
 };
 
-function getRandomCircleParams(rng: Random): MandalaCircleParams {
+function getRandomCircleParams(rng: Random): Partial<CircleConfig> {
   return {
-    data: rng.choice(SvgVocabulary.items),
+    symbol: rng.choice(SvgVocabulary.items).name,
     radius: rng.inRange(RADIUS_RANDOM),
     numSymbols: rng.inRange(NUM_SYMBOLS),
     invertEveryOtherSymbol: rng.bool(),
@@ -252,19 +252,22 @@ export const MandalaPage: React.FC<{}> = () => {
   const s = search.get("s") || JSON.stringify(DEFAULTS);
   const [latestS, setLatestS] = useState(s);
   const [key, setKey] = useState(0);
+  const [isInUpdate, setIsInUpdate] = useState(false);
   const defaults = parseJsonWithDefault(s || "", DEFAULTS);
   const onChange = (defaults: Defaults) => {
     const newS = JSON.stringify(defaults);
     if (s !== newS) {
       const newSearch = new URLSearchParams(search);
       newSearch.set("s", newS);
+      setIsInUpdate(true);
       setLatestS(newS);
       pushState("?" + newSearch.toString());
+      setIsInUpdate(false);
     }
   };
 
   useEffect(() => {
-    if (latestS !== s) {
+    if (!isInUpdate && latestS !== s) {
       setLatestS(s);
       setKey(key + 1);
     }
@@ -300,15 +303,21 @@ const MandalaPageWithDefaults: React.FC<{
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
   useEffect(() => {
-    onChange({
-      circle1,
-      circle2,
-      durationSecs,
-      baseCompCtx,
-      useTwoCircles,
-      invertCircle2,
-      firstBehind,
-    });
+    const timeout = setTimeout(() => {
+      onChange({
+        circle1,
+        circle2,
+        durationSecs,
+        baseCompCtx,
+        useTwoCircles,
+        invertCircle2,
+        firstBehind,
+      });
+    }, 250);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [
     circle1,
     circle2,
