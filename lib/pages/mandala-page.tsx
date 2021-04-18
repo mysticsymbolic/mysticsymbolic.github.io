@@ -11,7 +11,7 @@ import {
 import { VocabularyWidget } from "../vocabulary-widget";
 import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { isEvenNumber, NumericRange } from "../util";
+import { isEvenNumber, NumericRange, parseJsonWithDefault } from "../util";
 import { Random } from "../random";
 import { Checkbox } from "../checkbox";
 import {
@@ -232,27 +232,15 @@ const DEFAULTS = {
 
 type Defaults = typeof DEFAULTS;
 
-function parseJsonWithDefault<T>(value: string, defaultValue: T): T {
-  let result = defaultValue;
-  try {
-    result = JSON.parse(value);
-  } catch (e) {
-    console.log("Unable to decode JSON, returning default value.");
-  }
-
-  return result;
-}
-
 export const MandalaPage: React.FC<{}> = () => {
   const { search, pushState } = useContext(PageContext);
   const s = search.get("s") || JSON.stringify(DEFAULTS);
   const [latestS, setLatestS] = useState(s);
   const [key, setKey] = useState(0);
   const [isInUpdate, setIsInUpdate] = useState(false);
-  const defaults = parseJsonWithDefault(s || "", DEFAULTS);
+  const defaults: Defaults = parseJsonWithDefault(s || "", DEFAULTS);
   const onChange = useMemo(
     () => (defaults: Defaults) => {
-      console.log("onChange!", defaults.circle1.animateSymbolRotation);
       const newS = JSON.stringify(defaults);
       if (s !== newS) {
         const newSearch = new URLSearchParams(search);

@@ -78,3 +78,18 @@ export function slugify(text: string) {
 export function isEvenNumber(value: number) {
   return value % 2 === 0;
 }
+
+/**
+ * Attempt to parse the given JSON string. If the JSON is malformed,
+ * return the given default value instead.
+ */
+export function parseJsonWithDefault(value: string, defaultValue: any): any {
+  let result = defaultValue;
+  try {
+    result = JSON.parse(value);
+  } catch (e) {
+    console.log("Unable to decode JSON, returning default value.");
+  }
+
+  return result;
+}
