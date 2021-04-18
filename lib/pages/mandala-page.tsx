@@ -312,7 +312,7 @@ const MandalaPageWithDefaults: React.FC<{
   const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
-  const newDefaults = useMemo(
+  const newDefaults: Defaults = useMemo(
     () => ({
       circle1,
       circle2,
