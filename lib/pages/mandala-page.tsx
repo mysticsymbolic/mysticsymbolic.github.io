@@ -22,6 +22,7 @@ import { Page, PageContext } from "../page";
 import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
+import { useDebouncedEffect } from "../use-debounced-effect";
 
 type CircleConfig = {
   symbol: string;
@@ -269,18 +270,6 @@ export const MandalaPage: React.FC<{}> = () => {
     />
   );
 };
-
-function useDebouncedEffect(
-  ms: number,
-  effect: React.EffectCallback,
-  deps: React.DependencyList
-) {
-  useEffect(() => {
-    const timeout = setTimeout(effect, ms);
-
-    return () => clearTimeout(timeout);
-  }, [...deps, ms]);
-}
 
 const MandalaPageWithDefaults: React.FC<{
   defaults: Defaults;
