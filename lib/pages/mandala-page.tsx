@@ -222,7 +222,7 @@ function getRandomCircleParams(rng: Random): Partial<CircleConfig> {
   };
 }
 
-const DEFAULTS = {
+const DESIGN_DEFAULTS = {
   circle1: CIRCLE_1_DEFAULTS,
   circle2: CIRCLE_2_DEFAULTS,
   durationSecs: DEFAULT_DURATION_SECS,
@@ -232,17 +232,17 @@ const DEFAULTS = {
   firstBehind: false,
 };
 
-type Defaults = typeof DEFAULTS;
+type DesignConfig = typeof DESIGN_DEFAULTS;
 
 export const MandalaPage: React.FC<{}> = () => {
   const { search, pushState } = useContext(PageContext);
-  const s = search.get("s") || JSON.stringify(DEFAULTS);
+  const s = search.get("s") || JSON.stringify(DESIGN_DEFAULTS);
   const [latestS, setLatestS] = useState(s);
   const [key, setKey] = useState(0);
   const [isInUpdate, setIsInUpdate] = useState(false);
-  const defaults: Defaults = parseJsonWithDefault(s || "", DEFAULTS);
+  const defaults: DesignConfig = parseJsonWithDefault(s || "", DESIGN_DEFAULTS);
   const onChange = useMemo(
-    () => (defaults: Defaults) => {
+    () => (defaults: DesignConfig) => {
       const newS = JSON.stringify(defaults);
       if (s !== newS) {
         const newSearch = new URLSearchParams(search);
@@ -272,7 +272,7 @@ export const MandalaPage: React.FC<{}> = () => {
   );
 };
 
-function isDesignAnimated({ circle1, circle2 }: Defaults): boolean {
+function isDesignAnimated({ circle1, circle2 }: DesignConfig): boolean {
   return [circle1, circle2].some((value) => value.animateSymbolRotation);
 }
 
@@ -283,7 +283,7 @@ function createAnimationRenderer({
   circle2,
   useTwoCircles,
   firstBehind,
-}: Defaults): AnimationRenderer {
+}: DesignConfig): AnimationRenderer {
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
@@ -314,7 +314,7 @@ function createAnimationRenderer({
 }
 
 const AnimatedMandala: React.FC<{
-  config: Defaults;
+  config: DesignConfig;
   render: AnimationRenderer;
 }> = ({ config, render }) => {
   const animPct = useAnimationPct(
@@ -325,8 +325,8 @@ const AnimatedMandala: React.FC<{
 };
 
 const MandalaPageWithDefaults: React.FC<{
-  defaults: Defaults;
-  onChange: (defaults: Defaults) => void;
+  defaults: DesignConfig;
+  onChange: (defaults: DesignConfig) => void;
 }> = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -337,7 +337,7 @@ const MandalaPageWithDefaults: React.FC<{
   const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
   const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
   const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
-  const newDefaults: Defaults = useMemo(
+  const design: DesignConfig = useMemo(
     () => ({
       circle1,
       circle2,
@@ -357,12 +357,10 @@ const MandalaPageWithDefaults: React.FC<{
       firstBehind,
     ]
   );
-  const isAnimated = isDesignAnimated(newDefaults);
-  const render = useMemo(() => createAnimationRenderer(newDefaults), [
-    newDefaults,
-  ]);
+  const isAnimated = isDesignAnimated(design);
+  const render = useMemo(() => createAnimationRenderer(design), [design]);
 
-  useDebouncedEffect(250, () => onChange(newDefaults), [onChange, newDefaults]);
+  useDebouncedEffect(250, () => onChange(design), [onChange, design]);
 
   return (
     <Page title="Mandala!">
