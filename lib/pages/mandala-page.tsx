@@ -19,11 +19,7 @@ import {
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Page, PageContext } from "../page";
-import {
-  MandalaCircle,
-  MandalaCircleParams,
-  MandalaCircleProps,
-} from "../mandala-circle";
+import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
 
@@ -282,6 +278,18 @@ export const MandalaPage: React.FC<{}> = () => {
   );
 };
 
+function useDebouncedEffect(
+  ms: number,
+  effect: React.EffectCallback,
+  deps: React.DependencyList
+) {
+  useEffect(() => {
+    const timeout = setTimeout(effect, ms);
+
+    return () => clearTimeout(timeout);
+  }, [effect, ...deps, ms]);
+}
+
 const MandalaPageWithDefaults: React.FC<{
   defaults: Defaults;
   onChange: (defaults: Defaults) => void;
@@ -302,8 +310,9 @@ const MandalaPageWithDefaults: React.FC<{
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
+  useDebouncedEffect(
+    250,
+    () => {
       onChange({
         circle1,
         circle2,
@@ -313,20 +322,18 @@ const MandalaPageWithDefaults: React.FC<{
         invertCircle2,
         firstBehind,
       });
-    }, 250);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [
-    circle1,
-    circle2,
-    durationSecs,
-    baseCompCtx,
-    useTwoCircles,
-    invertCircle2,
-    firstBehind,
-  ]);
+    },
+    [
+      onChange,
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    ]
+  );
 
   const makeMandala = (animPct: number): JSX.Element => {
     const circles = [
