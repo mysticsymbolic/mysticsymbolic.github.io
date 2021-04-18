@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
@@ -18,12 +18,20 @@ import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
-import { Page } from "../page";
-import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
+import { Page, PageContext } from "../page";
+import {
+  MandalaCircle,
+  MandalaCircleParams,
+  MandalaCircleProps,
+} from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
 
-type ExtendedMandalaCircleParams = MandalaCircleParams & {
+type CircleConfig = {
+  symbol: string;
+  radius: number;
+  numSymbols: number;
+  invertEveryOtherSymbol: boolean;
   scaling: number;
   rotation: number;
   symbolScaling: number;
@@ -31,8 +39,8 @@ type ExtendedMandalaCircleParams = MandalaCircleParams & {
   animateSymbolRotation: boolean;
 };
 
-const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
-  data: SvgVocabulary.get("eye"),
+const CIRCLE_1_DEFAULTS: CircleConfig = {
+  symbol: "eye",
   radius: 300,
   numSymbols: 5,
   scaling: 1,
@@ -43,8 +51,8 @@ const CIRCLE_1_DEFAULTS: ExtendedMandalaCircleParams = {
   animateSymbolRotation: false,
 };
 
-const CIRCLE_2_DEFAULTS: ExtendedMandalaCircleParams = {
-  data: SvgVocabulary.get("leg"),
+const CIRCLE_2_DEFAULTS: CircleConfig = {
+  symbol: "leg",
   radius: 0,
   numSymbols: 3,
   scaling: 0.5,
@@ -93,25 +101,31 @@ const DURATION_SECS: NumericRange = {
 
 const DEFAULT_DURATION_SECS = 3;
 
-const ExtendedMandalaCircle: React.FC<
-  ExtendedMandalaCircleParams & SvgSymbolContext
-> = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
-  props = {
+const ExtendedMandalaCircle: React.FC<CircleConfig & SvgSymbolContext> = ({
+  symbol,
+  scaling,
+  rotation,
+  symbolScaling,
+  symbolRotation,
+  ...props
+}) => {
+  const circleProps: MandalaCircleProps = {
     ...props,
     symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
+    data: SvgVocabulary.get(symbol),
   };
 
   return (
     <SvgTransform transform={[svgScale(scaling), svgRotate(rotation)]}>
-      <MandalaCircle {...props} />
+      <MandalaCircle {...circleProps} />
     </SvgTransform>
   );
 };
 
 function animateMandalaCircleParams(
-  value: ExtendedMandalaCircleParams,
+  value: CircleConfig,
   animPct: number
-): ExtendedMandalaCircleParams {
+): CircleConfig {
   if (value.animateSymbolRotation) {
     value = {
       ...value,
@@ -121,24 +135,22 @@ function animateMandalaCircleParams(
   return value;
 }
 
-function isAnyMandalaCircleAnimated(
-  values: ExtendedMandalaCircleParams[]
-): boolean {
+function isAnyMandalaCircleAnimated(values: CircleConfig[]): boolean {
   return values.some((value) => value.animateSymbolRotation);
 }
 
 const ExtendedMandalaCircleParamsWidget: React.FC<{
   idPrefix: string;
-  value: ExtendedMandalaCircleParams;
-  onChange: (value: ExtendedMandalaCircleParams) => void;
+  value: CircleConfig;
+  onChange: (value: CircleConfig) => void;
 }> = ({ idPrefix, value, onChange }) => {
   return (
     <div className="thingy">
       <VocabularyWidget
         id={`${idPrefix}symbol`}
         label="Symbol"
-        value={value.data}
-        onChange={(data) => onChange({ ...value, data })}
+        value={SvgVocabulary.get(value.symbol)}
+        onChange={(data) => onChange({ ...value, symbol: data.name })}
         choices={SvgVocabulary}
       />
       <NumericSlider
@@ -222,23 +234,90 @@ const DEFAULTS = {
   firstBehind: false,
 };
 
+type Defaults = typeof DEFAULTS;
+
+function parseJsonWithDefault<T>(value: string, defaultValue: T): T {
+  let result = defaultValue;
+  try {
+    result = JSON.parse(value);
+  } catch (e) {
+    console.log("Unable to decode JSON, returning default value.");
+  }
+
+  return result;
+}
+
 export const MandalaPage: React.FC<{}> = () => {
-  const def = DEFAULTS;
+  const { search, pushState } = useContext(PageContext);
+  const s = search.get("s") || JSON.stringify(DEFAULTS);
+  const [latestS, setLatestS] = useState(s);
+  const [key, setKey] = useState(0);
+  const defaults = parseJsonWithDefault(s || "", DEFAULTS);
+  const onChange = (defaults: Defaults) => {
+    const newS = JSON.stringify(defaults);
+    if (s !== newS) {
+      const newSearch = new URLSearchParams(search);
+      newSearch.set("s", newS);
+      setLatestS(newS);
+      pushState("?" + newSearch.toString());
+    }
+  };
+
+  useEffect(() => {
+    if (latestS !== s) {
+      setLatestS(s);
+      setKey(key + 1);
+    }
+  });
+
+  return (
+    <MandalaPageWithDefaults
+      key={key}
+      defaults={defaults}
+      onChange={onChange}
+    />
+  );
+};
+
+const MandalaPageWithDefaults: React.FC<{
+  defaults: Defaults;
+  onChange: (defaults: Defaults) => void;
+}> = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [circle1, setCircle1] = useState(def.circle1);
-  const [circle2, setCircle2] = useState(def.circle2);
-  const [durationSecs, setDurationSecs] = useState(def.durationSecs);
-  const [baseCompCtx, setBaseCompCtx] = useState(def.baseCompCtx);
-  const [useTwoCircles, setUseTwoCircles] = useState(def.useTwoCircles);
-  const [invertCircle2, setInvertCircle2] = useState(def.invertCircle2);
-  const [firstBehind, setFirstBehind] = useState(def.firstBehind);
+  const [circle1, setCircle1] = useState(defaults.circle1);
+  const [circle2, setCircle2] = useState(defaults.circle2);
+  const [durationSecs, setDurationSecs] = useState(defaults.durationSecs);
+  const [baseCompCtx, setBaseCompCtx] = useState(defaults.baseCompCtx);
+  const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
+  const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
+  const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
   const durationMsecs = durationSecs * 1000;
   const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
   const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
 
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
+
+  useEffect(() => {
+    onChange({
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    });
+  }, [
+    circle1,
+    circle2,
+    durationSecs,
+    baseCompCtx,
+    useTwoCircles,
+    invertCircle2,
+    firstBehind,
+  ]);
 
   const makeMandala = (animPct: number): JSX.Element => {
     const circles = [

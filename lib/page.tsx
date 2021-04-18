@@ -5,11 +5,13 @@ export type PageContext = {
   currPage: PageName;
   allPages: PageName[];
   pushState: (href: string) => void;
+  search: URLSearchParams;
 };
 
 export const PageContext = React.createContext<PageContext>({
   currPage: "vocabulary",
   allPages: [],
+  search: new URLSearchParams(),
   pushState: () => {
     throw new Error("No page context is defined!");
   },
