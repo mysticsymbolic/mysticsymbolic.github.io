@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { AnimationRenderer, ExportWidget } from "../export-svg";
 import { HoverDebugHelper } from "../hover-debug-helper";
@@ -23,11 +23,12 @@ import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
-import { Page, PageContext } from "../page";
+import { Page } from "../page";
 import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
 import { useDebouncedEffect } from "../use-debounced-effect";
+import { createPageWithShareableState } from "../page-with-shareable-state";
 
 type CircleConfig = {
   symbol: string;
@@ -234,44 +235,6 @@ const DESIGN_DEFAULTS = {
 
 type DesignConfig = typeof DESIGN_DEFAULTS;
 
-export const MandalaPage: React.FC<{}> = () => {
-  const { search, pushState } = useContext(PageContext);
-  const s = search.get("s") || JSON.stringify(DESIGN_DEFAULTS);
-  const [latestS, setLatestS] = useState(s);
-  const [key, setKey] = useState(0);
-  const [isInUpdate, setIsInUpdate] = useState(false);
-  const defaults: DesignConfig = parseJsonWithDefault(s || "", DESIGN_DEFAULTS);
-  const onChange = useMemo(
-    () => (defaults: DesignConfig) => {
-      const newS = JSON.stringify(defaults);
-      if (s !== newS) {
-        const newSearch = new URLSearchParams(search);
-        newSearch.set("s", newS);
-        setIsInUpdate(true);
-        setLatestS(newS);
-        pushState("?" + newSearch.toString());
-        setIsInUpdate(false);
-      }
-    },
-    [s]
-  );
-
-  useEffect(() => {
-    if (!isInUpdate && latestS !== s) {
-      setLatestS(s);
-      setKey(key + 1);
-    }
-  });
-
-  return (
-    <MandalaPageWithDefaults
-      key={key}
-      defaults={defaults}
-      onChange={onChange}
-    />
-  );
-};
-
 function isDesignAnimated({ circle1, circle2 }: DesignConfig): boolean {
   return [circle1, circle2].some((value) => value.animateSymbolRotation);
 }
@@ -447,3 +410,11 @@ const MandalaPageWithDefaults: React.FC<{
     </Page>
   );
 };
+
+export const MandalaPage = createPageWithShareableState({
+  defaultValue: DESIGN_DEFAULTS,
+  serialize: (value) => JSON.stringify(value),
+  deserialize: (value, defaultValue) =>
+    parseJsonWithDefault(value, defaultValue),
+  component: MandalaPageWithDefaults,
+});
