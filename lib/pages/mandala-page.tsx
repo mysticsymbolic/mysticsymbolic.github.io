@@ -33,21 +33,6 @@ import MandalaAvsc from "./mandala-page.avsc.json";
 import type { AvroMandalaDesign } from "./mandala-page.avsc";
 import * as avro from "avro-js";
 
-const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
-
-console.log(
-  "avro test",
-  avroType.toBuffer({
-    durationSecs: 10,
-    circles: [
-      {
-        numSymbols: 1,
-      },
-    ],
-    baseCompCtx: { stroke: "#f0f0f0" },
-  })
-);
-
 type CircleConfig = {
   symbol: string;
   radius: number;
@@ -436,3 +421,16 @@ export const MandalaPage = createPageWithShareableState({
     parseJsonWithDefault(value, defaultValue),
   component: MandalaPageWithDefaults,
 });
+
+const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
+
+console.log(
+  "avro test",
+  avroType.toBuffer({
+    durationSecs: 10,
+    circles: [CIRCLE_1_DEFAULTS],
+    baseCompCtx: { ...createSvgCompositionContext(), uniformStrokeWidth: 1 },
+    invertCircle2: false,
+    firstBehind: false,
+  })
+);

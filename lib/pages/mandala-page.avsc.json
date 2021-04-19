@@ -9,7 +9,17 @@
         "items": {
           "name": "AvroCircle",
           "type": "record",
-          "fields": [{ "name": "numSymbols", "type": "int" }]
+          "fields": [
+            { "name": "symbol", "type": "string" },
+            { "name": "radius", "type": "float" },
+            { "name": "numSymbols", "type": "int" },
+            { "name": "invertEveryOtherSymbol", "type": "boolean" },
+            { "name": "scaling", "type": "float" },
+            { "name": "rotation", "type": "float" },
+            { "name": "symbolScaling", "type": "float" },
+            { "name": "symbolRotation", "type": "float" },
+            { "name": "animateSymbolRotation", "type": "boolean" }
+          ]
         }
       }
     },
@@ -18,9 +28,16 @@
       "type": {
         "name": "AvroSvgCompositionContext",
         "type": "record",
-        "fields": [{ "name": "stroke", "type": "string" }]
+        "fields": [
+          { "name": "stroke", "type": "string" },
+          { "name": "fill", "type": "string" },
+          { "name": "background", "type": "string" },
+          { "name": "uniformStrokeWidth", "type": "float" }
+        ]
       }
     },
-    { "name": "durationSecs", "type": "float" }
+    { "name": "durationSecs", "type": "float" },
+    { "name": "invertCircle2", "type": "boolean" },
+    { "name": "firstBehind", "type": "boolean" }
   ]
 }
