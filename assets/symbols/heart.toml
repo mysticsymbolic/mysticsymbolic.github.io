@@ -6,14 +6,6 @@ always_nest = true
 
 
 
-# If true, this indicates that the symbol should always
-
-# be nested inside another symbol's nesting area.
-
-always_be_nested = false
-
-
-
 # If true, this indicates that the symbol nested on this
 
 # symbol’s nesting area should have its colors inverted.

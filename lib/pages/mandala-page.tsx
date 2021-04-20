@@ -61,6 +61,12 @@ const RADIUS: NumericRange = {
   step: 1,
 };
 
+const RADIUS_RANDOM: NumericRange = {
+  min: 100,
+  max: RADIUS.max,
+  step: 1,
+};
+
 const NUM_SYMBOLS: NumericRange = {
   min: 1,
   max: 20,
@@ -200,7 +206,7 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
 function getRandomCircleParams(rng: Random): MandalaCircleParams {
   return {
     data: rng.choice(SvgVocabulary.items),
-    radius: rng.inRange(RADIUS),
+    radius: rng.inRange(RADIUS_RANDOM),
     numSymbols: rng.inRange(NUM_SYMBOLS),
     invertEveryOtherSymbol: rng.bool(),
   };
