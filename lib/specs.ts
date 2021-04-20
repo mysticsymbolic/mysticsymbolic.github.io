@@ -43,6 +43,14 @@ export const ATTACHMENT_POINT_TYPES: AttachmentPointType[] = [
   "crown",
 ];
 
+const ATTACHMENT_POINT_SET = new Set(ATTACHMENT_POINT_TYPES);
+
+export function isAttachmentPointType(
+  value: any
+): value is AttachmentPointType {
+  return ATTACHMENT_POINT_SET.has(value);
+}
+
 export function* iterAttachmentPoints(specs: Specs): Iterable<AttachmentPoint> {
   for (let type of ATTACHMENT_POINT_TYPES) {
     const points = specs[type];
@@ -141,7 +149,11 @@ function updateSpecs(fill: string, path: string, specs: Specs): Specs {
     };
   }
 
-  throw new Error(`Not sure what to do with specs path with fill "${fill}"!`);
+  console.log(
+    `Not sure what to do with specs path with fill "${fill}", ignoring it.`
+  );
+
+  return specs;
 }
 
 function getSpecs(layers: SvgSymbolElement[]): Specs {

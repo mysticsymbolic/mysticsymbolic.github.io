@@ -1,17 +1,16 @@
 import React, { useContext, useRef, useState } from "react";
 import { SvgVocabulary } from "../svg-vocabulary";
-import { createSvgSymbolContext, SvgSymbolData } from "../svg-symbol";
-import { iterAttachmentPoints } from "../specs";
+import { noFillIfShowingSpecs, SvgSymbolData } from "../svg-symbol";
+import {
+  AttachmentPointType,
+  ATTACHMENT_POINT_TYPES,
+  iterAttachmentPoints,
+} from "../specs";
 import { Random } from "../random";
-import { SymbolContextWidget } from "../symbol-context-widget";
 import { range } from "../util";
 
 import { AutoSizingSvg } from "../auto-sizing-svg";
-import { exportSvg } from "../export-svg";
-import {
-  createCreatureSymbolFactory,
-  extractCreatureSymbolFromElement,
-} from "../creature-symbol-factory";
+import { ExportWidget } from "../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
@@ -19,40 +18,64 @@ import {
   NestedCreatureSymbol,
 } from "../creature-symbol";
 import { HoverDebugHelper } from "../hover-debug-helper";
-
-const DEFAULT_BG_COLOR = "#858585";
-
-/**
- * Mapping from symbol names to symbol data, for quick and easy access.
- */
-const SYMBOL_MAP = new Map(
-  SvgVocabulary.map((symbol) => [symbol.name, symbol])
-);
+import { svgScale, SvgTransform } from "../svg-transform";
+import { NumericSlider } from "../numeric-slider";
+import { Checkbox } from "../checkbox";
+import {
+  CompositionContextWidget,
+  createSvgCompositionContext,
+} from "../svg-composition-context";
+import { Page } from "../page";
+import { RandomizerWidget } from "../randomizer-widget";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
-const ROOT_SYMBOLS = SvgVocabulary.filter(
+const ROOT_SYMBOLS = SvgVocabulary.items.filter(
   (data) => data.meta?.always_be_nested !== true
 );
 
-/** Symbols that can be attached to the main body of a creature. */
-const ATTACHMENT_SYMBOLS = ROOT_SYMBOLS;
-
-/** Symbols that can be nested within any part of a creature. */
-const NESTED_SYMBOLS = SvgVocabulary.filter(
-  (data) => data.meta?.always_nest !== true
-);
+type AttachmentSymbolMap = {
+  [key in AttachmentPointType]: SvgSymbolData[];
+};
 
 /**
- * Returns the data for the given symbol, throwing an error
- * if it doesn't exist.
+ * Symbols that can be attached to the main body of a creature,
+ * at a particular attachment point.
  */
-function getSymbol(name: string): SvgSymbolData {
-  const symbol = SYMBOL_MAP.get(name);
-  if (!symbol) {
-    throw new Error(`Unable to find the symbol "${name}"!`);
+const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
+  const result = {} as AttachmentSymbolMap;
+
+  for (let type of ATTACHMENT_POINT_TYPES) {
+    result[type] = SvgVocabulary.items.filter((data) => {
+      const { meta } = data;
+
+      // If we have no metadata whatsoever, it can attach anywhere.
+      if (!meta) return true;
+
+      if (meta.always_be_nested === true) {
+        // This symbol should *only* ever be nested, so return false.
+        return false;
+      }
+
+      // If we have no "attach_to", it can attach anywhere.
+      if (!meta.attach_to) {
+        return true;
+      }
+
+      // Only attach to points listed in "attach_to".
+      return meta.attach_to.includes(type);
+    });
   }
-  return symbol;
-}
+
+  return result;
+})();
+
+/** Symbols that can be nested within any part of a creature. */
+const NESTED_SYMBOLS = SvgVocabulary.items.filter(
+  // Since we don't currently support recursive nesting, ignore anything that
+  // wants nested children.
+  (data) =>
+    data.meta?.always_nest !== true && data.meta?.never_be_nested !== true
+);
 
 /**
  * Given a parent symbol, return an array of random children to be nested within
@@ -63,10 +86,11 @@ function getSymbol(name: string): SvgSymbolData {
  */
 function getNestingChildren(
   parent: SvgSymbolData,
-  rng: Random
+  rng: Random,
+  preferNesting?: boolean
 ): NestedCreatureSymbol[] {
   const { meta, specs } = parent;
-  if (meta?.always_nest && specs?.nesting) {
+  if ((meta?.always_nest || preferNesting) && specs?.nesting) {
     const indices = range(specs.nesting.length);
     const child = rng.choice(NESTED_SYMBOLS);
     return [
@@ -75,6 +99,7 @@ function getNestingChildren(
         attachments: [],
         nests: [],
         indices,
+        invertColors: meta?.invert_nested ?? false,
       },
     ];
   }
@@ -88,13 +113,17 @@ function getNestingChildren(
  */
 function getSymbolWithAttachments(
   numAttachmentKinds: number,
-  rng: Random
+  { rng, randomlyInvert: randomlyInvertSymbols }: CreatureGeneratorOptions
 ): CreatureSymbol {
   const root = rng.choice(ROOT_SYMBOLS);
+  const randomlyInvertRng = rng.clone();
+  const shouldInvert = () =>
+    randomlyInvertSymbols ? randomlyInvertRng.bool() : false;
   const result: CreatureSymbol = {
     data: root,
     attachments: [],
-    nests: getNestingChildren(root, rng),
+    nests: getNestingChildren(root, rng, true),
+    invertColors: shouldInvert(),
   };
   if (root.specs) {
     const attachmentKinds = rng.uniqueChoices(
@@ -104,7 +133,7 @@ function getSymbolWithAttachments(
       numAttachmentKinds
     );
     for (let kind of attachmentKinds) {
-      const attachment = rng.choice(ATTACHMENT_SYMBOLS);
+      const attachment = rng.choice(ATTACHMENT_SYMBOLS[kind]);
       const indices = range(root.specs[kind]?.length ?? 0);
       result.attachments.push({
         data: attachment,
@@ -112,76 +141,19 @@ function getSymbolWithAttachments(
         indices,
         attachments: [],
         nests: getNestingChildren(attachment, rng),
+        invertColors: shouldInvert(),
       });
     }
   }
   return result;
 }
 
-const symbol = createCreatureSymbolFactory(getSymbol);
+type CreatureGeneratorOptions = {
+  rng: Random;
+  randomlyInvert: boolean;
+};
 
-const Eye = symbol("eye");
-
-const Hand = symbol("hand");
-
-const Arm = symbol("arm");
-
-const Antler = symbol("antler");
-
-const Crown = symbol("crown");
-
-const Wing = symbol("wing");
-
-const MuscleArm = symbol("muscle_arm");
-
-const Leg = symbol("leg");
-
-const Tail = symbol("tail");
-
-const Lightning = symbol("lightning");
-
-const EYE_CREATURE = (
-  <Eye>
-    <Lightning nestInside />
-    <Arm attachTo="arm" left>
-      <Wing attachTo="arm" left right />
-    </Arm>
-    <Arm attachTo="arm" right>
-      <MuscleArm attachTo="arm" left right />
-    </Arm>
-    <Antler attachTo="horn" left right />
-    <Crown attachTo="crown">
-      <Hand attachTo="horn" left right>
-        <Arm attachTo="arm" left />
-      </Hand>
-    </Crown>
-    <Leg attachTo="leg" left right />
-    <Tail attachTo="tail" />
-  </Eye>
-);
-
-const EYE_CREATURE_SYMBOL = extractCreatureSymbolFromElement(EYE_CREATURE);
-
-/**
- * Randomly replace all the parts of the given creature. Note that this
- * might end up logging some console messages about not being able to find
- * attachment/nesting indices, because it doesn't really check to make
- * sure the final creature structure is fully valid.
- */
-function randomlyReplaceParts<T extends CreatureSymbol>(
-  rng: Random,
-  creature: T
-): T {
-  const result: T = {
-    ...creature,
-    data: rng.choice(SvgVocabulary),
-    attachments: creature.attachments.map((a) => randomlyReplaceParts(rng, a)),
-    nests: creature.nests.map((n) => randomlyReplaceParts(rng, n)),
-  };
-  return result;
-}
-
-type CreatureGenerator = (rng: Random) => CreatureSymbol;
+type CreatureGenerator = (options: CreatureGeneratorOptions) => CreatureSymbol;
 
 /**
  * Each index of this array represents the algorithm we use to
@@ -192,83 +164,83 @@ type CreatureGenerator = (rng: Random) => CreatureSymbol;
  */
 const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
   ...range(5).map((i) => getSymbolWithAttachments.bind(null, i)),
-  (rng) => randomlyReplaceParts(rng, EYE_CREATURE_SYMBOL),
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
-function getDownloadFilename(randomSeed: number | null) {
-  let downloadBasename = "mystic-symbolic-creature";
+const INITIAL_COMPLEXITY_LEVEL = 2;
 
-  if (randomSeed !== null) {
-    downloadBasename += `-${randomSeed}`;
-  }
-
-  return `${downloadBasename}.svg`;
+function getDownloadBasename(randomSeed: number) {
+  return `mystic-symbolic-creature-${randomSeed}`;
 }
 
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
-  const [randomSeed, setRandomSeed] = useState<number | null>(null);
-  const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
-  const [complexity, setComplexity] = useState(MAX_COMPLEXITY_LEVEL);
+  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const [randomlyInvert, setRandomlyInvert] = useState(true);
+  const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
+  const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
-  const ctx: CreatureContextType = {
+  const ctx: CreatureContextType = noFillIfShowingSpecs({
     ...defaultCtx,
-    ...symbolCtx,
-    fill: symbolCtx.showSpecs ? "none" : symbolCtx.fill,
-  };
-  const creature =
-    randomSeed === null
-      ? EYE_CREATURE_SYMBOL
-      : COMPLEXITY_LEVEL_GENERATORS[complexity](new Random(randomSeed));
-  const handleSvgExport = () =>
-    exportSvg(getDownloadFilename(randomSeed), svgRef);
+    ...compCtx,
+  });
+  const creature = COMPLEXITY_LEVEL_GENERATORS[complexity]({
+    rng: new Random(randomSeed),
+    randomlyInvert,
+  });
 
   return (
-    <>
-      <h1>Creature!</h1>
-      <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx}>
-        <label htmlFor="bgColor">Background: </label>
-        <input
-          type="color"
-          value={bgColor}
-          onChange={(e) => setBgColor(e.target.value)}
-        />{" "}
-      </SymbolContextWidget>
-      <p>
-        <label htmlFor="complexity">Random creature complexity: </label>
-        <input
-          type="range"
-          min={0}
-          max={MAX_COMPLEXITY_LEVEL}
-          step={1}
-          value={complexity}
-          onChange={(e) => {
-            setComplexity(parseInt(e.target.value));
-            newRandomSeed();
-          }}
-        />{" "}
-        {complexity === MAX_COMPLEXITY_LEVEL ? "bonkers" : complexity}
-      </p>
-      <p>
-        <button accessKey="r" onClick={newRandomSeed}>
-          <u>R</u>andomize!
-        </button>{" "}
-        <button onClick={() => window.location.reload()}>Reset</button>{" "}
-        <button onClick={handleSvgExport}>Export SVG</button>
-      </p>
-      <CreatureContext.Provider value={ctx}>
-        <HoverDebugHelper>
-          <AutoSizingSvg padding={20} ref={svgRef} bgColor={bgColor}>
-            <g transform="scale(0.5 0.5)">
-              <CreatureSymbol {...creature} />
-            </g>
-          </AutoSizingSvg>
-        </HoverDebugHelper>
-      </CreatureContext.Provider>
-    </>
+    <Page title="Creature!">
+      <div className="sidebar">
+        <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
+        <div className="thingy">
+          <NumericSlider
+            label="Random creature complexity"
+            min={0}
+            max={MAX_COMPLEXITY_LEVEL}
+            step={1}
+            value={complexity}
+            onChange={(value) => {
+              setComplexity(value);
+              newRandomSeed();
+            }}
+          />
+        </div>
+        <div className="thingy">
+          <Checkbox
+            label="Randomly invert symbols"
+            value={randomlyInvert}
+            onChange={setRandomlyInvert}
+          />
+        </div>
+        <RandomizerWidget
+          onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
+          onSymbolsChange={newRandomSeed}
+        />
+        <div className="thingy">
+          <ExportWidget
+            basename={getDownloadBasename(randomSeed)}
+            svgRef={svgRef}
+          />
+        </div>
+      </div>
+      <div className="canvas" style={{ backgroundColor: compCtx.background }}>
+        <CreatureContext.Provider value={ctx}>
+          <HoverDebugHelper>
+            <AutoSizingSvg
+              padding={20}
+              ref={svgRef}
+              bgColor={compCtx.background}
+            >
+              <SvgTransform transform={svgScale(0.5)}>
+                <CreatureSymbol {...creature} />
+              </SvgTransform>
+            </AutoSizingSvg>
+          </HoverDebugHelper>
+        </CreatureContext.Provider>
+      </div>
+    </Page>
   );
 };

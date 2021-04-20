@@ -1,9 +1,14 @@
 import path from "path";
 import fs from "fs";
 import toml from "toml";
-import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
+import {
+  validateAttachTo,
+  validateSvgSymbolMetadata,
+} from "./svg-symbol-metadata";
+import { withMockConsoleLog } from "./test-util";
+import { SVG_SYMBOLS_DIR } from "./vocabulary-builder";
 
-const templatePath = path.join(__dirname, "..", "svg", "_template.toml");
+const templatePath = path.join(SVG_SYMBOLS_DIR, "_template.toml");
 
 test("metadata template is valid SVG symbol metadata", () => {
   validateSvgSymbolMetadata(
@@ -23,8 +28,11 @@ describe("validateSvgSymbolMetadata()", () => {
         always_be_nested: true,
       })
     ).toEqual({
-      always_nest: true,
-      always_be_nested: true,
+      metadata: {
+        always_nest: true,
+        always_be_nested: true,
+      },
+      unknownProperties: [],
     });
   });
 
@@ -37,10 +45,35 @@ describe("validateSvgSymbolMetadata()", () => {
   });
 
   it("raises errors when a property is unrecognized", () => {
-    expect(() =>
+    expect(
       validateSvgSymbolMetadata({
+        always_nest: true,
         blarp: true,
       })
-    ).toThrow('Unrecognized SVG symbol metadata property "blarp"');
+    ).toEqual({
+      metadata: { always_nest: true },
+      unknownProperties: ["blarp"],
+    });
+  });
+});
+
+describe("validateAttachTo()", () => {
+  it("works", () => {
+    expect(validateAttachTo(["tail", "leg"])).toEqual(["tail", "leg"]);
+  });
+
+  it("works", () => {
+    withMockConsoleLog((mockLog) => {
+      expect(validateAttachTo(["beanbag"])).toEqual([]);
+      expect(mockLog).toHaveBeenCalledWith(
+        "Item 'beanbag' in \"attach_to\" is not a valid attachment point."
+      );
+    });
+  });
+
+  it("raises error when value is not an array", () => {
+    expect(() => validateAttachTo("blah")).toThrow(
+      'Expected "attach_to" to be an array, but it is a string!'
+    );
   });
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { dilateBoundingBox, getBoundingBoxSize } from "../bounding-box";
 import {
   createSvgSymbolContext,
@@ -9,6 +9,7 @@ import { SvgVocabulary } from "../svg-vocabulary";
 import { SvgSymbolContext } from "../svg-symbol";
 import { SymbolContextWidget } from "../symbol-context-widget";
 import { HoverDebugHelper } from "../hover-debug-helper";
+import { Page } from "../page";
 
 type SvgSymbolProps = {
   data: SvgSymbolData;
@@ -38,36 +39,58 @@ const SvgSymbol: React.FC<SvgSymbolProps> = (props) => {
 
 export const VocabularyPage: React.FC<{}> = () => {
   const [ctx, setCtx] = useState(createSvgSymbolContext());
+  const [filter, setFilter] = useState("");
+  const finalFilter = filter.toLowerCase().replace(/ /g, "_");
+  const items = useMemo(
+    () =>
+      SvgVocabulary.items.filter((item) =>
+        item.name.toLowerCase().includes(finalFilter)
+      ),
+    [finalFilter]
+  );
 
   return (
-    <>
-      <h1>Mystic Symbolic Vocabulary</h1>
-      <SymbolContextWidget ctx={ctx} onChange={setCtx} />
-      <HoverDebugHelper>
-        {SvgVocabulary.map((symbolData) => (
-          <div
-            key={symbolData.name}
-            style={{
-              display: "inline-block",
-              border: "1px solid black",
-              margin: "4px",
-            }}
-          >
+    <Page title="Vocabulary!">
+      <div className="sidebar">
+        <div className="flex-widget">
+          <label htmlFor="filter">Search for symbols: </label>
+          <input
+            type="text"
+            id="filter"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="🔎"
+          />
+        </div>
+        <SymbolContextWidget ctx={ctx} onChange={setCtx} />
+      </div>
+      <div className="canvas scrollable">
+        <HoverDebugHelper>
+          {items.map((symbolData) => (
             <div
+              key={symbolData.name}
               style={{
-                backgroundColor: "black",
-                color: "white",
-                padding: "4px",
+                display: "inline-block",
+                border: "1px solid black",
+                margin: "4px",
               }}
             >
-              {symbolData.name}
+              <div
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  padding: "4px",
+                }}
+              >
+                {symbolData.name}
+              </div>
+              <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
+                <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
+              </div>
             </div>
-            <div className="checkerboard-bg" style={{ lineHeight: 0 }}>
-              <SvgSymbol data={symbolData} scale={0.25} {...ctx} />
-            </div>
-          </div>
-        ))}
-      </HoverDebugHelper>
-    </>
+          ))}
+        </HoverDebugHelper>
+      </div>
+    </Page>
   );
 };

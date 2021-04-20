@@ -3,56 +3,24 @@ import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
 import { scalePointXY, subtractPoints } from "./point";
-import { AttachmentPointType, PointWithNormal } from "./specs";
+import { AttachmentPointType } from "./specs";
 import {
   createSvgSymbolContext,
+  safeGetAttachmentPoint,
   SvgSymbolContent,
   SvgSymbolContext,
   SvgSymbolData,
+  swapColors,
 } from "./svg-symbol";
+import {
+  svgRotate,
+  svgScale,
+  svgTransformOrigin,
+  SvgTransform,
+  svgTranslate,
+} from "./svg-transform";
 
 const DEFAULT_ATTACHMENT_SCALE = 0.5;
-
-function getAttachmentPoint(
-  s: SvgSymbolData,
-  type: AttachmentPointType,
-  idx: number = 0
-): PointWithNormal {
-  const { specs } = s;
-  if (!specs) {
-    throw new AttachmentPointError(`Symbol ${s.name} has no specs.`);
-  }
-  const points = specs[type];
-  if (!(points && points.length > idx)) {
-    throw new AttachmentPointError(
-      `Expected symbol ${s.name} to have at least ${
-        idx + 1
-      } ${type} attachment point(s).`
-    );
-  }
-
-  return points[idx];
-}
-
-class AttachmentPointError extends Error {}
-
-function safeGetAttachmentPoint(
-  s: SvgSymbolData,
-  type: AttachmentPointType,
-  idx: number = 0
-): PointWithNormal | null {
-  try {
-    return getAttachmentPoint(s, type, idx);
-  } catch (e) {
-    if (e instanceof AttachmentPointError) {
-      console.log(e.message);
-    } else {
-      throw e;
-    }
-  }
-
-  return null;
-}
 
 export type CreatureContextType = SvgSymbolContext & {
   attachmentScale: number;
@@ -76,6 +44,7 @@ export type NestedCreatureSymbol = CreatureSymbol & {
 
 export type CreatureSymbol = {
   data: SvgSymbolData;
+  invertColors: boolean;
   attachments: AttachedCreatureSymbol[];
   nests: NestedCreatureSymbol[];
 };
@@ -101,35 +70,43 @@ function getNestingTransforms(parent: BBox, child: BBox) {
 }
 
 type AttachmentTransformProps = {
-  transformOrigin: Point;
+  /**
+   * Where to move the attachment once it has been
+   * scaled and rotated.
+   */
   translate: Point;
+
+  /** The origin from which scaling and rotation are done. */
+  transformOrigin: Point;
+
+  /** How much to scale the attachment, relative to `transformOrigin`. */
   scale: Point;
-  rotate: number;
+
+  /** How much to rotate the attachment, relative to `transformOrigin`. */
+  rotate?: number;
+
+  /** The attachment. */
   children: JSX.Element;
 };
 
+/**
+ * A wrapper for an attachment that rotates and/or scales it relative
+ * to the given origin point, and then translates it the given amount.
+ */
 const AttachmentTransform: React.FC<AttachmentTransformProps> = (props) => (
-  <g transform={`translate(${props.translate.x} ${props.translate.y})`}>
-    {/**
-     * We originally used "transform-origin" here but that's not currently
-     * supported by Safari. Instead, we'll set the origin of our symbol to
-     * the transform origin, do the transform, and then move our origin back to
-     * the original origin, which is equivalent to setting "transform-origin".
-     **/}
-    <g
-      transform={`translate(${props.transformOrigin.x} ${props.transformOrigin.y})`}
-    >
-      <g
-        transform={`scale(${props.scale.x} ${props.scale.y}) rotate(${props.rotate})`}
-      >
-        <g
-          transform={`translate(-${props.transformOrigin.x} -${props.transformOrigin.y})`}
-        >
-          {props.children}
-        </g>
-      </g>
-    </g>
-  </g>
+  <SvgTransform
+    transform={[
+      // Remember that transforms are applied in reverse order,
+      // so read the following from the end first!
+      svgTranslate(props.translate),
+      svgTransformOrigin(props.transformOrigin, [
+        svgScale(props.scale),
+        svgRotate(props.rotate ?? 0),
+      ]),
+    ]}
+  >
+    {props.children}
+  </SvgTransform>
 );
 
 const AttachedCreatureSymbol: React.FC<AttachedCreatureSymbolProps> = ({
@@ -210,7 +187,6 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
         transformOrigin={t.transformOrigin}
         translate={t.translation}
         scale={t.scaling}
-        rotate={0}
       >
         <g
           data-attach-parent={parent.name}
@@ -227,9 +203,17 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
 };
 
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
-  const ctx = useContext(CreatureContext);
+  let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
-  const childCtx: CreatureContextType = { ...ctx, parent: data };
+  const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
+
+  if (props.invertColors) {
+    ctx = swapColors(ctx);
+  }
+
+  // If we're inverted, then pass our inverted colors on to our
+  // nested children, to maintain color balance in the composition.
+  const nestedCtx: CreatureContextType = { ...ctx, parent: data };
 
   // The attachments should be before our symbol in the DOM so they
   // appear behind our symbol, while anything nested within our symbol
@@ -237,7 +221,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   return (
     <>
       {attachments.length && (
-        <CreatureContext.Provider value={childCtx}>
+        <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
             <AttachedCreatureSymbol key={i} {...a} parent={data} />
           ))}
@@ -245,7 +229,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       )}
       <SvgSymbolContent data={data} {...ctx} />
       {nests.length && (
-        <CreatureContext.Provider value={childCtx}>
+        <CreatureContext.Provider value={nestedCtx}>
           {nests.map((n, i) => (
             <NestedCreatureSymbol key={i} {...n} parent={data} />
           ))}

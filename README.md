@@ -3,7 +3,7 @@ with procedural art.
 
 Right now there is no particular goal other than to explore various ideas.
 The project consists of a web site with multiple pages, each of which is
-and experiment of some kind.
+an experiment of some kind.
 
 It can be [viewed online][] or iterated on locally using the instructions below.
 
@@ -28,6 +28,20 @@ To run tests interactively, run:
 ```
 npm run test:watch
 ```
+
+## Code style
+
+All code styling is managed by [Prettier][].
+
+To format the code automatically, run:
+
+```
+npm run prettier:fix
+```
+
+You can alternatively install a Prettier extension for your editor; see its website for more details.
+
+[Prettier]: https://prettier.io/
 
 ## Deployment
 

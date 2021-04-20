@@ -1,4 +1,5 @@
 import type { SvgSymbolData } from "./svg-symbol";
-import _SvgVocabulary from "./_svg-vocabulary.json";
+import { Vocabulary } from "./vocabulary";
+import _SvgVocabulary from "./_svg-vocabulary";
 
-export const SvgVocabulary: SvgSymbolData[] = _SvgVocabulary as any;
+export const SvgVocabulary = new Vocabulary<SvgSymbolData>(_SvgVocabulary);

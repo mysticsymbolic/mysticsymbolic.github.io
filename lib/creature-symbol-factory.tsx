@@ -6,6 +6,7 @@ import {
 } from "./creature-symbol";
 import { AttachmentPointType } from "./specs";
 import { SvgSymbolData } from "./svg-symbol";
+import { Vocabulary } from "./vocabulary";
 
 type AttachmentIndices = {
   left?: boolean;
@@ -18,6 +19,7 @@ type SimpleCreatureSymbolProps = AttachmentIndices & {
   nestInside?: boolean;
   children?: AttachmentChildren;
   attachTo?: AttachmentPointType;
+  invert?: boolean;
   indices?: number[];
 };
 
@@ -70,7 +72,7 @@ type SimpleCreatureSymbolFC = React.FC<SimpleCreatureSymbolProps> & {
  * render a `<CreatureSymbol>`.
  */
 export function createCreatureSymbolFactory(
-  getSymbol: (name: string) => SvgSymbolData
+  vocabulary: Vocabulary<SvgSymbolData>
 ) {
   /**
    * Returns a React component that renders a `<CreatureSymbol>`, using the symbol
@@ -79,7 +81,7 @@ export function createCreatureSymbolFactory(
   return function createCreatureSymbol(
     name: string
   ): React.FC<SimpleCreatureSymbolProps> {
-    const data = getSymbol(name);
+    const data = vocabulary.get(name);
     const Component: SimpleCreatureSymbolFC = (props) => {
       const symbol = getCreatureSymbol(data, props);
       return <CreatureSymbol {...symbol} />;
@@ -129,13 +131,12 @@ function getCreatureSymbol(
     data,
     attachments: attachments.map(extractAttachedCreatureSymbol),
     nests: nests.map(extractNestedCreatureSymbol),
+    invertColors: props.invert ?? false,
   };
   return result;
 }
 
-export function extractCreatureSymbolFromElement(
-  el: JSX.Element
-): CreatureSymbol {
+function extractCreatureSymbolFromElement(el: JSX.Element): CreatureSymbol {
   if (isSimpleCreatureSymbolFC(el.type)) {
     return getCreatureSymbol(el.type.creatureSymbolData, el.props);
   }

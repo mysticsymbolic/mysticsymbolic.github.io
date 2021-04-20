@@ -1,18 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { WavesPage } from "./pages/waves-page";
-import { VocabularyPage } from "./pages/vocabulary-page";
-import { CreaturePage } from "./pages/creature-page";
-
-const Pages = {
-  vocabulary: VocabularyPage,
-  creature: CreaturePage,
-  waves: WavesPage,
-};
-
-type PageName = keyof typeof Pages;
-
-const pageNames = Object.keys(Pages) as PageName[];
+import { PageContext, PAGE_QUERY_ARG } from "./page";
+import { pageNames, Pages, toPageName, DEFAULT_PAGE } from "./pages";
 
 const APP_ID = "app";
 
@@ -22,48 +11,48 @@ if (!appEl) {
   throw new Error(`Unable to find #${APP_ID}!`);
 }
 
+function getWindowSearch(): URLSearchParams {
+  return new URLSearchParams(window.location.search);
+}
+
+/**
+ * Call the given handler whenever a `popstate` event
+ * occurs.
+ *
+ * Return a function that wraps `window.history.pushState()`;
+ * the given handler will be called immediately afterwards.
+ */
+function usePushState(onPushOrPopState: () => void) {
+  useEffect(() => {
+    window.addEventListener("popstate", onPushOrPopState);
+    return () => {
+      window.removeEventListener("popstate", onPushOrPopState);
+    };
+  }, [onPushOrPopState]);
+
+  return function pushState(href: string) {
+    window.history.pushState(null, "", href);
+    onPushOrPopState();
+  };
+}
+
 const App: React.FC<{}> = (props) => {
-  const page = new URLSearchParams(window.location.search);
-  const currPageName = toPageName(page.get("p") || "", "vocabulary");
-  const PageComponent = Pages[currPageName];
+  const [search, setSearch] = useState(getWindowSearch());
+  const updateSearchFromWindow = () => setSearch(getWindowSearch());
+  const currPage = toPageName(search.get(PAGE_QUERY_ARG) || "", DEFAULT_PAGE);
+  const PageComponent = Pages[currPage];
+  const pushState = usePushState(updateSearchFromWindow);
+  const ctx: PageContext = {
+    currPage,
+    allPages: pageNames,
+    pushState,
+  };
 
   return (
-    <>
-      <main>
-        <PageComponent />
-      </main>
-      <footer>
-        <p>Other pages</p>
-        <ul>
-          {pageNames.map((pageName) => (
-            <li key={pageName}>
-              {currPageName === pageName ? (
-                pageName
-              ) : (
-                <a href={`?p=${encodeURIComponent(pageName)}`}>{pageName}</a>
-              )}
-            </li>
-          ))}
-        </ul>
-        <p>
-          For more details about this project, see its{" "}
-          <a href="https://github.com/toolness/mystic-symbolic" target="_blank">
-            GitHub repository
-          </a>
-          .
-        </p>
-      </footer>
-    </>
+    <PageContext.Provider value={ctx}>
+      <PageComponent />
+    </PageContext.Provider>
   );
 };
 
 ReactDOM.render(<App />, appEl);
-
-function isPageName(page: string): page is PageName {
-  return pageNames.includes(page as any);
-}
-
-function toPageName(page: string, defaultValue: PageName): PageName {
-  if (isPageName(page)) return page;
-  return defaultValue;
-}
