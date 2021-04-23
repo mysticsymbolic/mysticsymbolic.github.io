@@ -95,7 +95,7 @@ const DEFAULT_DURATION_SECS = 3;
 
 const ExtendedMandalaCircle: React.FC<
   ExtendedMandalaCircleParams & SvgSymbolContext
-> = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
+  > = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
   props = {
     ...props,
     symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
@@ -113,9 +113,10 @@ function animateMandalaCircleParams(
   animPct: number
 ): ExtendedMandalaCircleParams {
   if (value.animateSymbolRotation) {
+    const direction = value.data.meta?.rotate_clockwise ? 1 : -1;
     value = {
       ...value,
-      symbolRotation: animPct * ROTATION.max,
+      symbolRotation: direction * animPct * ROTATION.max,
     };
   }
   return value;

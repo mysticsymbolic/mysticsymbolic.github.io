@@ -24,6 +24,12 @@ type SvgSymbolMetadataBooleans = {
    * symbol’s nesting area should have their colors inverted.
    */
   invert_nested?: boolean;
+
+  /**
+   * In the mandala, the normal rotation direction for animation is counterclockwise.
+   * This changes the rotation direction to clockwise.
+   */
+  rotate_clockwise?: boolean;
 };
 
 const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
@@ -31,6 +37,7 @@ const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
   "always_be_nested",
   "never_be_nested",
   "invert_nested",
+  "rotate_clockwise",
 ]);
 
 function isSvgSymbolMetadataBoolean(
