@@ -11,6 +11,13 @@ export type NumericSliderProps = NumericRange & {
   disabled?: boolean;
 };
 
+function toReasonableDecimal(value: number, maxDecimalDigits = 2) {
+  const str = value.toString();
+  const fixedStr = value.toFixed(maxDecimalDigits);
+
+  return str.length < fixedStr.length ? str : fixedStr;
+}
+
 export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
   const id = props.id || slugify(props.label);
 
@@ -32,9 +39,9 @@ export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
           disabled={props.disabled}
           onChange={(e) => props.onChange(float(e.target.value))}
         />
-        <span>
+        <span className="slider-value">
           {" "}
-          {props.value}
+          {toReasonableDecimal(props.value)}
           {props.valueSuffix}
         </span>
       </span>
