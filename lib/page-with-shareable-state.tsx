@@ -19,10 +19,10 @@ export type PageWithShareableStateOptions<T> = {
   defaultValue: T;
 
   /**
-   * Deserialize the given state, falling back to the
-   * given default value for anything that's invalid.
+   * Deserialize the given state, throwing an exception
+   * if it's invalid in any way.
    */
-  deserialize: (value: string, defaultValue: T) => T;
+  deserialize: (value: string) => T;
 
   /** Serialize the given state to a string. */
   serialize: (value: T) => string;
@@ -74,7 +74,13 @@ export function createPageWithShareableState<T>({
     const [isInOnChange, setIsInOnChange] = useState(false);
 
     /** The default state from th URL, which we'll pass into our component. */
-    const defaults: T = deserialize(state || "", defaultValue);
+    let defaults: T = defaultValue;
+
+    try {
+      defaults = deserialize(state || "");
+    } catch (e) {
+      console.log(`Error deserializing state: ${e}`);
+    }
 
     const onChange = useMemo(
       () => (value: T) => {

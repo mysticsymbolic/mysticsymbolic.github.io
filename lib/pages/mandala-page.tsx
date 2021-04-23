@@ -479,20 +479,15 @@ function serialize(value: DesignConfig): string {
   return btoa(String.fromCharCode(...buf));
 }
 
-function deserialize(value: string, defaultValue: DesignConfig): DesignConfig {
-  try {
-    const binaryString = atob(value);
-    const view = new SlowBuffer(binaryString.length);
+function deserialize(value: string): DesignConfig {
+  const binaryString = atob(value);
+  const view = new SlowBuffer(binaryString.length);
 
-    for (let i = 0; i < binaryString.length; i++) {
-      view[i] = binaryString.charCodeAt(i);
-    }
-
-    return AvroDesignConverter.from(avroType.fromBuffer(view));
-  } catch (e) {
-    console.error(e);
-    return defaultValue;
+  for (let i = 0; i < binaryString.length; i++) {
+    view[i] = binaryString.charCodeAt(i);
   }
+
+  return AvroDesignConverter.from(avroType.fromBuffer(view));
 }
 
 export const MandalaPage = createPageWithShareableState({
