@@ -11,7 +11,12 @@ export type NumericSliderProps = NumericRange & {
   disabled?: boolean;
 };
 
-function toReasonableDecimal(value: number, maxDecimalDigits = 2) {
+/**
+ * Returns the given number to a "reasonable-looking" human
+ * representation (for our purposes) that is not ridiculously
+ * long.
+ */
+function toReasonableDecimal(value: number, maxDecimalDigits = 2): string {
   const str = value.toString();
   const fixedStr = value.toFixed(maxDecimalDigits);
 
