@@ -133,9 +133,11 @@ function animateMandalaCircleParams(
   animPct: number
 ): CircleConfig {
   if (value.animateSymbolRotation) {
+    const data = SvgVocabulary.get(value.symbol);
+    const direction = data.meta?.rotate_clockwise ? 1 : -1;
     value = {
       ...value,
-      symbolRotation: animPct * ROTATION.max,
+      symbolRotation: direction * animPct * ROTATION.max,
     };
   }
   return value;
