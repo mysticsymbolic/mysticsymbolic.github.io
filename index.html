@@ -146,6 +146,13 @@ ul.navbar li:last-child {
 }
 
 .sidebar .numeric-slider .slider .slider-value {
+  /**
+   * We want to keep a minimum width for the value or else
+   * there will be a "jitter" effect where the slider will
+   * contract as a result of the label getting smaller,
+   * which will then change the value of the slider, which
+   * will then change the width of the label, ad infinitum.
+   */
   min-width: 2em;
 }
 
