@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 /**
- * Like useEffet(), but ensures that the effect is only
+ * Like useEffect(), but ensures that the effect is only
  * called when its dependencies haven't changed for the
  * given number of milliseconds.
  */
