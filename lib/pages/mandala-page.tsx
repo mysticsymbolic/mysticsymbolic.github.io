@@ -11,17 +11,13 @@ import {
 import { VocabularyWidget } from "../vocabulary-widget";
 import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
 import { SvgVocabulary } from "../svg-vocabulary";
-import {
-  isEvenNumber,
-  NumericRange,
-  parseJsonWithDefault,
-  secsToMsecs,
-} from "../util";
+import { isEvenNumber, NumericRange, secsToMsecs } from "../util";
 import { Random } from "../random";
 import { Checkbox } from "../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
+  SvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
 import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
@@ -30,7 +26,12 @@ import { RandomizerWidget } from "../randomizer-widget";
 import { useDebouncedEffect } from "../use-debounced-effect";
 import { createPageWithShareableState } from "../page-with-shareable-state";
 import MandalaAvsc from "./mandala-page.avsc.json";
-import type { AvroMandalaDesign } from "./mandala-page.avsc";
+import type {
+  AvroCircle,
+  AvroMandalaDesign,
+  AvroSvgCompositionContext,
+} from "./mandala-page.avsc";
+import { SlowBuffer } from "buffer";
 import * as avro from "avro-js";
 
 type CircleConfig = {
@@ -416,23 +417,84 @@ const MandalaPageWithDefaults: React.FC<{
   );
 };
 
-export const MandalaPage = createPageWithShareableState({
-  defaultValue: DESIGN_DEFAULTS,
-  serialize: (value) => JSON.stringify(value),
-  deserialize: (value, defaultValue) =>
-    parseJsonWithDefault(value, defaultValue),
-  component: MandalaPageWithDefaults,
-});
-
 const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
-console.log(
-  "avro test",
-  avroType.toBuffer({
-    durationSecs: 10,
-    circles: [CIRCLE_1_DEFAULTS],
-    baseCompCtx: { ...createSvgCompositionContext(), uniformStrokeWidth: 1 },
-    invertCircle2: false,
-    firstBehind: false,
-  })
-);
+interface Converter<A, B> {
+  to(value: A): B;
+  from(value: B): A;
+}
+
+const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
+  to: (circle) => circle,
+  from: (circle) => circle,
+};
+
+const AvroCompCtxConverter: Converter<
+  SvgCompositionContext,
+  AvroSvgCompositionContext
+> = {
+  to: (ctx) => ({
+    ...ctx,
+    uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
+  }),
+  from: (ctx) => ({ ...ctx, showSpecs: false }),
+};
+
+const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
+  to: (value) => {
+    const circles: AvroCircle[] = [AvroCircleConverter.to(value.circle1)];
+    if (value.useTwoCircles) {
+      circles.push(AvroCircleConverter.to(value.circle2));
+    }
+    return {
+      ...value,
+      circles,
+      baseCompCtx: AvroCompCtxConverter.to(value.baseCompCtx),
+    };
+  },
+  from: (value) => {
+    if (value.circles.length === 0) {
+      throw new Error(`Circles must have at least one item!`);
+    }
+    const useTwoCircles = value.circles.length > 1;
+    const circle1 = AvroCircleConverter.from(value.circles[0]);
+    const circle2 = useTwoCircles
+      ? AvroCircleConverter.from(value.circles[1])
+      : CIRCLE_2_DEFAULTS;
+    return {
+      ...value,
+      baseCompCtx: AvroCompCtxConverter.from(value.baseCompCtx),
+      circle1,
+      circle2,
+      useTwoCircles,
+    };
+  },
+};
+
+function serialize(value: DesignConfig): string {
+  const buf = avroType.toBuffer(AvroDesignConverter.to(value));
+  return btoa(String.fromCharCode(...buf));
+}
+
+function deserialize(value: string, defaultValue: DesignConfig): DesignConfig {
+  try {
+    const binaryString = atob(value);
+    const view = new SlowBuffer(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      view[i] = binaryString.charCodeAt(i);
+    }
+
+    return AvroDesignConverter.from(avroType.fromBuffer(view));
+  } catch (e) {
+    console.error(e);
+    return defaultValue;
+  }
+}
+
+export const MandalaPage = createPageWithShareableState({
+  defaultValue: DESIGN_DEFAULTS,
+  serialize,
+  deserialize,
+  component: MandalaPageWithDefaults,
+});

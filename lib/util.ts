@@ -80,21 +80,6 @@ export function isEvenNumber(value: number) {
 }
 
 /**
- * Attempt to parse the given JSON string. If the JSON is malformed,
- * return the given default value instead.
- */
-export function parseJsonWithDefault(value: string, defaultValue: any): any {
-  let result = defaultValue;
-  try {
-    result = JSON.parse(value);
-  } catch (e) {
-    console.log("Unable to decode JSON, returning default value.");
-  }
-
-  return result;
-}
-
-/**
  * Convert the given number of seconds (float) to milliseconds (integer).
  */
 export function secsToMsecs(secs: number): number {
