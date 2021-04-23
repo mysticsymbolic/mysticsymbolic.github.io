@@ -20,7 +20,11 @@ import {
   SvgCompositionContext,
 } from "../svg-composition-context";
 import { Page } from "../page";
-import { MandalaCircle, MandalaCircleProps } from "../mandala-circle";
+import {
+  MandalaCircle,
+  MandalaCircleParams,
+  MandalaCircleProps,
+} from "../mandala-circle";
 import { useAnimationPct } from "../animation";
 import { RandomizerWidget } from "../randomizer-widget";
 import { useDebouncedEffect } from "../use-debounced-effect";
@@ -34,11 +38,7 @@ import type {
 import { SlowBuffer } from "buffer";
 import * as avro from "avro-js";
 
-type CircleConfig = {
-  symbol: string;
-  radius: number;
-  numSymbols: number;
-  invertEveryOtherSymbol: boolean;
+type CircleConfig = MandalaCircleParams & {
   scaling: number;
   rotation: number;
   symbolScaling: number;
@@ -47,7 +47,7 @@ type CircleConfig = {
 };
 
 const CIRCLE_1_DEFAULTS: CircleConfig = {
-  symbol: "eye",
+  data: SvgVocabulary.get("eye"),
   radius: 300,
   numSymbols: 5,
   scaling: 1,
@@ -59,7 +59,7 @@ const CIRCLE_1_DEFAULTS: CircleConfig = {
 };
 
 const CIRCLE_2_DEFAULTS: CircleConfig = {
-  symbol: "leg",
+  data: SvgVocabulary.get("leg"),
   radius: 0,
   numSymbols: 3,
   scaling: 0.5,
@@ -109,7 +109,6 @@ const DURATION_SECS: NumericRange = {
 const DEFAULT_DURATION_SECS = 3;
 
 const ExtendedMandalaCircle: React.FC<CircleConfig & SvgSymbolContext> = ({
-  symbol,
   scaling,
   rotation,
   symbolScaling,
@@ -119,7 +118,6 @@ const ExtendedMandalaCircle: React.FC<CircleConfig & SvgSymbolContext> = ({
   const circleProps: MandalaCircleProps = {
     ...props,
     symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
-    data: SvgVocabulary.get(symbol),
   };
 
   return (
@@ -134,8 +132,7 @@ function animateMandalaCircleParams(
   animPct: number
 ): CircleConfig {
   if (value.animateSymbolRotation) {
-    const data = SvgVocabulary.get(value.symbol);
-    const direction = data.meta?.rotate_clockwise ? 1 : -1;
+    const direction = value.data.meta?.rotate_clockwise ? 1 : -1;
     value = {
       ...value,
       symbolRotation: direction * animPct * ROTATION.max,
@@ -154,8 +151,8 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
       <VocabularyWidget
         id={`${idPrefix}symbol`}
         label="Symbol"
-        value={SvgVocabulary.get(value.symbol)}
-        onChange={(data) => onChange({ ...value, symbol: data.name })}
+        value={value.data}
+        onChange={(data) => onChange({ ...value, data })}
         choices={SvgVocabulary}
       />
       <NumericSlider
@@ -222,7 +219,7 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
 
 function getRandomCircleParams(rng: Random): Partial<CircleConfig> {
   return {
-    symbol: rng.choice(SvgVocabulary.items).name,
+    data: rng.choice(SvgVocabulary.items),
     radius: rng.inRange(RADIUS_RANDOM),
     numSymbols: rng.inRange(NUM_SYMBOLS),
     invertEveryOtherSymbol: rng.bool(),
@@ -425,8 +422,14 @@ interface Converter<A, B> {
 }
 
 const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
-  to: (circle) => circle,
-  from: (circle) => circle,
+  to: ({ data, ...circle }) => ({
+    ...circle,
+    symbol: data.name,
+  }),
+  from: ({ symbol, ...circle }) => ({
+    ...circle,
+    data: SvgVocabulary.get(symbol),
+  }),
 };
 
 const AvroCompCtxConverter: Converter<
