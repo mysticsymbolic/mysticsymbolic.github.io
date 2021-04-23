@@ -29,9 +29,9 @@
         "name": "AvroSvgCompositionContext",
         "type": "record",
         "fields": [
-          { "name": "stroke", "type": "string" },
-          { "name": "fill", "type": "string" },
-          { "name": "background", "type": "string" },
+          { "name": "stroke", "type": "int" },
+          { "name": "fill", "type": "int" },
+          { "name": "background", "type": "int" },
           { "name": "uniformStrokeWidth", "type": "float" }
         ]
       }

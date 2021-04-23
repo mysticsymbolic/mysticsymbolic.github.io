@@ -37,6 +37,7 @@ import type {
 } from "./mandala-page.avsc";
 import { SlowBuffer } from "buffer";
 import * as avro from "avro-js";
+import { clampedByteToHex } from "../random-colors";
 
 type CircleConfig = MandalaCircleParams & {
   scaling: number;
@@ -438,9 +439,33 @@ const AvroCompCtxConverter: Converter<
 > = {
   to: (ctx) => ({
     ...ctx,
+    fill: AvroColorConverter.to(ctx.fill),
+    stroke: AvroColorConverter.to(ctx.stroke),
+    background: AvroColorConverter.to(ctx.background),
     uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
   }),
-  from: (ctx) => ({ ...ctx, showSpecs: false }),
+  from: (ctx) => ({
+    ...ctx,
+    fill: AvroColorConverter.from(ctx.fill),
+    stroke: AvroColorConverter.from(ctx.stroke),
+    background: AvroColorConverter.from(ctx.background),
+    showSpecs: false,
+  }),
+};
+
+export const AvroColorConverter: Converter<string, number> = {
+  to: (string) => {
+    const red = parseInt(string.substring(1, 3), 16);
+    const green = parseInt(string.substring(3, 5), 16);
+    const blue = parseInt(string.substring(5, 7), 16);
+    return (red << 16) + (green << 8) + blue;
+  },
+  from: (number) => {
+    const red = (number >> 16) & 0xff;
+    const green = (number >> 8) & 0xff;
+    const blue = number & 0xff;
+    return "#" + [red, green, blue].map(clampedByteToHex).join("");
+  },
 };
 
 const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {

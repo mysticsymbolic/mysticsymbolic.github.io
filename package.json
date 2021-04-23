@@ -16,9 +16,17 @@
   },
   "author": "",
   "license": "ISC",
+  "jest": {
+    "testPathIgnorePatterns": [
+      "dist",
+      "dist-watch",
+      ".cache"
+    ]
+  },
   "dependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/register": "^7.12.10",
     "@types/cheerio": "^0.22.23",
