@@ -4,8 +4,8 @@
 
 declare module "avro-js" {
   export type AvroType<T> = {
-    toBuffer(value: T): Uint8Array;
-    fromBuffer(value: Uint8Array): T;
+    toBuffer(value: T): Buffer;
+    fromBuffer(value: Buffer): T;
   };
 
   export function parse<T>(schema: any): AvroType<T>;
