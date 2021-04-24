@@ -1,5 +1,5 @@
 import {
-  AvroColorConverter,
+  ColorPacker,
   serializeMandalaDesign,
   deserializeMandalaDesign,
   MANDALA_DESIGN_DEFAULTS,
@@ -7,11 +7,11 @@ import {
 
 describe("AvroColorConverter", () => {
   it("converts strings to numbers", () => {
-    expect(AvroColorConverter.pack("#abcdef")).toEqual(0xabcdef);
+    expect(ColorPacker.pack("#abcdef")).toEqual(0xabcdef);
   });
 
   it("converts numbers to strings", () => {
-    expect(AvroColorConverter.unpack(0xabcdef)).toEqual("#abcdef");
+    expect(ColorPacker.unpack(0xabcdef)).toEqual("#abcdef");
   });
 });
 

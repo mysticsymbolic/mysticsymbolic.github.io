@@ -415,19 +415,19 @@ const MandalaPageWithDefaults: React.FC<{
   );
 };
 
-const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
+const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
 /**
  * A generic interface for "packing" one type to a different representation
  * for the purposes of serialization, and "unpacking" the packed type
  * back to its original representation (for deserialization).
  */
-interface Converter<UnpackedType, PackedType> {
+interface Packer<UnpackedType, PackedType> {
   pack(value: UnpackedType): PackedType;
   unpack(value: PackedType): UnpackedType;
 }
 
-const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
+const CirclePacker: Packer<CircleConfig, AvroCircle> = {
   pack: ({ data, ...circle }) => ({
     ...circle,
     symbol: data.name,
@@ -438,27 +438,27 @@ const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
   }),
 };
 
-const AvroCompCtxConverter: Converter<
+const SvgCompositionContextPacker: Packer<
   SvgCompositionContext,
   AvroSvgCompositionContext
 > = {
   pack: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.pack(ctx.fill),
-    stroke: AvroColorConverter.pack(ctx.stroke),
-    background: AvroColorConverter.pack(ctx.background),
+    fill: ColorPacker.pack(ctx.fill),
+    stroke: ColorPacker.pack(ctx.stroke),
+    background: ColorPacker.pack(ctx.background),
     uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
   }),
   unpack: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.unpack(ctx.fill),
-    stroke: AvroColorConverter.unpack(ctx.stroke),
-    background: AvroColorConverter.unpack(ctx.background),
+    fill: ColorPacker.unpack(ctx.fill),
+    stroke: ColorPacker.unpack(ctx.stroke),
+    background: ColorPacker.unpack(ctx.background),
     showSpecs: false,
   }),
 };
 
-export const AvroColorConverter: Converter<string, number> = {
+export const ColorPacker: Packer<string, number> = {
   pack: (string) => {
     const red = parseInt(string.substring(1, 3), 16);
     const green = parseInt(string.substring(3, 5), 16);
@@ -473,16 +473,16 @@ export const AvroColorConverter: Converter<string, number> = {
   },
 };
 
-const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
+const DesignConfigPacker: Packer<DesignConfig, AvroMandalaDesign> = {
   pack: (value) => {
-    const circles: AvroCircle[] = [AvroCircleConverter.pack(value.circle1)];
+    const circles: AvroCircle[] = [CirclePacker.pack(value.circle1)];
     if (value.useTwoCircles) {
-      circles.push(AvroCircleConverter.pack(value.circle2));
+      circles.push(CirclePacker.pack(value.circle2));
     }
     return {
       ...value,
       circles,
-      baseCompCtx: AvroCompCtxConverter.pack(value.baseCompCtx),
+      baseCompCtx: SvgCompositionContextPacker.pack(value.baseCompCtx),
     };
   },
   unpack: ({ circles, ...value }) => {
@@ -490,13 +490,13 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
       throw new Error(`Circles must have at least one item!`);
     }
     const useTwoCircles = circles.length > 1;
-    const circle1 = AvroCircleConverter.unpack(circles[0]);
+    const circle1 = CirclePacker.unpack(circles[0]);
     const circle2 = useTwoCircles
-      ? AvroCircleConverter.unpack(circles[1])
+      ? CirclePacker.unpack(circles[1])
       : CIRCLE_2_DEFAULTS;
     return {
       ...value,
-      baseCompCtx: AvroCompCtxConverter.unpack(value.baseCompCtx),
+      baseCompCtx: SvgCompositionContextPacker.unpack(value.baseCompCtx),
       circle1,
       circle2,
       useTwoCircles,
@@ -505,7 +505,7 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
 };
 
 export function serializeMandalaDesign(value: DesignConfig): string {
-  const buf = avroType.toBuffer(AvroDesignConverter.pack(value));
+  const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
   return btoa(String.fromCharCode(...buf));
 }
 
@@ -517,7 +517,7 @@ export function deserializeMandalaDesign(value: string): DesignConfig {
     view[i] = binaryString.charCodeAt(i);
   }
 
-  return AvroDesignConverter.unpack(avroType.fromBuffer(view));
+  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(view));
 }
 
 export const MandalaPage = createPageWithShareableState({
