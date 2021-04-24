@@ -6,7 +6,6 @@ import type {
   AvroMandalaDesign,
   AvroSvgCompositionContext,
 } from "./mandala-design.avsc";
-import { SlowBuffer } from "buffer";
 import * as avro from "avro-js";
 import { clampedByteToHex } from "../../random-colors";
 import {
@@ -14,6 +13,7 @@ import {
   ExtendedMandalaCircleParams,
   MandalaDesign,
 } from "./core";
+import { fromBase64, toBase64 } from "../../base64";
 
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
@@ -106,16 +106,10 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
 
 export function serializeMandalaDesign(value: MandalaDesign): string {
   const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
-  return btoa(String.fromCharCode(...buf));
+  return toBase64(buf);
 }
 
 export function deserializeMandalaDesign(value: string): MandalaDesign {
-  const binaryString = atob(value);
-  const view = new SlowBuffer(binaryString.length);
-
-  for (let i = 0; i < binaryString.length; i++) {
-    view[i] = binaryString.charCodeAt(i);
-  }
-
-  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(view));
+  const buf = fromBase64(value);
+  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(buf));
 }
