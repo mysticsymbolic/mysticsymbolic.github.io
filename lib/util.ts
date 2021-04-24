@@ -85,3 +85,15 @@ export function isEvenNumber(value: number) {
 export function secsToMsecs(secs: number): number {
   return Math.floor(secs * 1000);
 }
+
+/**
+ * Returns the given number to a "friendly-looking" human
+ * representation that is not ridiculously long.  For example,
+ * it will return "1.85" instead of "1.850000000143".
+ */
+export function toFriendlyDecimal(value: number, maxDecimalDigits = 2): string {
+  const str = value.toString();
+  const fixedStr = value.toFixed(maxDecimalDigits);
+
+  return str.length < fixedStr.length ? str : fixedStr;
+}

@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import { float, NumericRange, slugify } from "./util";
+import { float, NumericRange, slugify, toFriendlyDecimal } from "./util";
 
 export type NumericSliderProps = NumericRange & {
   id?: string;
@@ -10,18 +10,6 @@ export type NumericSliderProps = NumericRange & {
   valueSuffix?: string;
   disabled?: boolean;
 };
-
-/**
- * Returns the given number to a "friendly-looking" human
- * representation (for our purposes) that is not ridiculously
- * long, e.g. it will return "1.85" instead of "1.850000000143".
- */
-function toFriendlyDecimal(value: number, maxDecimalDigits = 2): string {
-  const str = value.toString();
-  const fixedStr = value.toFixed(maxDecimalDigits);
-
-  return str.length < fixedStr.length ? str : fixedStr;
-}
 
 export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
   const id = props.id || slugify(props.label);
