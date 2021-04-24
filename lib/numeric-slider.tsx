@@ -12,11 +12,11 @@ export type NumericSliderProps = NumericRange & {
 };
 
 /**
- * Returns the given number to a "reasonable-looking" human
+ * Returns the given number to a "friendly-looking" human
  * representation (for our purposes) that is not ridiculously
- * long.
+ * long, e.g. it will return "1.85" instead of "1.850000000143".
  */
-function toReasonableDecimal(value: number, maxDecimalDigits = 2): string {
+function toFriendlyDecimal(value: number, maxDecimalDigits = 2): string {
   const str = value.toString();
   const fixedStr = value.toFixed(maxDecimalDigits);
 
@@ -46,7 +46,7 @@ export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
         />
         <span className="slider-value">
           {" "}
-          {toReasonableDecimal(props.value)}
+          {toFriendlyDecimal(props.value)}
           {props.valueSuffix}
         </span>
       </span>
