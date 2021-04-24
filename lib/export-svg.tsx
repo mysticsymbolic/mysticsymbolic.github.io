@@ -140,10 +140,12 @@ async function exportGif(
   });
 }
 
+export type AnimationRenderer = (time: number) => JSX.Element;
+
 export type ExportableAnimation = {
   duration: number;
   fps?: number;
-  render: (time: number) => JSX.Element;
+  render: AnimationRenderer;
 };
 
 export const ExportWidget: React.FC<{

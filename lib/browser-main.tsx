@@ -43,6 +43,7 @@ const App: React.FC<{}> = (props) => {
   const PageComponent = Pages[currPage];
   const pushState = usePushState(updateSearchFromWindow);
   const ctx: PageContext = {
+    search,
     currPage,
     allPages: pageNames,
     pushState,

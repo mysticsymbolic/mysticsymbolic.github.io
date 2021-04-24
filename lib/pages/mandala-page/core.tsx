@@ -1,29 +1,30 @@
-import React, { useRef, useState } from "react";
-import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
-import { HoverDebugHelper } from "../hover-debug-helper";
-import { NumericSlider } from "../numeric-slider";
+import React, { useMemo, useRef, useState } from "react";
+import { AutoSizingSvg } from "../../auto-sizing-svg";
+import { AnimationRenderer, ExportWidget } from "../../export-svg";
+import { HoverDebugHelper } from "../../hover-debug-helper";
+import { NumericSlider } from "../../numeric-slider";
 import {
   noFillIfShowingSpecs,
   SvgSymbolContext,
   swapColors,
-} from "../svg-symbol";
-import { VocabularyWidget } from "../vocabulary-widget";
-import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
-import { SvgVocabulary } from "../svg-vocabulary";
-import { isEvenNumber, NumericRange } from "../util";
-import { Random } from "../random";
-import { Checkbox } from "../checkbox";
+} from "../../svg-symbol";
+import { VocabularyWidget } from "../../vocabulary-widget";
+import { svgRotate, svgScale, SvgTransform } from "../../svg-transform";
+import { SvgVocabulary } from "../../svg-vocabulary";
+import { isEvenNumber, NumericRange, secsToMsecs } from "../../util";
+import { Random } from "../../random";
+import { Checkbox } from "../../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
-} from "../svg-composition-context";
-import { Page } from "../page";
-import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
-import { useAnimationPct } from "../animation";
-import { RandomizerWidget } from "../randomizer-widget";
+} from "../../svg-composition-context";
+import { Page } from "../../page";
+import { MandalaCircle, MandalaCircleParams } from "../../mandala-circle";
+import { useAnimationPct } from "../../animation";
+import { RandomizerWidget } from "../../randomizer-widget";
+import { useDebouncedEffect } from "../../use-debounced-effect";
 
-type ExtendedMandalaCircleParams = MandalaCircleParams & {
+export type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
   rotation: number;
   symbolScaling: number;
@@ -95,7 +96,7 @@ const DEFAULT_DURATION_SECS = 3;
 
 const ExtendedMandalaCircle: React.FC<
   ExtendedMandalaCircleParams & SvgSymbolContext
-  > = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
+> = ({ scaling, rotation, symbolScaling, symbolRotation, ...props }) => {
   props = {
     ...props,
     symbolTransforms: [svgScale(symbolScaling), svgRotate(symbolRotation)],
@@ -120,12 +121,6 @@ function animateMandalaCircleParams(
     };
   }
   return value;
-}
-
-function isAnyMandalaCircleAnimated(
-  values: ExtendedMandalaCircleParams[]
-): boolean {
-  return values.some((value) => value.animateSymbolRotation);
 }
 
 const ExtendedMandalaCircleParamsWidget: React.FC<{
@@ -213,24 +208,34 @@ function getRandomCircleParams(rng: Random): MandalaCircleParams {
   };
 }
 
-export const MandalaPage: React.FC<{}> = () => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const [circle1, setCircle1] = useState(CIRCLE_1_DEFAULTS);
-  const [circle2, setCircle2] = useState(CIRCLE_2_DEFAULTS);
-  const [durationSecs, setDurationSecs] = useState(DEFAULT_DURATION_SECS);
-  const [baseCompCtx, setBaseCompCtx] = useState(createSvgCompositionContext());
-  const [useTwoCircles, setUseTwoCircles] = useState(false);
-  const [invertCircle2, setInvertCircle2] = useState(true);
-  const [firstBehindSecond, setFirstBehindSecond] = useState(false);
-  const durationMsecs = durationSecs * 1000;
-  const isAnimated = isAnyMandalaCircleAnimated([circle1, circle2]);
-  const animPct = useAnimationPct(isAnimated ? durationMsecs : 0);
-  const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
+export const MANDALA_DESIGN_DEFAULTS = {
+  circle1: CIRCLE_1_DEFAULTS,
+  circle2: CIRCLE_2_DEFAULTS,
+  durationSecs: DEFAULT_DURATION_SECS,
+  baseCompCtx: createSvgCompositionContext(),
+  useTwoCircles: false,
+  invertCircle2: true,
+  firstBehind: false,
+};
 
+export type MandalaDesign = typeof MANDALA_DESIGN_DEFAULTS;
+
+function isDesignAnimated({ circle1, circle2 }: MandalaDesign): boolean {
+  return [circle1, circle2].some((value) => value.animateSymbolRotation);
+}
+
+function createAnimationRenderer({
+  baseCompCtx,
+  invertCircle2,
+  circle1,
+  circle2,
+  useTwoCircles,
+  firstBehind,
+}: MandalaDesign): AnimationRenderer {
+  const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
-  const makeMandala = (animPct: number): JSX.Element => {
+  return (animPct) => {
     const circles = [
       <ExtendedMandalaCircle
         key="first"
@@ -247,13 +252,73 @@ export const MandalaPage: React.FC<{}> = () => {
           {...circle2SymbolCtx}
         />
       );
-      if (firstBehindSecond) {
+      if (firstBehind) {
         circles.reverse();
       }
     }
 
     return <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>;
   };
+}
+
+const AnimatedMandala: React.FC<{
+  config: MandalaDesign;
+  render: AnimationRenderer;
+}> = ({ config, render }) => {
+  const animPct = useAnimationPct(
+    isDesignAnimated(config) ? secsToMsecs(config.durationSecs) : 0
+  );
+
+  return <>{render(animPct)}</>;
+};
+
+/**
+ * A mandala page that starts with the given default mandala configuration.
+ *
+ * The given handler will be called whenever the user changes the
+ * configuration.
+ *
+ * Note that the default is only used to determine the initial state of
+ * the component at mount.  Any changes to the prop once the component has
+ * been mounted are ignored.
+ */
+export const MandalaPageWithDefaults: React.FC<{
+  defaults: MandalaDesign;
+  onChange: (defaults: MandalaDesign) => void;
+}> = ({ defaults, onChange }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [circle1, setCircle1] = useState(defaults.circle1);
+  const [circle2, setCircle2] = useState(defaults.circle2);
+  const [durationSecs, setDurationSecs] = useState(defaults.durationSecs);
+  const [baseCompCtx, setBaseCompCtx] = useState(defaults.baseCompCtx);
+  const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
+  const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
+  const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
+  const design: MandalaDesign = useMemo(
+    () => ({
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    }),
+    [
+      circle1,
+      circle2,
+      durationSecs,
+      baseCompCtx,
+      useTwoCircles,
+      invertCircle2,
+      firstBehind,
+    ]
+  );
+  const isAnimated = isDesignAnimated(design);
+  const render = useMemo(() => createAnimationRenderer(design), [design]);
+
+  useDebouncedEffect(250, () => onChange(design), [onChange, design]);
 
   return (
     <Page title="Mandala!">
@@ -289,8 +354,8 @@ export const MandalaPage: React.FC<{}> = () => {
             />{" "}
             <Checkbox
               label="Place behind first circle"
-              value={firstBehindSecond}
-              onChange={setFirstBehindSecond}
+              value={firstBehind}
+              onChange={setFirstBehind}
             />
           </fieldset>
         )}
@@ -317,7 +382,7 @@ export const MandalaPage: React.FC<{}> = () => {
             basename="mandala"
             svgRef={svgRef}
             animate={
-              isAnimated && { duration: durationMsecs, render: makeMandala }
+              isAnimated && { duration: secsToMsecs(durationSecs), render }
             }
           />
         </div>
@@ -333,7 +398,7 @@ export const MandalaPage: React.FC<{}> = () => {
             bgColor={baseCompCtx.background}
             sizeToElement={canvasRef}
           >
-            {makeMandala(animPct)}
+            <AnimatedMandala config={defaults} render={render} />
           </AutoSizingSvg>
         </HoverDebugHelper>
       </div>

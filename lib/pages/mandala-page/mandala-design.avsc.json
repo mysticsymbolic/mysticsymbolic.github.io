@@ -1,0 +1,43 @@
+{
+  "type": "record",
+  "name": "AvroMandalaDesign",
+  "fields": [
+    {
+      "name": "circles",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "AvroCircle",
+          "type": "record",
+          "fields": [
+            { "name": "symbol", "type": "string" },
+            { "name": "radius", "type": "float" },
+            { "name": "numSymbols", "type": "int" },
+            { "name": "invertEveryOtherSymbol", "type": "boolean" },
+            { "name": "scaling", "type": "float" },
+            { "name": "rotation", "type": "float" },
+            { "name": "symbolScaling", "type": "float" },
+            { "name": "symbolRotation", "type": "float" },
+            { "name": "animateSymbolRotation", "type": "boolean" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "baseCompCtx",
+      "type": {
+        "name": "AvroSvgCompositionContext",
+        "type": "record",
+        "fields": [
+          { "name": "stroke", "type": "int" },
+          { "name": "fill", "type": "int" },
+          { "name": "background", "type": "int" },
+          { "name": "uniformStrokeWidth", "type": "float" }
+        ]
+      }
+    },
+    { "name": "durationSecs", "type": "float" },
+    { "name": "invertCircle2", "type": "boolean" },
+    { "name": "firstBehind", "type": "boolean" }
+  ]
+}

@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import { float, NumericRange, slugify } from "./util";
+import { float, NumericRange, slugify, toFriendlyDecimal } from "./util";
 
 export type NumericSliderProps = NumericRange & {
   id?: string;
@@ -32,9 +32,9 @@ export const NumericSlider: React.FC<NumericSliderProps> = (props) => {
           disabled={props.disabled}
           onChange={(e) => props.onChange(float(e.target.value))}
         />
-        <span>
+        <span className="slider-value">
           {" "}
-          {props.value}
+          {toFriendlyDecimal(props.value)}
           {props.valueSuffix}
         </span>
       </span>
