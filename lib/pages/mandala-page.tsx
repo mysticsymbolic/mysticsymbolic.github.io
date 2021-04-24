@@ -417,17 +417,22 @@ const MandalaPageWithDefaults: React.FC<{
 
 const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
-interface Converter<A, B> {
-  to(value: A): B;
-  from(value: B): A;
+/**
+ * A generic interface for "contracting" one type to a smaller representation
+ * for the purposes of serialization, and "expanding" the smaller representation
+ * back to its original type (for deserialization).
+ */
+interface Converter<ExpandedType, ContractedType> {
+  contract(value: ExpandedType): ContractedType;
+  expand(value: ContractedType): ExpandedType;
 }
 
 const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
-  to: ({ data, ...circle }) => ({
+  contract: ({ data, ...circle }) => ({
     ...circle,
     symbol: data.name,
   }),
-  from: ({ symbol, ...circle }) => ({
+  expand: ({ symbol, ...circle }) => ({
     ...circle,
     data: SvgVocabulary.get(symbol),
   }),
@@ -437,30 +442,30 @@ const AvroCompCtxConverter: Converter<
   SvgCompositionContext,
   AvroSvgCompositionContext
 > = {
-  to: (ctx) => ({
+  contract: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.to(ctx.fill),
-    stroke: AvroColorConverter.to(ctx.stroke),
-    background: AvroColorConverter.to(ctx.background),
+    fill: AvroColorConverter.contract(ctx.fill),
+    stroke: AvroColorConverter.contract(ctx.stroke),
+    background: AvroColorConverter.contract(ctx.background),
     uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
   }),
-  from: (ctx) => ({
+  expand: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.from(ctx.fill),
-    stroke: AvroColorConverter.from(ctx.stroke),
-    background: AvroColorConverter.from(ctx.background),
+    fill: AvroColorConverter.expand(ctx.fill),
+    stroke: AvroColorConverter.expand(ctx.stroke),
+    background: AvroColorConverter.expand(ctx.background),
     showSpecs: false,
   }),
 };
 
 export const AvroColorConverter: Converter<string, number> = {
-  to: (string) => {
+  contract: (string) => {
     const red = parseInt(string.substring(1, 3), 16);
     const green = parseInt(string.substring(3, 5), 16);
     const blue = parseInt(string.substring(5, 7), 16);
     return (red << 16) + (green << 8) + blue;
   },
-  from: (number) => {
+  expand: (number) => {
     const red = (number >> 16) & 0xff;
     const green = (number >> 8) & 0xff;
     const blue = number & 0xff;
@@ -469,29 +474,29 @@ export const AvroColorConverter: Converter<string, number> = {
 };
 
 const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
-  to: (value) => {
-    const circles: AvroCircle[] = [AvroCircleConverter.to(value.circle1)];
+  contract: (value) => {
+    const circles: AvroCircle[] = [AvroCircleConverter.contract(value.circle1)];
     if (value.useTwoCircles) {
-      circles.push(AvroCircleConverter.to(value.circle2));
+      circles.push(AvroCircleConverter.contract(value.circle2));
     }
     return {
       ...value,
       circles,
-      baseCompCtx: AvroCompCtxConverter.to(value.baseCompCtx),
+      baseCompCtx: AvroCompCtxConverter.contract(value.baseCompCtx),
     };
   },
-  from: ({ circles, ...value }) => {
+  expand: ({ circles, ...value }) => {
     if (circles.length === 0) {
       throw new Error(`Circles must have at least one item!`);
     }
     const useTwoCircles = circles.length > 1;
-    const circle1 = AvroCircleConverter.from(circles[0]);
+    const circle1 = AvroCircleConverter.expand(circles[0]);
     const circle2 = useTwoCircles
-      ? AvroCircleConverter.from(circles[1])
+      ? AvroCircleConverter.expand(circles[1])
       : CIRCLE_2_DEFAULTS;
     return {
       ...value,
-      baseCompCtx: AvroCompCtxConverter.from(value.baseCompCtx),
+      baseCompCtx: AvroCompCtxConverter.expand(value.baseCompCtx),
       circle1,
       circle2,
       useTwoCircles,
@@ -500,7 +505,7 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
 };
 
 export function serializeMandalaDesign(value: DesignConfig): string {
-  const buf = avroType.toBuffer(AvroDesignConverter.to(value));
+  const buf = avroType.toBuffer(AvroDesignConverter.contract(value));
   return btoa(String.fromCharCode(...buf));
 }
 
@@ -512,7 +517,7 @@ export function deserializeMandalaDesign(value: string): DesignConfig {
     view[i] = binaryString.charCodeAt(i);
   }
 
-  return AvroDesignConverter.from(avroType.fromBuffer(view));
+  return AvroDesignConverter.expand(avroType.fromBuffer(view));
 }
 
 export const MandalaPage = createPageWithShareableState({
