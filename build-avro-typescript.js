@@ -22,6 +22,6 @@ function createTypescriptSync(avscPath) {
   fs.writeFileSync(filepath, ts, { encoding: "utf-8" });
 }
 
-const AVSC_FILES = ["./lib/pages/mandala-page.avsc.json"];
+const AVSC_FILES = ["./lib/pages/mandala-page/mandala-design.avsc.json"];
 
 AVSC_FILES.forEach(createTypescriptSync);

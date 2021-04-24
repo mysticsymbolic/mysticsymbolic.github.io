@@ -2,8 +2,8 @@ import {
   ColorPacker,
   serializeMandalaDesign,
   deserializeMandalaDesign,
-  MANDALA_DESIGN_DEFAULTS,
-} from "./mandala-page";
+} from "./";
+import { MANDALA_DESIGN_DEFAULTS } from "./core";
 
 describe("AvroColorConverter", () => {
   it("converts strings to numbers", () => {

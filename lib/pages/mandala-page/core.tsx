@@ -1,41 +1,30 @@
 import React, { useMemo, useRef, useState } from "react";
-import { AutoSizingSvg } from "../auto-sizing-svg";
-import { AnimationRenderer, ExportWidget } from "../export-svg";
-import { HoverDebugHelper } from "../hover-debug-helper";
-import { NumericSlider } from "../numeric-slider";
+import { AutoSizingSvg } from "../../auto-sizing-svg";
+import { AnimationRenderer, ExportWidget } from "../../export-svg";
+import { HoverDebugHelper } from "../../hover-debug-helper";
+import { NumericSlider } from "../../numeric-slider";
 import {
   noFillIfShowingSpecs,
   SvgSymbolContext,
   swapColors,
-} from "../svg-symbol";
-import { VocabularyWidget } from "../vocabulary-widget";
-import { svgRotate, svgScale, SvgTransform } from "../svg-transform";
-import { SvgVocabulary } from "../svg-vocabulary";
-import { isEvenNumber, NumericRange, secsToMsecs } from "../util";
-import { Random } from "../random";
-import { Checkbox } from "../checkbox";
+} from "../../svg-symbol";
+import { VocabularyWidget } from "../../vocabulary-widget";
+import { svgRotate, svgScale, SvgTransform } from "../../svg-transform";
+import { SvgVocabulary } from "../../svg-vocabulary";
+import { isEvenNumber, NumericRange, secsToMsecs } from "../../util";
+import { Random } from "../../random";
+import { Checkbox } from "../../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
-  SvgCompositionContext,
-} from "../svg-composition-context";
-import { Page } from "../page";
-import { MandalaCircle, MandalaCircleParams } from "../mandala-circle";
-import { useAnimationPct } from "../animation";
-import { RandomizerWidget } from "../randomizer-widget";
-import { useDebouncedEffect } from "../use-debounced-effect";
-import { createPageWithShareableState } from "../page-with-shareable-state";
-import MandalaAvsc from "./mandala-page.avsc.json";
-import type {
-  AvroCircle,
-  AvroMandalaDesign,
-  AvroSvgCompositionContext,
-} from "./mandala-page.avsc";
-import { SlowBuffer } from "buffer";
-import * as avro from "avro-js";
-import { clampedByteToHex } from "../random-colors";
+} from "../../svg-composition-context";
+import { Page } from "../../page";
+import { MandalaCircle, MandalaCircleParams } from "../../mandala-circle";
+import { useAnimationPct } from "../../animation";
+import { RandomizerWidget } from "../../randomizer-widget";
+import { useDebouncedEffect } from "../../use-debounced-effect";
 
-type ExtendedMandalaCircleParams = MandalaCircleParams & {
+export type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
   rotation: number;
   symbolScaling: number;
@@ -229,9 +218,9 @@ export const MANDALA_DESIGN_DEFAULTS = {
   firstBehind: false,
 };
 
-type DesignConfig = typeof MANDALA_DESIGN_DEFAULTS;
+export type MandalaDesign = typeof MANDALA_DESIGN_DEFAULTS;
 
-function isDesignAnimated({ circle1, circle2 }: DesignConfig): boolean {
+function isDesignAnimated({ circle1, circle2 }: MandalaDesign): boolean {
   return [circle1, circle2].some((value) => value.animateSymbolRotation);
 }
 
@@ -242,7 +231,7 @@ function createAnimationRenderer({
   circle2,
   useTwoCircles,
   firstBehind,
-}: DesignConfig): AnimationRenderer {
+}: MandalaDesign): AnimationRenderer {
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
@@ -273,7 +262,7 @@ function createAnimationRenderer({
 }
 
 const AnimatedMandala: React.FC<{
-  config: DesignConfig;
+  config: MandalaDesign;
   render: AnimationRenderer;
 }> = ({ config, render }) => {
   const animPct = useAnimationPct(
@@ -283,9 +272,9 @@ const AnimatedMandala: React.FC<{
   return <>{render(animPct)}</>;
 };
 
-const MandalaPageWithDefaults: React.FC<{
-  defaults: DesignConfig;
-  onChange: (defaults: DesignConfig) => void;
+export const MandalaPageWithDefaults: React.FC<{
+  defaults: MandalaDesign;
+  onChange: (defaults: MandalaDesign) => void;
 }> = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -296,7 +285,7 @@ const MandalaPageWithDefaults: React.FC<{
   const [useTwoCircles, setUseTwoCircles] = useState(defaults.useTwoCircles);
   const [invertCircle2, setInvertCircle2] = useState(defaults.invertCircle2);
   const [firstBehind, setFirstBehind] = useState(defaults.firstBehind);
-  const design: DesignConfig = useMemo(
+  const design: MandalaDesign = useMemo(
     () => ({
       circle1,
       circle2,
@@ -406,115 +395,3 @@ const MandalaPageWithDefaults: React.FC<{
     </Page>
   );
 };
-
-const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
-
-/**
- * A generic interface for "packing" one type to a different representation
- * for the purposes of serialization, and "unpacking" the packed type
- * back to its original representation (for deserialization).
- */
-interface Packer<UnpackedType, PackedType> {
-  pack(value: UnpackedType): PackedType;
-  unpack(value: PackedType): UnpackedType;
-}
-
-const CirclePacker: Packer<ExtendedMandalaCircleParams, AvroCircle> = {
-  pack: ({ data, ...circle }) => ({
-    ...circle,
-    symbol: data.name,
-  }),
-  unpack: ({ symbol, ...circle }) => ({
-    ...circle,
-    data: SvgVocabulary.get(symbol),
-  }),
-};
-
-const SvgCompositionContextPacker: Packer<
-  SvgCompositionContext,
-  AvroSvgCompositionContext
-> = {
-  pack: (ctx) => ({
-    ...ctx,
-    fill: ColorPacker.pack(ctx.fill),
-    stroke: ColorPacker.pack(ctx.stroke),
-    background: ColorPacker.pack(ctx.background),
-    uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
-  }),
-  unpack: (ctx) => ({
-    ...ctx,
-    fill: ColorPacker.unpack(ctx.fill),
-    stroke: ColorPacker.unpack(ctx.stroke),
-    background: ColorPacker.unpack(ctx.background),
-    showSpecs: false,
-  }),
-};
-
-export const ColorPacker: Packer<string, number> = {
-  pack: (string) => {
-    const red = parseInt(string.substring(1, 3), 16);
-    const green = parseInt(string.substring(3, 5), 16);
-    const blue = parseInt(string.substring(5, 7), 16);
-    return (red << 16) + (green << 8) + blue;
-  },
-  unpack: (number) => {
-    const red = (number >> 16) & 0xff;
-    const green = (number >> 8) & 0xff;
-    const blue = number & 0xff;
-    return "#" + [red, green, blue].map(clampedByteToHex).join("");
-  },
-};
-
-const DesignConfigPacker: Packer<DesignConfig, AvroMandalaDesign> = {
-  pack: (value) => {
-    const circles: AvroCircle[] = [CirclePacker.pack(value.circle1)];
-    if (value.useTwoCircles) {
-      circles.push(CirclePacker.pack(value.circle2));
-    }
-    return {
-      ...value,
-      circles,
-      baseCompCtx: SvgCompositionContextPacker.pack(value.baseCompCtx),
-    };
-  },
-  unpack: ({ circles, ...value }) => {
-    if (circles.length === 0) {
-      throw new Error(`Circles must have at least one item!`);
-    }
-    const useTwoCircles = circles.length > 1;
-    const circle1 = CirclePacker.unpack(circles[0]);
-    const circle2 = useTwoCircles
-      ? CirclePacker.unpack(circles[1])
-      : CIRCLE_2_DEFAULTS;
-    return {
-      ...value,
-      baseCompCtx: SvgCompositionContextPacker.unpack(value.baseCompCtx),
-      circle1,
-      circle2,
-      useTwoCircles,
-    };
-  },
-};
-
-export function serializeMandalaDesign(value: DesignConfig): string {
-  const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
-  return btoa(String.fromCharCode(...buf));
-}
-
-export function deserializeMandalaDesign(value: string): DesignConfig {
-  const binaryString = atob(value);
-  const view = new SlowBuffer(binaryString.length);
-
-  for (let i = 0; i < binaryString.length; i++) {
-    view[i] = binaryString.charCodeAt(i);
-  }
-
-  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(view));
-}
-
-export const MandalaPage = createPageWithShareableState({
-  defaultValue: MANDALA_DESIGN_DEFAULTS,
-  serialize: serializeMandalaDesign,
-  deserialize: deserializeMandalaDesign,
-  component: MandalaPageWithDefaults,
-});
