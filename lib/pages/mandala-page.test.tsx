@@ -1,4 +1,9 @@
-import { AvroColorConverter } from "./mandala-page";
+import {
+  AvroColorConverter,
+  serializeMandalaDesign,
+  deserializeMandalaDesign,
+  MANDALA_DESIGN_DEFAULTS,
+} from "./mandala-page";
 
 describe("AvroColorConverter", () => {
   it("converts strings to numbers", () => {
@@ -8,4 +13,9 @@ describe("AvroColorConverter", () => {
   it("converts numbers to strings", () => {
     expect(AvroColorConverter.from(0xabcdef)).toEqual("#abcdef");
   });
+});
+
+test("Mandala design serialization/desrialization works", () => {
+  const s = serializeMandalaDesign(MANDALA_DESIGN_DEFAULTS);
+  expect(deserializeMandalaDesign(s)).toEqual(MANDALA_DESIGN_DEFAULTS);
 });

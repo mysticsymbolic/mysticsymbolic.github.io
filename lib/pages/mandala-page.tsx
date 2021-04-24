@@ -227,7 +227,7 @@ function getRandomCircleParams(rng: Random): Partial<CircleConfig> {
   };
 }
 
-const DESIGN_DEFAULTS = {
+export const MANDALA_DESIGN_DEFAULTS = {
   circle1: CIRCLE_1_DEFAULTS,
   circle2: CIRCLE_2_DEFAULTS,
   durationSecs: DEFAULT_DURATION_SECS,
@@ -237,7 +237,7 @@ const DESIGN_DEFAULTS = {
   firstBehind: false,
 };
 
-type DesignConfig = typeof DESIGN_DEFAULTS;
+type DesignConfig = typeof MANDALA_DESIGN_DEFAULTS;
 
 function isDesignAnimated({ circle1, circle2 }: DesignConfig): boolean {
   return [circle1, circle2].some((value) => value.animateSymbolRotation);
@@ -480,14 +480,14 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
       baseCompCtx: AvroCompCtxConverter.to(value.baseCompCtx),
     };
   },
-  from: (value) => {
-    if (value.circles.length === 0) {
+  from: ({ circles, ...value }) => {
+    if (circles.length === 0) {
       throw new Error(`Circles must have at least one item!`);
     }
-    const useTwoCircles = value.circles.length > 1;
-    const circle1 = AvroCircleConverter.from(value.circles[0]);
+    const useTwoCircles = circles.length > 1;
+    const circle1 = AvroCircleConverter.from(circles[0]);
     const circle2 = useTwoCircles
-      ? AvroCircleConverter.from(value.circles[1])
+      ? AvroCircleConverter.from(circles[1])
       : CIRCLE_2_DEFAULTS;
     return {
       ...value,
@@ -499,12 +499,12 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
   },
 };
 
-function serialize(value: DesignConfig): string {
+export function serializeMandalaDesign(value: DesignConfig): string {
   const buf = avroType.toBuffer(AvroDesignConverter.to(value));
   return btoa(String.fromCharCode(...buf));
 }
 
-function deserialize(value: string): DesignConfig {
+export function deserializeMandalaDesign(value: string): DesignConfig {
   const binaryString = atob(value);
   const view = new SlowBuffer(binaryString.length);
 
@@ -516,8 +516,8 @@ function deserialize(value: string): DesignConfig {
 }
 
 export const MandalaPage = createPageWithShareableState({
-  defaultValue: DESIGN_DEFAULTS,
-  serialize,
-  deserialize,
+  defaultValue: MANDALA_DESIGN_DEFAULTS,
+  serialize: serializeMandalaDesign,
+  deserialize: deserializeMandalaDesign,
   component: MandalaPageWithDefaults,
 });
