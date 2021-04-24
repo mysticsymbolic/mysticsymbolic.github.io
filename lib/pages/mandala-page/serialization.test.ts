@@ -2,7 +2,7 @@ import {
   ColorPacker,
   serializeMandalaDesign,
   deserializeMandalaDesign,
-} from "./";
+} from "./serialization";
 import { MANDALA_DESIGN_DEFAULTS } from "./core";
 
 describe("AvroColorConverter", () => {
