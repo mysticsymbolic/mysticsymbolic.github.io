@@ -7,11 +7,11 @@ import {
 
 describe("AvroColorConverter", () => {
   it("converts strings to numbers", () => {
-    expect(AvroColorConverter.contract("#abcdef")).toEqual(0xabcdef);
+    expect(AvroColorConverter.pack("#abcdef")).toEqual(0xabcdef);
   });
 
   it("converts numbers to strings", () => {
-    expect(AvroColorConverter.expand(0xabcdef)).toEqual("#abcdef");
+    expect(AvroColorConverter.unpack(0xabcdef)).toEqual("#abcdef");
   });
 });
 

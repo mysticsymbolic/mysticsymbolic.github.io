@@ -418,21 +418,21 @@ const MandalaPageWithDefaults: React.FC<{
 const avroType = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
 /**
- * A generic interface for "contracting" one type to a smaller representation
- * for the purposes of serialization, and "expanding" the smaller representation
- * back to its original type (for deserialization).
+ * A generic interface for "packing" one type to a different representation
+ * for the purposes of serialization, and "unpacking" the packed type
+ * back to its original representation (for deserialization).
  */
-interface Converter<ExpandedType, ContractedType> {
-  contract(value: ExpandedType): ContractedType;
-  expand(value: ContractedType): ExpandedType;
+interface Converter<UnpackedType, PackedType> {
+  pack(value: UnpackedType): PackedType;
+  unpack(value: PackedType): UnpackedType;
 }
 
 const AvroCircleConverter: Converter<CircleConfig, AvroCircle> = {
-  contract: ({ data, ...circle }) => ({
+  pack: ({ data, ...circle }) => ({
     ...circle,
     symbol: data.name,
   }),
-  expand: ({ symbol, ...circle }) => ({
+  unpack: ({ symbol, ...circle }) => ({
     ...circle,
     data: SvgVocabulary.get(symbol),
   }),
@@ -442,30 +442,30 @@ const AvroCompCtxConverter: Converter<
   SvgCompositionContext,
   AvroSvgCompositionContext
 > = {
-  contract: (ctx) => ({
+  pack: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.contract(ctx.fill),
-    stroke: AvroColorConverter.contract(ctx.stroke),
-    background: AvroColorConverter.contract(ctx.background),
+    fill: AvroColorConverter.pack(ctx.fill),
+    stroke: AvroColorConverter.pack(ctx.stroke),
+    background: AvroColorConverter.pack(ctx.background),
     uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
   }),
-  expand: (ctx) => ({
+  unpack: (ctx) => ({
     ...ctx,
-    fill: AvroColorConverter.expand(ctx.fill),
-    stroke: AvroColorConverter.expand(ctx.stroke),
-    background: AvroColorConverter.expand(ctx.background),
+    fill: AvroColorConverter.unpack(ctx.fill),
+    stroke: AvroColorConverter.unpack(ctx.stroke),
+    background: AvroColorConverter.unpack(ctx.background),
     showSpecs: false,
   }),
 };
 
 export const AvroColorConverter: Converter<string, number> = {
-  contract: (string) => {
+  pack: (string) => {
     const red = parseInt(string.substring(1, 3), 16);
     const green = parseInt(string.substring(3, 5), 16);
     const blue = parseInt(string.substring(5, 7), 16);
     return (red << 16) + (green << 8) + blue;
   },
-  expand: (number) => {
+  unpack: (number) => {
     const red = (number >> 16) & 0xff;
     const green = (number >> 8) & 0xff;
     const blue = number & 0xff;
@@ -474,29 +474,29 @@ export const AvroColorConverter: Converter<string, number> = {
 };
 
 const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
-  contract: (value) => {
-    const circles: AvroCircle[] = [AvroCircleConverter.contract(value.circle1)];
+  pack: (value) => {
+    const circles: AvroCircle[] = [AvroCircleConverter.pack(value.circle1)];
     if (value.useTwoCircles) {
-      circles.push(AvroCircleConverter.contract(value.circle2));
+      circles.push(AvroCircleConverter.pack(value.circle2));
     }
     return {
       ...value,
       circles,
-      baseCompCtx: AvroCompCtxConverter.contract(value.baseCompCtx),
+      baseCompCtx: AvroCompCtxConverter.pack(value.baseCompCtx),
     };
   },
-  expand: ({ circles, ...value }) => {
+  unpack: ({ circles, ...value }) => {
     if (circles.length === 0) {
       throw new Error(`Circles must have at least one item!`);
     }
     const useTwoCircles = circles.length > 1;
-    const circle1 = AvroCircleConverter.expand(circles[0]);
+    const circle1 = AvroCircleConverter.unpack(circles[0]);
     const circle2 = useTwoCircles
-      ? AvroCircleConverter.expand(circles[1])
+      ? AvroCircleConverter.unpack(circles[1])
       : CIRCLE_2_DEFAULTS;
     return {
       ...value,
-      baseCompCtx: AvroCompCtxConverter.expand(value.baseCompCtx),
+      baseCompCtx: AvroCompCtxConverter.unpack(value.baseCompCtx),
       circle1,
       circle2,
       useTwoCircles,
@@ -505,7 +505,7 @@ const AvroDesignConverter: Converter<DesignConfig, AvroMandalaDesign> = {
 };
 
 export function serializeMandalaDesign(value: DesignConfig): string {
-  const buf = avroType.toBuffer(AvroDesignConverter.contract(value));
+  const buf = avroType.toBuffer(AvroDesignConverter.pack(value));
   return btoa(String.fromCharCode(...buf));
 }
 
@@ -517,7 +517,7 @@ export function deserializeMandalaDesign(value: string): DesignConfig {
     view[i] = binaryString.charCodeAt(i);
   }
 
-  return AvroDesignConverter.expand(avroType.fromBuffer(view));
+  return AvroDesignConverter.unpack(avroType.fromBuffer(view));
 }
 
 export const MandalaPage = createPageWithShareableState({
