@@ -272,6 +272,16 @@ const AnimatedMandala: React.FC<{
   return <>{render(animPct)}</>;
 };
 
+/**
+ * A mandala page that starts with the given default mandala configuration.
+ *
+ * The given handler will be called whenever the user changes the
+ * configuration.
+ *
+ * Note that the default is only used to determine the initial state of
+ * the component at mount.  Any changes to the prop once the component has
+ * been mounted are ignored.
+ */
 export const MandalaPageWithDefaults: React.FC<{
   defaults: MandalaDesign;
   onChange: (defaults: MandalaDesign) => void;
