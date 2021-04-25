@@ -13,6 +13,9 @@ to Nina Paley.
 
 [MIT License][mit]
 
+The MIT license applies to all non-art files.
+
+```
 Copyright (c) 2021 Atul Varma and other contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,5 +35,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
 
 [mit]: https://opensource.org/licenses/MIT
