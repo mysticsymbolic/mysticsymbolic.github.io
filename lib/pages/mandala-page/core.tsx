@@ -220,8 +220,8 @@ export const MANDALA_DESIGN_DEFAULTS = {
 
 export type MandalaDesign = typeof MANDALA_DESIGN_DEFAULTS;
 
-function isDesignAnimated({ circle1, circle2 }: MandalaDesign): boolean {
-  return [circle1, circle2].some((value) => value.animateSymbolRotation);
+function isDesignAnimated(design: MandalaDesign): boolean {
+  return getCirclesFromDesign(design).some((c) => c.animateSymbolRotation);
 }
 
 function createAnimationRenderer({
@@ -271,6 +271,24 @@ const AnimatedMandala: React.FC<{
 
   return <>{render(animPct)}</>;
 };
+
+export function getCirclesFromDesign(
+  design: MandalaDesign
+): ExtendedMandalaCircleParams[] {
+  const circles: ExtendedMandalaCircleParams[] = [design.circle1];
+
+  if (design.useTwoCircles) {
+    circles.push(design.circle2);
+  }
+
+  return circles;
+}
+
+function getBasename(design: MandalaDesign): string {
+  return `mandala-${getCirclesFromDesign(design)
+    .map((c) => c.data.name)
+    .join("-")}`;
+}
 
 /**
  * A mandala page that starts with the given default mandala configuration.
@@ -379,7 +397,7 @@ export const MandalaPageWithDefaults: React.FC<{
         />
         <div className="thingy">
           <ExportWidget
-            basename="mandala"
+            basename={getBasename(design)}
             svgRef={svgRef}
             animate={
               isAnimated && { duration: secsToMsecs(durationSecs), render }

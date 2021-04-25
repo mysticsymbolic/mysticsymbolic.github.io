@@ -12,6 +12,7 @@ import {
   MANDALA_DESIGN_DEFAULTS,
   ExtendedMandalaCircleParams,
   MandalaDesign,
+  getCirclesFromDesign,
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
 
@@ -75,13 +76,9 @@ export const ColorPacker: Packer<string, number> = {
 
 const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
   pack: (value) => {
-    const circles: AvroCircle[] = [CirclePacker.pack(value.circle1)];
-    if (value.useTwoCircles) {
-      circles.push(CirclePacker.pack(value.circle2));
-    }
     return {
       ...value,
-      circles,
+      circles: getCirclesFromDesign(value).map(CirclePacker.pack),
       baseCompCtx: SvgCompositionContextPacker.pack(value.baseCompCtx),
     };
   },
