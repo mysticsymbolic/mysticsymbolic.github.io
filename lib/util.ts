@@ -78,3 +78,22 @@ export function slugify(text: string) {
 export function isEvenNumber(value: number) {
   return value % 2 === 0;
 }
+
+/**
+ * Convert the given number of seconds (float) to milliseconds (integer).
+ */
+export function secsToMsecs(secs: number): number {
+  return Math.floor(secs * 1000);
+}
+
+/**
+ * Returns the given number to a "friendly-looking" human
+ * representation that is not ridiculously long.  For example,
+ * it will return "1.85" instead of "1.850000000143".
+ */
+export function toFriendlyDecimal(value: number, maxDecimalDigits = 2): string {
+  const str = value.toString();
+  const fixedStr = value.toFixed(maxDecimalDigits);
+
+  return str.length < fixedStr.length ? str : fixedStr;
+}

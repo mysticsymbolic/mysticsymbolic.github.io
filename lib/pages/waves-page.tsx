@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Checkbox } from "../checkbox";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
@@ -74,6 +75,7 @@ const Waves: React.FC<{}> = () => {
   );
   const [yAccel, setYAccel] = useState(WAVE_PARALLAX_TRANSLATE_ACCEL);
   const [scaleVel, setScaleVel] = useState(WAVE_PARALLAX_SCALE_VELOCITY);
+  const [useMask, setUseMask] = useState(false);
 
   let scale = WAVE_PARALLAX_SCALE_START;
   let y = WAVE_PARALLAX_TRANSLATE_START;
@@ -107,7 +109,16 @@ const Waves: React.FC<{}> = () => {
     <>
       <div className="canvas">
         <svg width="1280px" height="720px" viewBox="0 0 1280 720">
-          {waves}
+          {useMask ? (
+            <>
+              <mask id="circle-mask">
+                <circle cx="640" cy="360" r="300" fill="white" />
+              </mask>
+              <g mask="url(#circle-mask)">{waves}</g>
+            </>
+          ) : (
+            waves
+          )}
         </svg>
       </div>
       <div className="sidebar">
@@ -155,6 +166,11 @@ const Waves: React.FC<{}> = () => {
           value={scaleVel}
           step={0.025}
           onChange={setScaleVel}
+        />
+        <Checkbox
+          label="Mask with circle"
+          value={useMask}
+          onChange={setUseMask}
         />
       </div>
     </>

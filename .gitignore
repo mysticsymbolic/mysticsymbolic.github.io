@@ -4,3 +4,4 @@ dist-watch
 .cache
 lib/_svg-vocabulary-pretty-printed.json
 lib/_svg-vocabulary.ts
+lib/**/*.avsc.ts

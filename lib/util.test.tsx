@@ -1,4 +1,11 @@
-import { flatten, float, inclusiveRange, rad2deg, range } from "./util";
+import {
+  flatten,
+  float,
+  inclusiveRange,
+  rad2deg,
+  range,
+  toFriendlyDecimal,
+} from "./util";
 
 describe("float", () => {
   it("converts strings", () => {
@@ -34,4 +41,8 @@ test("range() works", () => {
 
 test("inclusiveRange() works", () => {
   expect(inclusiveRange({ min: 0, max: 1, step: 0.5 })).toEqual([0, 0.5, 1]);
+});
+
+test("toFriendlyDecimal() works", () => {
+  expect(toFriendlyDecimal(1.850000000143)).toEqual("1.85");
 });
