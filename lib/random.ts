@@ -1,4 +1,9 @@
-import { inclusiveRange, NumericInterval, NumericRange } from "./util";
+import {
+  inclusiveRange,
+  NumericInterval,
+  NumericRange,
+  GaussianDist,
+} from "./util";
 
 export type RandomParameters = {
   modulus: number;
@@ -63,6 +68,19 @@ export class Random {
    */
   inInterval({ min, max }: NumericInterval): number {
     return this.next() * (max - min) + min;
+  }
+
+  /**
+   * Return a number from the specified gaussian distribution
+   * from: https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+   */
+  fromGaussian({ mean, stddev }: GaussianDist, nsamples = 6) {
+    let runtotal = 0;
+    for (var i = 0; i < nsamples; i++) {
+      runtotal += this.next();
+    }
+
+    return (stddev * (runtotal - nsamples / 2)) / (nsamples / 2) + mean;
   }
 
   /**

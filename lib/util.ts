@@ -37,6 +37,11 @@ export type NumericRange = NumericInterval & {
   step: number;
 };
 
+export type GaussianDist = {
+  mean: number;
+  stddev: number;
+};
+
 /**
  * Return numbers within the given range, inclusive.
  */
@@ -48,6 +53,13 @@ export function inclusiveRange({ min, max, step }: NumericRange): number[] {
   }
 
   return result;
+}
+
+/**
+ * Clamp a number between min and max
+ */
+export function clamp(number, min, max) {
+  return Math.max(min, Math.min(number, max));
 }
 
 /**
