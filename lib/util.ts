@@ -58,8 +58,8 @@ export function inclusiveRange({ min, max, step }: NumericRange): number[] {
 /**
  * Clamp a number between min and max
  */
-export function clamp(number, min, max) {
-  return Math.max(min, Math.min(number, max));
+export function clamp(x:number, min:number, max:number) {
+  return Math.max(min, Math.min(x, max));
 }
 
 /**

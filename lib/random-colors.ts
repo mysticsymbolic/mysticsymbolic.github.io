@@ -1,7 +1,7 @@
 import { Random } from "./random";
 import { range, clamp } from "./util";
 import * as colorspaces from "colorspaces";
-import { hsluvToHex } from "hsluv";
+import { ColorTuple, hsluvToHex } from "hsluv";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
 
@@ -97,7 +97,7 @@ function create3VColor(rng: Random): string[] {
 
   //zip
   let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
-  let hexcolors = hsls.map((x) => hsluvToHex(x));
+  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
 
   //scramble order
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
@@ -123,8 +123,8 @@ function createSimplePaletteGenerator(
 function createTriadPaletteGenerator(
   createTriad: (rng: Random) => string[]
 ): RandomPaletteGenerator {
-  return (numEntries: number, rng: Random) => {
-    let colors: string = [];
+  return (numEntries: number, rng: Random): string[] => {
+    let colors: string[] = [];
     let n = Math.floor(numEntries / 3) + 1;
 
     if (numEntries == 3) {
