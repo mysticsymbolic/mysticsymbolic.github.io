@@ -9,7 +9,8 @@ export type RandomPaletteAlgorithm =
   | "RGB"
   | "CIELUV"
   | "threevals"
-  | "huecontrast";
+  | "huecontrast"
+  | "randgrey";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
   "threevals";
@@ -66,6 +67,28 @@ function createRandomCIELUVColor(rng: Random): string {
   }
 
   return randColorHex;
+}
+
+function createRandGrey(rng: Random): string[] {
+  let L1 = rng.inInterval({ min: 0, max: 100 });
+  let L2 = rng.inInterval({ min: 0, max: 100 });
+  let L3 = rng.inInterval({ min: 0, max: 100 });
+
+  let Ls = [L1, L2, L3];
+
+  let h = 0;
+  let Hs = [h, h, h];
+
+  let S = 0;
+  let Ss = [S, S, S];
+
+  //zip
+  let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
+  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
+
+  //scramble order
+  hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
+  return hexcolors;
 }
 
 function create3HColor(rng: Random): string[] {
@@ -176,6 +199,7 @@ const PALETTE_GENERATORS: {
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(create3VColor),
   huecontrast: createTriadPaletteGenerator(create3HColor),
+  randgrey: createTriadPaletteGenerator(createRandGrey),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
