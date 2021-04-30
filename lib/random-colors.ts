@@ -5,10 +5,14 @@ import { ColorTuple, hsluvToHex } from "hsluv";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
 
-export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "colorRule3V";
+export type RandomPaletteAlgorithm =
+  | "RGB"
+  | "CIELUV"
+  | "threevals"
+  | "huecontrast";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
-  "colorRule3V";
+  "threevals";
 
 /**
  * Clamp the given number to be between 0 and 255, then
@@ -62,6 +66,33 @@ function createRandomCIELUVColor(rng: Random): string {
   }
 
   return randColorHex;
+}
+
+function create3HColor(rng: Random): string[] {
+  let L = rng.fromGaussian({ mean: 50, stddev: 20 });
+
+  let Ls = [L, L, L];
+
+  Ls = Ls.map((x) => clamp(x, 0, 100));
+
+  let h1 = rng.inInterval({ min: 0, max: 360 }),
+    h2 = 360 * (((h1 + 120) / 360) % 1),
+    h3 = 360 * (((h1 + 240) / 360) % 1);
+
+  let Hs = [h1, h2, h3];
+
+  let S = 100;
+  let Ss = [S, S, S];
+
+  Ss = Ss.map((x) => clamp(x, 0, 100));
+
+  //zip
+  let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
+  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
+
+  //scramble order
+  hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
+  return hexcolors;
 }
 
 function create3VColor(rng: Random): string[] {
@@ -143,7 +174,8 @@ const PALETTE_GENERATORS: {
 } = {
   RGB: createSimplePaletteGenerator(createRandomRGBColor),
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
-  colorRule3V: createTriadPaletteGenerator(create3VColor),
+  threevals: createTriadPaletteGenerator(create3VColor),
+  huecontrast: createTriadPaletteGenerator(create3HColor),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
