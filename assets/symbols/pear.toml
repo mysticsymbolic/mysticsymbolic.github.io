@@ -1,4 +1,4 @@
-always_nest = false
+always_nest = true
 
 
 always_be_nested = false
