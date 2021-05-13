@@ -1,6 +1,10 @@
-import React, { useContext, useRef, useState } from "react";
-import { SvgVocabulary } from "../svg-vocabulary";
-import { noFillIfShowingSpecs, SvgSymbolData } from "../svg-symbol";
+import React, { useContext, useMemo, useRef, useState } from "react";
+import { SvgVocabulary, SvgVocabularyWithBlank } from "../svg-vocabulary";
+import {
+  EMPTY_SVG_SYMBOL_DATA,
+  noFillIfShowingSpecs,
+  SvgSymbolData,
+} from "../svg-symbol";
 import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
@@ -27,6 +31,7 @@ import {
 } from "../svg-composition-context";
 import { Page } from "../page";
 import { RandomizerWidget } from "../randomizer-widget";
+import { VocabularyWidget } from "../vocabulary-widget";
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
@@ -174,6 +179,40 @@ function getDownloadBasename(randomSeed: number) {
   return `mystic-symbolic-creature-${randomSeed}`;
 }
 
+function creatureHasSymbol(
+  creature: CreatureSymbol,
+  symbol: SvgSymbolData
+): boolean {
+  if (creature.data === symbol) return true;
+  if (creature.attachments.some((a) => creatureHasSymbol(a, symbol)))
+    return true;
+  return creature.nests.some((n) => creatureHasSymbol(n, symbol));
+}
+
+function repeatUntilSymbolIsIncluded(
+  symbol: SvgSymbolData,
+  rng: Random,
+  createCreature: (rng: Random) => CreatureSymbol,
+  maxAttempts = 10_000
+): CreatureSymbol {
+  if (symbol === EMPTY_SVG_SYMBOL_DATA) return createCreature(rng);
+
+  for (let i = 0; i < maxAttempts; i++) {
+    const creature = createCreature(rng);
+    if (creatureHasSymbol(creature, symbol)) return creature;
+  }
+
+  // We don't want to hold up the UI forever so just log a message and
+  // return *something*.
+
+  console.log(
+    `Tried to create a creature with the ${symbol.name} symbol ` +
+      `but gave up after ${maxAttempts} attempts.`
+  );
+
+  return createCreature(rng);
+}
+
 export const CreaturePage: React.FC<{}> = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [randomSeed, setRandomSeed] = useState<number>(Date.now());
@@ -186,10 +225,22 @@ export const CreaturePage: React.FC<{}> = () => {
     ...defaultCtx,
     ...compCtx,
   });
-  const creature = COMPLEXITY_LEVEL_GENERATORS[complexity]({
-    rng: new Random(randomSeed),
-    randomlyInvert,
-  });
+  const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
+    EMPTY_SVG_SYMBOL_DATA
+  );
+  const creature = useMemo(
+    () =>
+      repeatUntilSymbolIsIncluded(
+        alwaysInclude,
+        new Random(randomSeed),
+        (rng) =>
+          COMPLEXITY_LEVEL_GENERATORS[complexity]({
+            rng,
+            randomlyInvert,
+          })
+      ),
+    [alwaysInclude, complexity, randomSeed, randomlyInvert]
+  );
 
   return (
     <Page title="Creature!">
@@ -218,7 +269,16 @@ export const CreaturePage: React.FC<{}> = () => {
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomSeed}
-        />
+        >
+          <div className="thingy">
+            <VocabularyWidget
+              label="Always include this symbol"
+              value={alwaysInclude}
+              onChange={setAlwaysInclude}
+              choices={SvgVocabularyWithBlank}
+            />
+          </div>
+        </RandomizerWidget>
         <div className="thingy">
           <ExportWidget
             basename={getDownloadBasename(randomSeed)}
