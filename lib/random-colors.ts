@@ -97,16 +97,14 @@ function createRandGrey(rng: Random): string[] {
   return hexcolors;
 }
 
-
-function create3V180(angle1: number):
-ColorFunction {
+function create3V180(angle1: number): ColorFunction {
   return (rng: Random): string[] => {
-    let Ls = [25,50,75];
+    let Ls = [25, 50, 75];
 
     //Now we have 3 lightness values, pick a random hue and sat
     let h1 = rng.inInterval({ min: 0, max: 360 }),
-    h2 = 360 * (((h1+angle1) / 360) % 1),
-    h3 = 360 * (((180-h2) / 360) % 1);
+      h2 = 360 * (((h1 + angle1) / 360) % 1),
+      h3 = 360 * (((180 - h2) / 360) % 1);
     let Hs = [h1, h2, h3];
     console.log(Hs);
 
@@ -124,7 +122,7 @@ ColorFunction {
     //scramble order
     hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
     return hexcolors;
-  }
+  };
 }
 
 function create3VColor(rng: Random): string[] {
@@ -213,7 +211,7 @@ const PALETTE_GENERATORS: {
   threev45: createTriadPaletteGenerator(create3V180(45)),
   threev60: createTriadPaletteGenerator(create3V180(60)),
   threev75: createTriadPaletteGenerator(create3V180(75)),
-  threev90: createTriadPaletteGenerator(create3V180(90))
+  threev90: createTriadPaletteGenerator(create3V180(90)),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
