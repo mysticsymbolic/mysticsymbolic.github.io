@@ -4,13 +4,19 @@ import * as colorspaces from "colorspaces";
 import { ColorTuple, hsluvToHex } from "hsluv";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
+type ColorFunction = (rng: Random) => string[];
 
 export type RandomPaletteAlgorithm =
   | "RGB"
   | "CIELUV"
   | "threevals"
-  | "huecontrast"
-  | "randgrey";
+  | "randgrey"
+  | "threev15"
+  | "threev30"
+  | "threev45"
+  | "threev60"
+  | "threev75"
+  | "threev90";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
   "threevals";
@@ -91,31 +97,32 @@ function createRandGrey(rng: Random): string[] {
   return hexcolors;
 }
 
-function create3HColor(rng: Random): string[] {
-  let L = rng.fromGaussian({ mean: 50, stddev: 20 });
+function create3V180(angle1: number): ColorFunction {
+  return (rng: Random): string[] => {
+    let Ls = [25, 50, 75];
 
-  let Ls = [L, L, L];
+    //Now we have 3 lightness values, pick a random hue and sat
+    let h1 = rng.inInterval({ min: 0, max: 360 }),
+      h2 = 360 * (((h1 + angle1) / 360) % 1),
+      h3 = 360 * (((180 - h2) / 360) % 1);
+    let Hs = [h1, h2, h3];
+    console.log(Hs);
 
-  Ls = Ls.map((x) => clamp(x, 0, 100));
+    let Ss = [
+      rng.fromGaussian({ mean: 100, stddev: 40 }),
+      rng.fromGaussian({ mean: 100, stddev: 40 }),
+      rng.fromGaussian({ mean: 100, stddev: 40 }),
+    ];
+    Ss = Ss.map((x) => clamp(x, 0, 100));
 
-  let h1 = rng.inInterval({ min: 0, max: 360 }),
-    h2 = 360 * (((h1 + 120) / 360) % 1),
-    h3 = 360 * (((h1 + 240) / 360) % 1);
+    //zip
+    let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
+    let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
 
-  let Hs = [h1, h2, h3];
-
-  let S = 100;
-  let Ss = [S, S, S];
-
-  Ss = Ss.map((x) => clamp(x, 0, 100));
-
-  //zip
-  let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
-  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
-
-  //scramble order
-  hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
-  return hexcolors;
+    //scramble order
+    hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
+    return hexcolors;
+  };
 }
 
 function create3VColor(rng: Random): string[] {
@@ -198,8 +205,13 @@ const PALETTE_GENERATORS: {
   RGB: createSimplePaletteGenerator(createRandomRGBColor),
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(create3VColor),
-  huecontrast: createTriadPaletteGenerator(create3HColor),
   randgrey: createTriadPaletteGenerator(createRandGrey),
+  threev15: createTriadPaletteGenerator(create3V180(15)),
+  threev30: createTriadPaletteGenerator(create3V180(15)),
+  threev45: createTriadPaletteGenerator(create3V180(45)),
+  threev60: createTriadPaletteGenerator(create3V180(60)),
+  threev75: createTriadPaletteGenerator(create3V180(75)),
+  threev90: createTriadPaletteGenerator(create3V180(90)),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
