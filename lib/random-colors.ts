@@ -4,19 +4,19 @@ import * as colorspaces from "colorspaces";
 import { ColorTuple, hsluvToHex } from "hsluv";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
+type ColorFunction = (rng: Random) => string[];
 
 export type RandomPaletteAlgorithm =
   | "RGB"
   | "CIELUV"
   | "threevals"
-  | "huecontrast"
   | "randgrey"
-  | "3v15"
-  | "3v30"
-  | "3v45"
-  | "3v60"
-  | "3v75"
-  | "3v90";
+  | "threev15"
+  | "threev30"
+  | "threev45"
+  | "threev60"
+  | "threev75"
+  | "threev90";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
   "threevals";
@@ -97,35 +97,9 @@ function createRandGrey(rng: Random): string[] {
   return hexcolors;
 }
 
-function create3HColor(rng: Random): string[] {
-  let L = rng.fromGaussian({ mean: 50, stddev: 20 });
 
-  let Ls = [L, L, L];
-
-  Ls = Ls.map((x) => clamp(x, 0, 100));
-
-  let h1 = rng.inInterval({ min: 0, max: 360 }),
-    h2 = 360 * (((h1 + 120) / 360) % 1),
-    h3 = 360 * (((h1 + 240) / 360) % 1);
-
-  let Hs = [h1, h2, h3];
-
-  let S = 100;
-  let Ss = [S, S, S];
-
-  Ss = Ss.map((x) => clamp(x, 0, 100));
-
-  //zip
-  let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
-  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
-
-  //scramble order
-  hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
-  return hexcolors;
-}
-
-function create3V180(angle1:number):
-number => string[] {
+function create3V180(angle1: number):
+ColorFunction {
   return (rng: Random): string[] => {
     let Ls = [25,50,75];
 
@@ -134,6 +108,7 @@ number => string[] {
     h2 = 360 * (((h1+angle1) / 360) % 1),
     h3 = 360 * (((180-h2) / 360) % 1);
     let Hs = [h1, h2, h3];
+    console.log(Hs);
 
     let Ss = [
       rng.fromGaussian({ mean: 100, stddev: 40 }),
@@ -152,11 +127,11 @@ number => string[] {
   }
 }
 
-function create3VColorSimple(rng: Random): string[] {
-  let lowL_Mean = 25.0,
-    medL_Mean = 50.0,
-    hiL_Mean = 75,
-    lowL_SD = 0,
+function create3VColor(rng: Random): string[] {
+  let lowL_Mean = 20.0,
+    medL_Mean = 40.0,
+    hiL_Mean = 70,
+    lowL_SD = 30.0,
     medL_SD = lowL_SD,
     hiL_SD = lowL_SD;
 
@@ -171,15 +146,15 @@ function create3VColorSimple(rng: Random): string[] {
   //Now we have 3 lightness values, pick a random hue and sat
 
   let h1 = rng.inInterval({ min: 0, max: 360 }),
-  h2 = 360 * ((h1 + 30)/360 % 1),
-  h3 = 360 * ((h1 + 195)/360 % 1);
+    h2 = 360 * (((h1 + 60 * Number(rng.bool(0.5))) / 360) % 1),
+    h3 = 360 * (((h1 + 180 * Number(rng.bool(0.5))) / 360) % 1);
 
   let Hs = [h1, h2, h3];
 
   let Ss = [
-    rng.fromGaussian({ mean: 70, stddev: 60 }),
-    rng.fromGaussian({ mean: 70, stddev: 60 }),
-    rng.fromGaussian({ mean: 70, stddev: 60 }),
+    rng.fromGaussian({ mean: 100, stddev: 40 }),
+    rng.fromGaussian({ mean: 100, stddev: 40 }),
+    rng.fromGaussian({ mean: 100, stddev: 40 }),
   ];
   Ss = Ss.map((x) => clamp(x, 0, 100));
 
@@ -191,7 +166,6 @@ function create3VColorSimple(rng: Random): string[] {
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
   return hexcolors;
 }
-
 
 /**
  * Factory function to take a function that generates a random color
@@ -233,15 +207,13 @@ const PALETTE_GENERATORS: {
   RGB: createSimplePaletteGenerator(createRandomRGBColor),
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(create3VColor),
-  simple3v: createTriadPaletteGenerator(create3VColorSimple),
-  huecontrast: createTriadPaletteGenerator(create3HColor),
   randgrey: createTriadPaletteGenerator(createRandGrey),
-  3v15: createTriadPaletteGenerator(factory3V180(15)),
-  3v30: createTriadPaletteGenerator(factory3V180(15)),
-  3v45: createTriadPaletteGenerator(factory3V180(45)),
-  3v60: createTriadPaletteGenerator(factory3V180(60)),
-  3v75: createTriadPaletteGenerator(factory3V180(75)),
-  3v90: createTriadPaletteGenerator(factory3V180(90))
+  threev15: createTriadPaletteGenerator(create3V180(15)),
+  threev30: createTriadPaletteGenerator(create3V180(15)),
+  threev45: createTriadPaletteGenerator(create3V180(45)),
+  threev60: createTriadPaletteGenerator(create3V180(60)),
+  threev75: createTriadPaletteGenerator(create3V180(75)),
+  threev90: createTriadPaletteGenerator(create3V180(90))
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
