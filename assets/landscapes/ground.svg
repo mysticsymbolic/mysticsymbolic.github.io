@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.0.3 build 635 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280px" height="720px">
+<g id="trees_and_hills">
+<g id="Layer_1">
+<radialGradient id="FE1A3BFD-A0EB-44B5-ADFC-44312AF27078_0" cx="50.00%" cy="50.00%" r="143.48%">
+<stop offset="72.94%" style="stop-color:rgb(174,183,98);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(97,105,52);stop-opacity:1.00" />
+</radialGradient>
+<path fill="url(#FE1A3BFD-A0EB-44B5-ADFC-44312AF27078_0)" fill-rule="evenodd" stroke="none" d="M -20.000 320.000 C -19.868 320.000 1299.868 320.000 1300.000 320.000 C 1300.000 320.046 1300.000 779.954 1300.000 780.000 C 1299.868 780.000 -19.868 780.000 -20.000 780.000 C -20.000 779.954 -20.000 320.046 -20.000 320.000 Z"/>
+</g>
+</g>
+</svg>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.0.3 build 635 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280px" height="720px">
+<g id="trees_and_hills">
+<g id="tree1">
+<radialGradient id="E5DB5984-3D72-40A2-86C9-10B74EF44C7F_0" cx="50.48%" cy="59.86%" r="50.00%">
+<stop offset="37.65%" style="stop-color:rgb(150,186,86);stop-opacity:1.00" />
+<stop offset="90.98%" style="stop-color:rgb(74,96,51);stop-opacity:1.00" />
+</radialGradient>
+<path fill="url(#E5DB5984-3D72-40A2-86C9-10B74EF44C7F_0)" fill-rule="evenodd" stroke="none" d="M 855.685 279.966 C 855.695 279.984 976.895 369.681 951.161 469.678 C 936.214 527.761 890.108 547.795 855.685 547.795 C 821.262 547.795 775.156 527.761 760.209 469.678 C 734.475 369.681 855.675 279.984 855.685 279.966 Z"/>
+<path fill="#82663a" d="M 776.810 443.136 C 803.477 469.402 861.083 517.580 861.090 517.587 L 850.565 528.275 C 850.557 528.266 801.512 471.397 774.845 445.131 L 776.810 443.136 Z"/>
+<path fill="#82663a" d="M 850.565 517.587 C 850.568 517.584 908.083 469.403 934.702 443.137 L 936.668 445.130 C 910.049 471.396 861.103 528.262 861.090 528.275 L 850.565 517.587 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 850.565 517.587 L 861.090 528.275 "/>
+<path fill="#82663a" d="M 796.948 383.294 C 816.947 409.960 860.542 460.586 860.558 460.608 L 851.097 467.660 C 851.102 467.666 814.707 411.640 794.708 384.974 L 796.948 383.294 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 796.948 383.294 L 794.708 384.974 "/>
+<path fill="#82663a" d="M 851.097 460.608 C 851.109 460.591 894.612 409.962 914.564 383.295 L 916.806 384.972 C 896.854 411.639 860.558 467.661 860.558 467.660 L 851.097 460.608 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 851.097 460.608 L 860.558 467.660 "/>
+<path fill="#82663a" d="M 896.826 344.945 C 883.492 363.680 859.763 403.231 859.748 403.252 L 851.622 397.423 C 851.615 397.432 881.211 362.056 894.544 343.322 L 896.826 344.945 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 896.826 344.945 L 894.544 343.322 "/>
+<path fill="#82663a" d="M 851.601 403.222 C 851.602 403.224 827.971 363.678 814.686 344.944 L 816.970 343.324 C 830.255 362.058 859.760 397.439 859.769 397.452 L 851.601 403.222 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 851.601 403.222 L 859.769 397.452 "/>
+<path fill="#82663a" d="M 856.985 324.134 C 856.985 349.535 860.685 400.330 860.685 400.337 L 850.685 400.337 C 850.685 400.330 854.385 349.535 854.385 324.134 L 856.985 324.134 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 856.985 324.134 L 854.385 324.134 "/>
+<path fill="#82663a" d="M 860.685 400.337 C 860.685 400.332 861.728 464.114 861.728 464.134 L 849.928 464.134 C 849.928 464.141 850.685 400.355 850.685 400.337 L 860.685 400.337 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 860.685 400.337 L 850.685 400.337 "/>
+<path fill="#82663a" d="M 861.728 464.134 C 861.728 464.140 863.328 522.925 863.328 522.931 L 848.328 522.931 C 848.328 522.925 849.928 464.140 849.928 464.134 L 861.728 464.134 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 861.728 464.134 L 849.928 464.134 "/>
+<path fill="#82663a" d="M 863.328 522.931 C 863.328 522.955 865.433 563.818 865.385 584.250 L 845.985 584.205 C 846.033 563.773 848.328 522.920 848.328 522.931 L 863.328 522.931 Z"/>
+<path fill="none" stroke="#82663a" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 863.328 522.931 L 848.328 522.931 "/>
+</g>
+</g>
+</svg>
