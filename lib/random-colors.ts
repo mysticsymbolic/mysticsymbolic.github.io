@@ -104,7 +104,8 @@ function create3V180(angle1: number): ColorFunction {
     //Now we have 3 lightness values, pick a random hue and sat
     let h1 = rng.inInterval({ min: 0, max: 360 }),
       h2 = 360 * (((h1 + angle1) / 360) % 1),
-      h3 = 360 * (((180 - h2) / 360) % 1);
+      h3 = 360 * (((h1 + 180) / 360) % 1);
+
     let Hs = [h1, h2, h3];
     console.log(Hs);
 
