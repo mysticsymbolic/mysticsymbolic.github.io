@@ -4,7 +4,7 @@ import * as colorspaces from "colorspaces";
 import { ColorTuple, hsluvToHex } from "hsluv";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
-type ColorFunction = (rng: Random) => string[];
+//type ColorFunction = (rng: Random) => string[];
 
 export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "threevals";
 //  | "randgrey"
@@ -34,12 +34,12 @@ export function clampedByteToHex(value: number): string {
   }
   return hex;
 }
-/*
+
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
   return "#" + rgb.map(clampedByteToHex).join("");
 }
-*/
+
 
 function createRandomCIELUVColor(rng: Random): string {
   const max_luv_samples = 100;
@@ -73,6 +73,7 @@ function createRandomCIELUVColor(rng: Random): string {
   return randColorHex;
 }
 
+/*
 function createRandGrey(rng: Random): string[] {
   let L1 = rng.inInterval({ min: 0, max: 100 });
   let L2 = rng.inInterval({ min: 0, max: 100 });
@@ -94,6 +95,7 @@ function createRandGrey(rng: Random): string[] {
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
   return hexcolors;
 }
+*/
 
 /*
 function create3V180(angle1: number): ColorFunction {
