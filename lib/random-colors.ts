@@ -127,7 +127,7 @@ function create3V180(angle1: number): ColorFunction {
 */
 
 function threeVColor(rng: Random): string[] {
-  let L1 = rng.inInterval({ min: 0, max: 25 });
+  let L1 = rng.inInterval({ min: 10, max: 25 });
   let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
   let L3 = rng.inInterval({ min: L2 + 25, max: 85 });
 
