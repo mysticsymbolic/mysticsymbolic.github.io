@@ -34,11 +34,12 @@ export function clampedByteToHex(value: number): string {
   }
   return hex;
 }
-
+/*
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
   return "#" + rgb.map(clampedByteToHex).join("");
 }
+*/
 
 function createRandomCIELUVColor(rng: Random): string {
   const max_luv_samples = 100;
@@ -94,6 +95,7 @@ function createRandGrey(rng: Random): string[] {
   return hexcolors;
 }
 
+/*
 function create3V180(angle1: number): ColorFunction {
   return (rng: Random): string[] => {
     let Ls = [25, 50, 75];
@@ -121,13 +123,14 @@ function create3V180(angle1: number): ColorFunction {
     return hexcolors;
   };
 }
+*/
 
 function threeVColor(rng: Random): string[] {
   let L1 = rng.inInterval({ min: 0, max: 33 });
   let L2 = rng.inInterval({ min: L1 + 25, max: 66 });
   let L3 = rng.inInterval({ min: L2 + 25, max: 100 });
 
-  let Ls = [25, 50, 75];
+  let Ls = [L1, L2, L3];
 
   let angleI = rng.inInterval({ min: 0, max: 120 });
 
