@@ -40,7 +40,6 @@ function createRandomRGBColor(rng: Random): string {
   return "#" + rgb.map(clampedByteToHex).join("");
 }
 
-
 function createRandomCIELUVColor(rng: Random): string {
   const max_luv_samples = 100;
   let luvSampleFailed = true;
@@ -128,9 +127,9 @@ function create3V180(angle1: number): ColorFunction {
 */
 
 function threeVColor(rng: Random): string[] {
-  let L1 = rng.inInterval({ min: 0, max: 33 });
-  let L2 = rng.inInterval({ min: L1 + 25, max: 66 });
-  let L3 = rng.inInterval({ min: L2 + 25, max: 100 });
+  let L1 = rng.inInterval({ min: 0, max: 25 });
+  let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
+  let L3 = rng.inInterval({ min: L2 + 25, max: 85 });
 
   let Ls = [L1, L2, L3];
 
