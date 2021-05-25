@@ -339,7 +339,7 @@ export const MandalaPageWithDefaults: React.FC<{
   useDebouncedEffect(250, () => onChange(design), [onChange, design]);
 
   return (
-    <Page title="Mandala!">
+    <Page title="BOOP!">
       <div className="sidebar">
         <CompositionContextWidget ctx={baseCompCtx} onChange={setBaseCompCtx} />
         <fieldset>
