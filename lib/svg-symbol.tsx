@@ -12,8 +12,23 @@ export type SvgSymbolData = {
   name: string;
   bbox: BBox;
   layers: SvgSymbolElement[];
+  defs?: SvgSymbolDef[];
   meta?: SvgSymbolMetadata;
   specs?: Specs;
+};
+
+export type SvgSymbolGradientStop = {
+  offset: string;
+  color: string;
+};
+
+export type SvgSymbolDef = {
+  type: "radialGradient";
+  id: string;
+  cx: string;
+  cy: string;
+  r: string;
+  stops: SvgSymbolGradientStop[];
 };
 
 export const EMPTY_SVG_SYMBOL_DATA: SvgSymbolData = {
