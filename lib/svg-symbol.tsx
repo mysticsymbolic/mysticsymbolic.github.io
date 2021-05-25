@@ -16,6 +16,15 @@ export type SvgSymbolData = {
   specs?: Specs;
 };
 
+export const EMPTY_SVG_SYMBOL_DATA: SvgSymbolData = {
+  name: "",
+  bbox: {
+    x: { min: 0, max: 0 },
+    y: { min: 0, max: 0 },
+  },
+  layers: [],
+};
+
 export type SvgSymbolElement = (
   | {
       tagName: "g";

@@ -86,15 +86,31 @@ const exportPng: ImageExporter = async (svgEl, onProgress) => {
   });
 };
 
-function drawImage(canvas: HTMLCanvasElement, dataURL: string): Promise<void> {
+function drawImage(
+  canvas: HTMLCanvasElement,
+  dataURL: string,
+  scale: number
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = document.createElement("img");
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+      const scaledWidth = Math.floor(img.width * scale);
+      const scaledHeight = Math.floor(img.height * scale);
+      canvas.width = scaledWidth;
+      canvas.height = scaledHeight;
       const ctx = getCanvasContext2D(canvas);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        img.width,
+        img.height,
+        0,
+        0,
+        scaledWidth,
+        scaledHeight
+      );
       resolve();
     };
     img.onerror = reject;
@@ -107,6 +123,7 @@ function drawImage(canvas: HTMLCanvasElement, dataURL: string): Promise<void> {
  */
 async function exportGif(
   animate: ExportableAnimation,
+  scale: number,
   svgEl: SVGSVGElement,
   onProgress: (value: number) => void
 ): Promise<string> {
@@ -127,7 +144,7 @@ async function exportGif(
     const animPct = i / numFrames;
     const markup = renderToStaticMarkup(render(animPct));
     const url = getSvgUrl(markup);
-    await drawImage(canvas, url);
+    await drawImage(canvas, url, scale);
     gif.addFrame(canvas, { delay: msecPerFrame });
   }
 
@@ -140,17 +157,22 @@ async function exportGif(
   });
 }
 
+export type AnimationRenderer = (time: number) => JSX.Element;
+
 export type ExportableAnimation = {
   duration: number;
   fps?: number;
-  render: (time: number) => JSX.Element;
+  render: AnimationRenderer;
 };
+
+const DEFAULT_GIF_SCALE = 0.5;
 
 export const ExportWidget: React.FC<{
   svgRef: React.RefObject<SVGSVGElement>;
   animate?: ExportableAnimation | false;
+  gifScale?: number;
   basename: string;
-}> = ({ svgRef, basename, animate }) => {
+}> = ({ svgRef, basename, animate, gifScale }) => {
   const [progress, setProgress] = useState<number | null>(null);
 
   if (progress !== null) {
@@ -186,7 +208,7 @@ export const ExportWidget: React.FC<{
               basename,
               "gif",
               setProgress,
-              exportGif.bind(null, animate)
+              exportGif.bind(null, animate, gifScale || DEFAULT_GIF_SCALE)
             )
           }
         >

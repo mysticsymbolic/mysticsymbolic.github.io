@@ -54,4 +54,4 @@ npm run deploy
 [NodeJS]: https://nodejs.org/en/
 [Nina Paley]: https://blog.ninapaley.com/
 [Atul Varma]: https://portfolio.toolness.org/
-[viewed online]: https://toolness.github.io/mystic-symbolic/
+[viewed online]: https://mysticsymbolic.art/
