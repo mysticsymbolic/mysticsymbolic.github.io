@@ -73,11 +73,15 @@ function attribsToProps(el: cheerio.TagElement): any {
 function serializeSvgSymbolElement(
   $: cheerio.Root,
   el: cheerio.TagElement
-): SvgSymbolElement {
-  let children = onlyTags(el.children).map((child) =>
-    serializeSvgSymbolElement($, child)
-  );
+): SvgSymbolElement | null {
   const { tagName } = el;
+  if (tagName === "radialGradient") {
+    // TODO: Process the radial gradient and put its information somewhere!
+    return null;
+  }
+  let children = withoutNulls(
+    onlyTags(el.children).map((child) => serializeSvgSymbolElement($, child))
+  );
   if (isSupportedSvgTag(tagName)) {
     return {
       tagName,
@@ -97,6 +101,18 @@ function removeEmptyGroups(s: SvgSymbolElement[]): SvgSymbolElement[] {
     }));
 }
 
+function withoutNulls<T>(arr: (T | null)[]): T[] {
+  const result: T[] = [];
+
+  for (let item of arr) {
+    if (item !== null) {
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+
 export function convertSvgMarkupToSymbolData(
   filename: string,
   svgMarkup: string
@@ -105,7 +121,9 @@ export function convertSvgMarkupToSymbolData(
   const $ = cheerio.load(svgMarkup);
   const svgEl = $("svg");
   const rawLayers = removeEmptyGroups(
-    onlyTags(svgEl.children()).map((ch) => serializeSvgSymbolElement($, ch))
+    withoutNulls(
+      onlyTags(svgEl.children()).map((ch) => serializeSvgSymbolElement($, ch))
+    )
   );
   const [specs, layers] = extractSpecs(rawLayers);
   const bbox = getSvgBoundingBox(layers);
