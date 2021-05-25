@@ -30,6 +30,7 @@ Object {
       "min": 27.751,
     },
   },
+  "defs": undefined,
   "layers": Array [
     Object {
       "children": Array [],
