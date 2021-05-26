@@ -12,6 +12,7 @@ import {
 import toml from "toml";
 import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
 import { clampedByteToHex } from "./random-colors";
+import { withoutNulls } from "./util";
 
 const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
@@ -153,18 +154,6 @@ function removeEmptyGroups(s: SvgSymbolElement[]): SvgSymbolElement[] {
       ...s,
       children: removeEmptyGroups(s.children),
     }));
-}
-
-function withoutNulls<T>(arr: (T | null)[]): T[] {
-  const result: T[] = [];
-
-  for (let item of arr) {
-    if (item !== null) {
-      result.push(item);
-    }
-  }
-
-  return result;
 }
 
 export function convertSvgMarkupToSymbolData(
