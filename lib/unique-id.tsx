@@ -27,6 +27,11 @@ function useUniqueIds(count: number): string[] {
 }
 
 export class UniqueIdMap extends Map<string, string> {
+  /**
+   * Returns the globally-unique identifier for the given
+   * locally-unique one, raising an exception if one
+   * doesn't exist.
+   */
   getStrict(key: string): string {
     const uid = this.get(key);
 
@@ -37,7 +42,18 @@ export class UniqueIdMap extends Map<string, string> {
     return uid;
   }
 
-  mungeUrl(value: string): string {
+  /**
+   * If the given string is of the form `url(#id)`, where `id` is a
+   * locally-unique identifier, then this will replace `id` with
+   * its globally-unique analogue.
+   *
+   * If the string is *not* of this form, it will return the string
+   * unmodified.
+   *
+   * This can be used to e.g. rewrite references in SVG attributes
+   * that may refer to locally-unique identifiers.
+   */
+  rewriteUrl(value: string): string {
     const match = value.match(/^url\(\#(.+)\)$/);
 
     if (!match) {
@@ -50,6 +66,16 @@ export class UniqueIdMap extends Map<string, string> {
   }
 }
 
+/**
+ * We sometimes need to take locally-unique identifiers and make them
+ * globally-unique within some larger context; for example, an individual
+ * SVG may have defined a `<radialGradient id="boop">` where `#boop` is
+ * unique to the SVG, but if we want to inline the SVG into an HTML page,
+ * it may no longer be unique.
+ *
+ * This React Hook takes an array of locally-unique identifiers and returns
+ * a mapping between them and globally-unique ones.
+ */
 export function useUniqueIdMap(originalIds: string[]): UniqueIdMap {
   const uniqueIds = useUniqueIds(originalIds.length);
 

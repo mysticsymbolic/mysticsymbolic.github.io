@@ -138,7 +138,7 @@ function reactifySvgSymbolElement(
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
   if (fill) {
-    fill = uidMap.mungeUrl(fill);
+    fill = uidMap.rewriteUrl(fill);
   }
   if (strokeWidth !== undefined && typeof ctx.uniformStrokeWidth === "number") {
     strokeWidth = ctx.uniformStrokeWidth;
