@@ -6,11 +6,11 @@ type UniqueIdContextType = {
 };
 
 const UniqueIdContext = React.createContext<UniqueIdContextType>({
-  prefix: "",
+  prefix: "uid_",
   counter: 0,
 });
 
-export function useUniqueIds(count: number): string[] {
+function useUniqueIds(count: number): string[] {
   const ctx = useContext(UniqueIdContext);
   const result = useMemo<string[]>(() => {
     const result: string[] = [];
@@ -25,14 +25,6 @@ export function useUniqueIds(count: number): string[] {
 
   return result;
 }
-
-export const UniqueIdContextProvider: React.FC<{ prefix?: string }> = (
-  props
-) => (
-  <UniqueIdContext.Provider value={{ counter: 0, prefix: props.prefix || "" }}>
-    {props.children}
-  </UniqueIdContext.Provider>
-);
 
 export class UniqueIdMap extends Map<string, string> {
   getStrict(key: string): string {
