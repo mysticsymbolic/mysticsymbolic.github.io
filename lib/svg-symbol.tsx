@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { AttachmentPointType, PointWithNormal, Specs } from "./specs";
 import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
+import { useUniqueIds } from "./unique-id-context";
 import { VisibleSpecs } from "./visible-specs";
 
 const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
@@ -128,6 +129,7 @@ function getColor(
 
 function reactifySvgSymbolElement(
   ctx: SvgSymbolContext,
+  uidMap: UidMap,
   el: SvgSymbolElement,
   key: number
 ): JSX.Element {
@@ -135,6 +137,9 @@ function reactifySvgSymbolElement(
   let vectorEffect;
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
+  if (fill) {
+    fill = replaceUrlUid(fill, uidMap);
+  }
   if (strokeWidth !== undefined && typeof ctx.uniformStrokeWidth === "number") {
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
@@ -151,18 +156,89 @@ function reactifySvgSymbolElement(
   return React.createElement(
     el.tagName,
     props,
-    el.children.map(reactifySvgSymbolElement.bind(null, ctx))
+    el.children.map(reactifySvgSymbolElement.bind(null, ctx, uidMap))
   );
 }
+
+type UidMap = Map<string, string>;
+
+function useUidMap(defs: SvgSymbolDef[] | undefined): UidMap {
+  const uniqueIds = useUniqueIds(defs?.length ?? 0);
+
+  return useMemo(() => {
+    const map = new Map<string, string>();
+
+    if (defs) {
+      for (let i = 0; i < defs.length; i++) {
+        map.set(defs[i].id, uniqueIds[i]);
+      }
+    }
+
+    return map;
+  }, [defs]);
+}
+
+function getUid(uidMap: UidMap, id: string): string {
+  const uid = uidMap.get(id);
+
+  if (!uid) {
+    throw new Error(`Unable to find a unique ID for "${id}"`);
+  }
+
+  return uid;
+}
+
+function replaceUrlUid(value: string, uidMap: UidMap): string {
+  const match = value.match(/^url\(\#(.+)\)$/);
+
+  if (!match) {
+    return value;
+  }
+
+  const uid = getUid(uidMap, match[1]);
+
+  return `url(#${uid})`;
+}
+
+const SvgSymbolDef: React.FC<
+  { def: SvgSymbolDef; uidMap: UidMap } & SvgSymbolContext
+> = ({ def, uidMap, ...ctx }) => {
+  switch (def.type) {
+    case "radialGradient":
+      return (
+        <radialGradient
+          id={getUid(uidMap, def.id)}
+          cx={def.cx}
+          cy={def.cy}
+          r={def.r}
+        >
+          {def.stops.map((stop, i) => (
+            <stop
+              key={i}
+              offset={stop.offset}
+              stopColor={getColor(ctx, stop.color)}
+            />
+          ))}
+        </radialGradient>
+      );
+  }
+};
 
 export const SvgSymbolContent: React.FC<
   { data: SvgSymbolData } & SvgSymbolContext
 > = (props) => {
   const d = props.data;
+  const uidMap = useUidMap(d.defs);
 
   return (
     <g data-symbol-name={d.name}>
-      {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
+      {d.defs &&
+        d.defs.map((def, i) => (
+          <SvgSymbolDef key={i} {...props} def={def} uidMap={uidMap} />
+        ))}
+      {props.data.layers.map(
+        reactifySvgSymbolElement.bind(null, props, uidMap)
+      )}
       {props.showSpecs && d.specs && <VisibleSpecs specs={d.specs} />}
     </g>
   );
