@@ -88,10 +88,7 @@ function getNonEmptyAttrib(el: cheerio.TagElement, attr: string): string {
   return result;
 }
 
-function parseRadialGradient(
-  $: cheerio.Root,
-  el: cheerio.TagElement
-): SvgSymbolDef {
+function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
   const stops: SvgSymbolGradientStop[] = [];
   for (let child of el.children) {
     if (child.type === "tag") {
@@ -131,7 +128,7 @@ function serializeSvgSymbolElement(
 ): SvgSymbolElement | null {
   const { tagName } = el;
   if (tagName === "radialGradient") {
-    defsOutput.push(parseRadialGradient($, el));
+    defsOutput.push(parseRadialGradient(el));
     return null;
   }
   let children = withoutNulls(
