@@ -23,6 +23,10 @@ export type SvgSymbolGradientStop = {
   color: string;
 };
 
+/**
+ * This represents a definition that will be referenced
+ * from elsewhere in an SVG, such as a radial gradient.
+ */
 export type SvgSymbolDef = {
   type: "radialGradient";
   id: string;

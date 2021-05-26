@@ -122,6 +122,13 @@ function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
   };
 }
 
+/**
+ * Attempt to convert the given SVG element into a `SvgSymbolElement`
+ * and/or a list of accompanying `SvgSymbolDef` objects.
+ *
+ * Note that the latter will be "returned" to the caller via the
+ * `defsOutput` argument.
+ */
 function serializeSvgSymbolElement(
   $: cheerio.Root,
   el: cheerio.TagElement,
