@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo } from "react";
 
 type UniqueIdContextType = {
   prefix: string;
@@ -12,7 +12,7 @@ const UniqueIdContext = React.createContext<UniqueIdContextType>({
 
 export function useUniqueIds(count: number): string[] {
   const ctx = useContext(UniqueIdContext);
-  const result = useState<string[]>(() => {
+  const result = useMemo<string[]>(() => {
     const result: string[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -21,7 +21,7 @@ export function useUniqueIds(count: number): string[] {
     }
 
     return result;
-  })[0];
+  }, [count]);
 
   return result;
 }
