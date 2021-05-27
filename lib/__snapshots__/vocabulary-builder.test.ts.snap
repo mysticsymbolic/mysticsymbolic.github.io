@@ -18,6 +18,28 @@ Object {
 }
 `;
 
+exports[`convertSvgMarkupToSymbolData() processses radial gradients 1`] = `
+Array [
+  Object {
+    "cx": "49.97%",
+    "cy": "76.69%",
+    "id": "blargy",
+    "r": "68.79%",
+    "stops": Array [
+      Object {
+        "color": "#000000",
+        "offset": "0.00%",
+      },
+      Object {
+        "color": "#ffffff",
+        "offset": "100.00%",
+      },
+    ],
+    "type": "radialGradient",
+  },
+]
+`;
+
 exports[`convertSvgMarkupToSymbolData() works with SVGs that just have a path and no specs 1`] = `
 Object {
   "bbox": Object {
