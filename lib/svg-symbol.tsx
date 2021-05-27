@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { AttachmentPointType, PointWithNormal, Specs } from "./specs";
 import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
+import { UniqueIdMap, useUniqueIdMap } from "./unique-id";
 import { VisibleSpecs } from "./visible-specs";
 
 const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
@@ -12,8 +13,27 @@ export type SvgSymbolData = {
   name: string;
   bbox: BBox;
   layers: SvgSymbolElement[];
+  defs?: SvgSymbolDef[];
   meta?: SvgSymbolMetadata;
   specs?: Specs;
+};
+
+export type SvgSymbolGradientStop = {
+  offset: string;
+  color: string;
+};
+
+/**
+ * This represents a definition that will be referenced
+ * from elsewhere in an SVG, such as a radial gradient.
+ */
+export type SvgSymbolDef = {
+  type: "radialGradient";
+  id: string;
+  cx: string;
+  cy: string;
+  r: string;
+  stops: SvgSymbolGradientStop[];
 };
 
 export const EMPTY_SVG_SYMBOL_DATA: SvgSymbolData = {
@@ -113,6 +133,7 @@ function getColor(
 
 function reactifySvgSymbolElement(
   ctx: SvgSymbolContext,
+  uidMap: UniqueIdMap,
   el: SvgSymbolElement,
   key: number
 ): JSX.Element {
@@ -120,6 +141,9 @@ function reactifySvgSymbolElement(
   let vectorEffect;
   fill = getColor(ctx, fill);
   stroke = getColor(ctx, stroke);
+  if (fill) {
+    fill = uidMap.rewriteUrl(fill);
+  }
   if (strokeWidth !== undefined && typeof ctx.uniformStrokeWidth === "number") {
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
@@ -136,18 +160,50 @@ function reactifySvgSymbolElement(
   return React.createElement(
     el.tagName,
     props,
-    el.children.map(reactifySvgSymbolElement.bind(null, ctx))
+    el.children.map(reactifySvgSymbolElement.bind(null, ctx, uidMap))
   );
 }
+
+const SvgSymbolDef: React.FC<
+  { def: SvgSymbolDef; uidMap: UniqueIdMap } & SvgSymbolContext
+> = ({ def, uidMap, ...ctx }) => {
+  switch (def.type) {
+    case "radialGradient":
+      return (
+        <radialGradient
+          id={uidMap.getStrict(def.id)}
+          cx={def.cx}
+          cy={def.cy}
+          r={def.r}
+        >
+          {def.stops.map((stop, i) => (
+            <stop
+              key={i}
+              offset={stop.offset}
+              stopColor={getColor(ctx, stop.color)}
+            />
+          ))}
+        </radialGradient>
+      );
+  }
+};
 
 export const SvgSymbolContent: React.FC<
   { data: SvgSymbolData } & SvgSymbolContext
 > = (props) => {
   const d = props.data;
+  const origIds = useMemo(() => d.defs?.map((def) => def.id) ?? [], [d.defs]);
+  const uidMap = useUniqueIdMap(origIds);
 
   return (
     <g data-symbol-name={d.name}>
-      {props.data.layers.map(reactifySvgSymbolElement.bind(null, props))}
+      {d.defs &&
+        d.defs.map((def, i) => (
+          <SvgSymbolDef key={i} {...props} def={def} uidMap={uidMap} />
+        ))}
+      {props.data.layers.map(
+        reactifySvgSymbolElement.bind(null, props, uidMap)
+      )}
       {props.showSpecs && d.specs && <VisibleSpecs specs={d.specs} />}
     </g>
   );
