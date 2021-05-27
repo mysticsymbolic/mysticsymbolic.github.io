@@ -45,10 +45,12 @@ export class UniqueIdMap extends Map<string, string> {
   /**
    * If the given string is of the form `url(#id)`, where `id` is a
    * locally-unique identifier, then this will replace `id` with
-   * its globally-unique analogue.
+   * its globally-unique analogue.  If it does not have a
+   * globally-unique identifier for it, however, an error will be
+   * raised.
    *
-   * If the string is *not* of this form, it will return the string
-   * unmodified.
+   * If the string is *not* of the aforementioned form, however,
+   * it will be returned unmodified.
    *
    * This can be used to e.g. rewrite references in SVG attributes
    * that may refer to locally-unique identifiers.
