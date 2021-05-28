@@ -11,9 +11,10 @@
     "test:watch": "jest --watch",
     "test": "jest",
     "esbuild": "esbuild lib/browser-main.tsx --bundle --outfile=dist/browser-main.js --external:stylus --define:global=window --inject:./lib/esbuild-shims.js --target=es2018 --sourcemap",
+    "esbuild:build": "npm run esbuild -- --define:process.env.NODE_ENV=\\\"production\\\" --minify",
     "esbuild:serve": "npm run esbuild -- --servedir=dist --serve=1234",
     "build-prereqs": "node build-vocabulary.js && node build-avro-typescript.js",
-    "build": "npm run build-prereqs && npm run esbuild",
+    "build": "npm run build-prereqs && npm run esbuild:build",
     "watch": "npm run build-prereqs && npm run esbuild:serve"
   },
   "author": "",
