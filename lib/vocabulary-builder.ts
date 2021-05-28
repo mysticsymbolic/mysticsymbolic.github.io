@@ -11,8 +11,8 @@ import {
 } from "./svg-symbol";
 import toml from "toml";
 import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
-import { clampedByteToHex } from "./random-colors";
 import { withoutNulls } from "./util";
+import { clampedBytesToRGBColor } from "./color-util";
 
 const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
@@ -108,7 +108,7 @@ function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
         .map((value) => parseInt(value));
       stops.push({
         offset: getNonEmptyAttrib(child, "offset"),
-        color: "#" + rgb.map(clampedByteToHex).join(""),
+        color: clampedBytesToRGBColor(rgb),
       });
     }
   }
