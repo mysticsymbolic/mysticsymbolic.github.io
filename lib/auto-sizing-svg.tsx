@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type AutoSizingSvgProps = {
   padding?: number;
@@ -31,7 +31,7 @@ export const AutoSizingSvg = React.forwardRef(
     const [width, setWidth] = useState(1);
     const [height, setHeight] = useState(1);
     const gRef = useRef<SVGGElement>(null);
-    const resizeToElement = () => {
+    const resizeToElement = useCallback(() => {
       if (sizeToElement?.current) {
         const bbox = sizeToElement.current.getBoundingClientRect();
         setX(-bbox.width / 2);
@@ -41,17 +41,14 @@ export const AutoSizingSvg = React.forwardRef(
         return true;
       }
       return false;
-    };
+    }, [sizeToElement]);
 
     useResizeHandler(resizeToElement);
 
-    // This is a bit weird; we specifically *want* to keep running
-    // this effect until our dimensions have stabilized, which eslint
-    // thinks (possibly rightfully so) could potentially result in
-    // an infinite chain of updates. But we wrote this code before
-    // introducing eslint and we're confident it works as-is, so we're
-    // going to disable the eslint rule.
-    /* eslint-disable react-hooks/exhaustive-deps */
+    // Note that we're passing `props.children` in as a dependency; it's not
+    // used anywhere in the effect, but since any change to the
+    // children may result in a dimension change in the SVG element, we
+    // want it to trigger the effect.
     useEffect(() => {
       if (!resizeToElement()) {
         const svgEl = gRef.current;
@@ -64,7 +61,7 @@ export const AutoSizingSvg = React.forwardRef(
           setHeight(bbox.height + padding * 2);
         }
       }
-    });
+    }, [props.padding, resizeToElement, props.children]);
 
     return (
       <svg
