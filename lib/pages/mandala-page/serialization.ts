@@ -7,7 +7,6 @@ import type {
   AvroSvgCompositionContext,
 } from "./mandala-design.avsc";
 import * as avro from "avro-js";
-import { clampedByteToHex } from "../../random-colors";
 import {
   MANDALA_DESIGN_DEFAULTS,
   ExtendedMandalaCircleParams,
@@ -15,6 +14,7 @@ import {
   getCirclesFromDesign,
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
+import { clampedBytesToRGBColor } from "../../color-util";
 
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
@@ -70,7 +70,7 @@ export const ColorPacker: Packer<string, number> = {
     const red = (number >> 16) & 0xff;
     const green = (number >> 8) & 0xff;
     const blue = number & 0xff;
-    return "#" + [red, green, blue].map(clampedByteToHex).join("");
+    return clampedBytesToRGBColor([red, green, blue]);
   },
 };
 
