@@ -8,6 +8,8 @@
     "prettier:check": "prettier --check lib/**/*.ts lib/**/*.ts",
     "prettier:fix": "prettier --write   lib/**/*.ts lib/**/*.ts",
     "typecheck": "tsc --noemit",
+    "eslint": "eslint lib --ext .ts,.tsx --max-warnings 1",
+    "lint": "npm run prettier:check && npm run typecheck && npm run eslint",
     "test:watch": "jest --watch",
     "test": "jest",
     "esbuild": "esbuild lib/browser-main.tsx --bundle --outfile=dist/browser-main.js --external:stylus --define:global=window --inject:./lib/esbuild-shims.js --target=es2018 --sourcemap",
@@ -54,5 +56,10 @@
     "typescript": "^4.1.3",
     "util": "^0.12.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
+    "@typescript-eslint/parser": "^4.25.0",
+    "eslint": "^7.27.0",
+    "eslint-plugin-react-hooks": "^4.2.0"
+  }
 }
