@@ -27,14 +27,24 @@ export type SvgSymbolGradientStop = {
  * This represents a definition that will be referenced
  * from elsewhere in an SVG, such as a radial gradient.
  */
-export type SvgSymbolDef = {
-  type: "radialGradient";
-  id: string;
-  cx: string;
-  cy: string;
-  r: string;
-  stops: SvgSymbolGradientStop[];
-};
+export type SvgSymbolDef =
+  | {
+      type: "radialGradient";
+      id: string;
+      cx: string;
+      cy: string;
+      r: string;
+      stops: SvgSymbolGradientStop[];
+    }
+  | {
+      type: "linearGradient";
+      id: string;
+      x1: string;
+      y1: string;
+      x2: string;
+      y2: string;
+      stops: SvgSymbolGradientStop[];
+    };
 
 export const EMPTY_SVG_SYMBOL_DATA: SvgSymbolData = {
   name: "",
@@ -167,23 +177,22 @@ function reactifySvgSymbolElement(
 const SvgSymbolDef: React.FC<
   { def: SvgSymbolDef; uidMap: UniqueIdMap } & SvgSymbolContext
 > = ({ def, uidMap, ...ctx }) => {
+  const id = uidMap.getStrict(def.id);
+  const stops = def.stops.map((stop, i) => (
+    <stop key={i} offset={stop.offset} stopColor={getColor(ctx, stop.color)} />
+  ));
   switch (def.type) {
     case "radialGradient":
       return (
-        <radialGradient
-          id={uidMap.getStrict(def.id)}
-          cx={def.cx}
-          cy={def.cy}
-          r={def.r}
-        >
-          {def.stops.map((stop, i) => (
-            <stop
-              key={i}
-              offset={stop.offset}
-              stopColor={getColor(ctx, stop.color)}
-            />
-          ))}
+        <radialGradient id={id} cx={def.cx} cy={def.cy} r={def.r}>
+          {stops}
         </radialGradient>
+      );
+    case "linearGradient":
+      return (
+        <linearGradient id={id} x1={def.x1} y1={def.y1} x2={def.x2} y2={def.y2}>
+          {stops}
+        </linearGradient>
       );
   }
 };

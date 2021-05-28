@@ -89,16 +89,18 @@ function getNonEmptyAttrib(el: cheerio.TagElement, attr: string): string {
   return result;
 }
 
-function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
+function parseGradientStops(
+  els: cheerio.TagElement["children"]
+): SvgSymbolGradientStop[] {
   const stops: SvgSymbolGradientStop[] = [];
-  for (let child of el.children) {
-    if (child.type === "tag") {
-      if (child.tagName !== "stop") {
+  for (let el of els) {
+    if (el.type === "tag") {
+      if (el.tagName !== "stop") {
         throw new Error(
           `Expected an SVG gradient to only contain <stop> elements!`
         );
       }
-      const style = getNonEmptyAttrib(child, "style");
+      const style = getNonEmptyAttrib(el, "style");
       const color = style.match(/stop-color\:rgb\((\d+),(\d+),(\d+)\)/);
       if (!color) {
         throw new Error(`Expected "${style}" to contain a stop-color!`);
@@ -107,18 +109,34 @@ function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
         .slice(1)
         .map((value) => parseInt(value));
       stops.push({
-        offset: getNonEmptyAttrib(child, "offset"),
+        offset: getNonEmptyAttrib(el, "offset"),
         color: clampedBytesToRGBColor(rgb),
       });
     }
   }
+  return stops;
+}
+
+function parseLinearGradient(el: cheerio.TagElement): SvgSymbolDef {
+  return {
+    type: "linearGradient",
+    id: getNonEmptyAttrib(el, "id"),
+    x1: getNonEmptyAttrib(el, "x1"),
+    y1: getNonEmptyAttrib(el, "y1"),
+    x2: getNonEmptyAttrib(el, "x2"),
+    y2: getNonEmptyAttrib(el, "y2"),
+    stops: parseGradientStops(el.children),
+  };
+}
+
+function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
   return {
     type: "radialGradient",
     id: getNonEmptyAttrib(el, "id"),
     cx: getNonEmptyAttrib(el, "cx"),
     cy: getNonEmptyAttrib(el, "cy"),
     r: getNonEmptyAttrib(el, "r"),
-    stops,
+    stops: parseGradientStops(el.children),
   };
 }
 
@@ -138,8 +156,10 @@ function serializeSvgSymbolElement(
   if (tagName === "radialGradient") {
     defsOutput.push(parseRadialGradient(el));
     return null;
-  }
-  if (!isSupportedSvgTag(tagName)) {
+  } else if (tagName === "linearGradient") {
+    defsOutput.push(parseLinearGradient(el));
+    return null;
+  } else if (!isSupportedSvgTag(tagName)) {
     throw new Error(`Unsupported SVG element: <${tagName}>`);
   }
   let children = withoutNulls(
