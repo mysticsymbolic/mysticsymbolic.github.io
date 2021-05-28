@@ -21,7 +21,7 @@ function useUniqueIds(count: number): string[] {
     }
 
     return result;
-  }, [count]);
+  }, [count, ctx]);
 
   return result;
 }
@@ -83,6 +83,6 @@ export function useUniqueIdMap(originalIds: string[]): UniqueIdMap {
 
   return useMemo(
     () => new UniqueIdMap(originalIds.map((id, i) => [id, uniqueIds[i]])),
-    [originalIds]
+    [originalIds, uniqueIds]
   );
 }

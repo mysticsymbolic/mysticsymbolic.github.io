@@ -45,6 +45,13 @@ export const AutoSizingSvg = React.forwardRef(
 
     useResizeHandler(resizeToElement);
 
+    // This is a bit weird; we specifically *want* to keep running
+    // this effect until our dimensions have stabilized, which eslint
+    // thinks (possibly rightfully so) could potentially result in
+    // an infinite chain of updates. But we wrote this code before
+    // introducing eslint and we're confident it works as-is, so we're
+    // going to disable the eslint rule.
+    /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => {
       if (!resizeToElement()) {
         const svgEl = gRef.current;
