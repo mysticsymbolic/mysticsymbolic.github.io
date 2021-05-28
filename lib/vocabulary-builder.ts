@@ -139,19 +139,19 @@ function serializeSvgSymbolElement(
     defsOutput.push(parseRadialGradient(el));
     return null;
   }
+  if (!isSupportedSvgTag(tagName)) {
+    throw new Error(`Unsupported SVG element: <${tagName}>`);
+  }
   let children = withoutNulls(
     onlyTags(el.children).map((child) =>
       serializeSvgSymbolElement($, child, defsOutput)
     )
   );
-  if (isSupportedSvgTag(tagName)) {
-    return {
-      tagName,
-      props: attribsToProps(el) as any,
-      children,
-    };
-  }
-  throw new Error(`Unsupported SVG element: <${tagName}>`);
+  return {
+    tagName,
+    props: attribsToProps(el) as any,
+    children,
+  };
 }
 
 function removeEmptyGroups(s: SvgSymbolElement[]): SvgSymbolElement[] {
