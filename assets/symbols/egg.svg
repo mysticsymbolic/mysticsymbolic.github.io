@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 12.5 build 22414 -->
+<!-- Generator: Moho 13.5 build 20210422 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="egg">
 <g id="egg">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 360.000 15.528 C 470.069 15.528 625.198 262.332 583.646 448.465 C 558.086 562.959 477.312 648.033 360.000 648.033 C 242.688 648.033 161.914 562.959 136.355 448.465 C 94.802 262.332 249.931 15.528 360.000 15.528 Z"/>
-<path fill="none" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 130.806 371.193 C 157.441 348.363 210.704 302.709 210.712 302.703 C 210.717 302.709 265.641 369.046 265.647 369.052 C 265.652 369.049 324.856 330.531 324.862 330.527 C 324.868 330.529 368.144 346.698 389.785 354.784 "/>
+<radialGradient id="6CE5DBD2-CC60-459D-9650-8B059AB54BD3_0" cx="49.50%" cy="55.98%" r="64.40%">
+<stop offset="0.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="37.25%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</radialGradient>
+<path fill="url(#6CE5DBD2-CC60-459D-9650-8B059AB54BD3_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 360.000 15.528 C 470.069 15.528 625.198 262.332 583.646 448.465 C 558.086 562.959 477.312 648.033 360.000 648.033 C 242.688 648.033 161.914 562.959 136.355 448.465 C 94.802 262.332 249.931 15.528 360.000 15.528 Z"/>
+<path fill="none" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 130.806 371.193 C 157.441 348.363 210.704 302.709 210.712 302.703 C 210.717 302.709 265.641 369.046 265.646 369.053 C 265.652 369.049 324.856 330.531 324.862 330.527 C 324.868 330.529 368.144 346.698 389.785 354.784 "/>
 </g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 189.648 538.136 C 189.682 538.136 530.318 538.136 530.352 538.136 C 530.352 538.102 530.352 197.467 530.352 197.433 C 530.318 197.433 189.682 197.433 189.648 197.433 C 189.648 197.467 189.648 538.102 189.648 538.136 Z"/>
