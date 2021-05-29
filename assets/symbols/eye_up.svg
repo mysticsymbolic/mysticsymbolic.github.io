@@ -10,7 +10,7 @@
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 360.000 324.084 C 320.437 324.084 288.521 292.168 288.521 252.605 "/>
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 288.521 252.605 C 288.521 213.042 320.437 181.126 360.000 181.126 "/>
 <path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 181.126 C 399.563 181.126 431.479 213.042 431.479 252.605 C 431.479 292.168 399.563 324.084 360.000 324.084 C 320.437 324.084 288.521 292.168 288.521 252.605 C 288.521 213.042 320.437 181.126 360.000 181.126 Z"/>
-<radialGradient id="77A2BF57-080F-4D74-BD9F-7CCB18A2BEE7_2" cx="50.00%" cy="4.96%" r="73.26%">
+<radialGradient id="77A2BF57-080F-4D74-BD9F-7CCB18A2BEE7_2" cx="50.00%" cy="4.96%" r="133.14%">
 <stop offset="0.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="50.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
