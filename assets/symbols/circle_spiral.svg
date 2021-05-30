@@ -5,7 +5,7 @@
 <g id="circle_spiral">
 <g id="cloud_spiral_root">
 <radialGradient id="4FEEBBB3-33A9-4473-9C80-C31EBD03A545_0" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="24.31%" style="stop-color:rgb(22,22,22);stop-opacity:1.00" />
+<stop offset="24.31%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 <stop offset="96.08%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 </radialGradient>
 <path fill="url(#4FEEBBB3-33A9-4473-9C80-C31EBD03A545_0)" fill-rule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
