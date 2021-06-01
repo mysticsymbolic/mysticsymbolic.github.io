@@ -1,7 +1,6 @@
 {
   "exclude": [
     "dist",
-    "dist-watch",
     "vendor/**/*.js",
   ],
   "compilerOptions": {

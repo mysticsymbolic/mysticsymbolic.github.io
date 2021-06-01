@@ -2,6 +2,7 @@ import { Random } from "./random";
 import { range, clamp } from "./util";
 import * as colorspaces from "colorspaces";
 import { ColorTuple, hsluvToHex } from "hsluv";
+import { clampedBytesToRGBColor } from "./color-util";
 
 export interface PaletteAlgorithmConfig {
   valueMin?: number,
@@ -28,26 +29,9 @@ export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "threevals";
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
   "threevals";
 
-/**
- * Clamp the given number to be between 0 and 255, then
- * convert it to hexadecimal.
- */
-export function clampedByteToHex(value: number): string {
-  if (value < 0) {
-    value = 0;
-  } else if (value > 255) {
-    value = 255;
-  }
-  let hex = value.toString(16);
-  if (hex.length === 1) {
-    hex = "0" + hex;
-  }
-  return hex;
-}
-
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
-  return "#" + rgb.map(clampedByteToHex).join("");
+  return clampedBytesToRGBColor(rgb);
 }
 
 function createRandomCIELUVColor(rng: Random): string {

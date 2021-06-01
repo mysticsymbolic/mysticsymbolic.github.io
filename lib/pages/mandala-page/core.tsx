@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { AutoSizingSvg } from "../../auto-sizing-svg";
 import { AnimationRenderer, ExportWidget } from "../../export-svg";
 import { HoverDebugHelper } from "../../hover-debug-helper";
@@ -336,7 +336,10 @@ export const MandalaPageWithDefaults: React.FC<{
   const isAnimated = isDesignAnimated(design);
   const render = useMemo(() => createAnimationRenderer(design), [design]);
 
-  useDebouncedEffect(250, () => onChange(design), [onChange, design]);
+  useDebouncedEffect(
+    250,
+    useCallback(() => onChange(design), [onChange, design])
+  );
 
   return (
     <Page title="Mandala!">

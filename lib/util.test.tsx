@@ -5,6 +5,7 @@ import {
   rad2deg,
   range,
   toFriendlyDecimal,
+  withoutNulls,
 } from "./util";
 
 describe("float", () => {
@@ -45,4 +46,8 @@ test("inclusiveRange() works", () => {
 
 test("toFriendlyDecimal() works", () => {
   expect(toFriendlyDecimal(1.850000000143)).toEqual("1.85");
+});
+
+test("withoutNulls() works", () => {
+  expect(withoutNulls([1, 2, 0, null, 3])).toEqual([1, 2, 0, 3]);
 });
