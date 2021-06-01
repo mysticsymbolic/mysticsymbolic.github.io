@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { PaletteAlgorithmWidget } from "./palette-algorithm-widget";
 import { Random } from "./random";
 import {
@@ -46,6 +46,9 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
       props.onSymbolsChange(new Random(Date.now()));
     }
   };
+  useEffect(() => {
+    props.onColorsChange(createRandomCompositionColors(paletteAlg, paletteConfig));
+  }, [paletteConfig])
   const makeRadio = (kind: RandType) => (
     <label className="checkbox">
       <input
