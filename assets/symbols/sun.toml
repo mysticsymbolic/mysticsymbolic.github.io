@@ -19,3 +19,7 @@ always_be_nested = true
 # symbol’s nesting area should have its colors inverted.
 
 invert_nested = true
+
+
+
+background = true
