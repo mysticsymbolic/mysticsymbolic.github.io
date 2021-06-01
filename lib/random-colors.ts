@@ -4,8 +4,18 @@ import * as colorspaces from "colorspaces";
 import { ColorTuple, hsluvToHex } from "hsluv";
 import { clampedBytesToRGBColor } from "./color-util";
 
-type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
-//type ColorFunction = (rng: Random) => string[];
+export interface PaletteAlgorithmConfig {
+  valueMin?: number,
+  valueMax?: number,
+  hue?: number,
+  hueInterval?: number
+  saturation?: number
+}
+
+type RandomPaletteGenerator = (numEntries: number, rng: Random, config: PaletteAlgorithmConfig) => string[];
+// type ColorFunction = (rng: Random) => string[];
+// type ColorFunctionConfig = () => string[];
+
 
 export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "threevals";
 //  | "randgrey"
@@ -80,23 +90,21 @@ function createRandGrey(rng: Random): string[] {
 }
 */
 
-/*
-function create3V180(angle1: number): ColorFunction {
-  return (rng: Random): string[] => {
-    let Ls = [25, 50, 75];
+function create3Vconfig() {
+  return (rng: Random, config: PaletteAlgorithmConfig): string[] => {
+    const LMin = config.valueMin ? config.valueMin : 25;
+    const LMax = config.valueMax? config.valueMax: 75;
+    let Ls = [LMin, 50, LMax];
 
     //Now we have 3 lightness values, pick a random hue and sat
-    let h1 = rng.inInterval({ min: 0, max: 360 }),
-      h2 = 360 * (((h1 + angle1) / 360) % 1),
-      h3 = 360 * (((h1 + 180) / 360) % 1);
+    let h1 = config.hue ? config.hue : rng.inInterval({ min: 0, max: 360 }),
+      h2 = 360 * (((h1 + (config.hueInterval ? config.hueInterval : 120)) / 360) % 1),
+      h3 = 360 * (((h2 + (config.hueInterval ? config.hueInterval : 240)) / 360) % 1);
 
     let Hs = [h1, h2, h3];
 
-    let Ss = [
-      rng.fromGaussian({ mean: 100, stddev: 40 }),
-      rng.fromGaussian({ mean: 100, stddev: 40 }),
-      rng.fromGaussian({ mean: 100, stddev: 40 }),
-    ];
+    const sat = config.saturation ? config.saturation : rng.fromGaussian({ mean: 100, stddev: 40 });
+    let Ss = [ sat, sat, sat ];
     Ss = Ss.map((x) => clamp(x, 0, 100));
 
     //zip
@@ -108,41 +116,40 @@ function create3V180(angle1: number): ColorFunction {
     return hexcolors;
   };
 }
-*/
 
-function threeVColor(rng: Random): string[] {
-  let L1 = rng.inInterval({ min: 10, max: 25 });
-  let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
-  let L3 = rng.inInterval({ min: L2 + 25, max: 85 });
-
-  let Ls = [L1, L2, L3];
-
-  let angleI = rng.inInterval({ min: 0, max: 120 });
-
-  //Now we have 3 lightness values, pick a random hue and sat
-  let h1 = rng.inInterval({ min: 0, max: 360 }),
-    h2 = h1 + angleI,
-    h3 = 360 * ((((h1 + h2) / 2 + 180) / 360) % 1);
-
-  h2 = 360 * ((h2 / 360) % 1);
-
-  let Hs = [h1, h2, h3];
-
-  let Ss = [
-    rng.fromGaussian({ mean: 100, stddev: 40 }),
-    rng.fromGaussian({ mean: 100, stddev: 40 }),
-    rng.fromGaussian({ mean: 100, stddev: 40 }),
-  ];
-  Ss = Ss.map((x) => clamp(x, 0, 100));
-
-  //zip
-  let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
-  let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
-
-  //scramble order
-  hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
-  return hexcolors;
-}
+// function threeVColor(rng: Random): string[] {
+//   let L1 = rng.inInterval({ min: 10, max: 25 });
+//   let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
+//   let L3 = rng.inInterval({ min: L2 + 25, max: 85 });
+//
+//   let Ls = [L1, L2, L3];
+//
+//   let angleI = rng.inInterval({ min: 0, max: 120 });
+//
+//   //Now we have 3 lightness values, pick a random hue and sat
+//   let h1 = rng.inInterval({ min: 0, max: 360 }),
+//     h2 = h1 + angleI,
+//     h3 = 360 * ((((h1 + h2) / 2 + 180) / 360) % 1);
+//
+//   h2 = 360 * ((h2 / 360) % 1);
+//
+//   let Hs = [h1, h2, h3];
+//
+//   let Ss = [
+//     rng.fromGaussian({ mean: 100, stddev: 40 }),
+//     rng.fromGaussian({ mean: 100, stddev: 40 }),
+//     rng.fromGaussian({ mean: 100, stddev: 40 }),
+//   ];
+//   Ss = Ss.map((x) => clamp(x, 0, 100));
+//
+//   //zip
+//   let hsls = Ls.map((k, i) => [Hs[i], Ss[i], k]);
+//   let hexcolors = hsls.map((x) => hsluvToHex(x as ColorTuple));
+//
+//   //scramble order
+//   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
+//   return hexcolors;
+// }
 
 /*
 function threeVColor(rng: Random): string[] {
@@ -203,16 +210,16 @@ function createSimplePaletteGenerator(
  */
 
 function createTriadPaletteGenerator(
-  createTriad: (rng: Random) => string[]
+  createTriad: (rng: Random, config: PaletteAlgorithmConfig) => string[]
 ): RandomPaletteGenerator {
-  return (numEntries: number, rng: Random): string[] => {
+  return (numEntries: number, rng: Random, config?): string[] => {
     let colors: string[] = [];
     let n = Math.floor(numEntries / 3) + 1;
 
     if (numEntries == 3) {
-      colors = colors.concat(createTriad(rng));
+      colors = colors.concat(createTriad(rng, config));
     } else {
-      for (let i = 0; i < n; i++) colors = colors.concat(createTriad(rng));
+      for (let i = 0; i < n; i++) colors = colors.concat(createTriad(rng, config));
       colors = colors.slice(0, numEntries);
     }
 
@@ -225,7 +232,8 @@ const PALETTE_GENERATORS: {
 } = {
   RGB: createSimplePaletteGenerator(createRandomRGBColor),
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
-  threevals: createTriadPaletteGenerator(threeVColor),
+  threevals: createTriadPaletteGenerator(create3Vconfig()),
+  // threevals: createTriadPaletteGenerator(threeVColor),
   //randgrey: createTriadPaletteGenerator(createRandGrey),
   //threev15: createTriadPaletteGenerator(create3V180(15)),
   //threev30: createTriadPaletteGenerator(create3V180(15)),
@@ -250,7 +258,8 @@ export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
 export function createRandomColorPalette(
   numEntries: number,
   rng: Random = new Random(),
-  algorithm: RandomPaletteAlgorithm = DEFAULT_RANDOM_PALETTE_ALGORITHM
+  algorithm: RandomPaletteAlgorithm = DEFAULT_RANDOM_PALETTE_ALGORITHM,
+  config: PaletteAlgorithmConfig = {},
 ): string[] {
-  return PALETTE_GENERATORS[algorithm](numEntries, rng);
+  return PALETTE_GENERATORS[algorithm](numEntries, rng, config);
 }
