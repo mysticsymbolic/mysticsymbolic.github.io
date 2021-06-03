@@ -355,7 +355,7 @@ if (j==0) {
 					
             <>   
 						  <circle stroke="2" cx={`${maskX-2000}`} cy={`${maskY}`} r={`${maskRadius}`}  fill={`${compCtx.background}`}></circle>
-              <clipPath id="cloud-circle-mask" style={{ backgroundColor: compCtx.background }}>
+              <clipPath id="cloud-circle-mask">
               <circle cx={`${maskX-2000}`} cy={`${maskY}`} r={`${maskRadius}`}  />
               </clipPath>
               <g clipPath="url(#cloud-circle-mask)">{clouds}</g>
