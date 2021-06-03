@@ -340,9 +340,6 @@ if (j==0) {
 
 }
 
-/* need these for the RandomizerWidget not to give a typeScript error */
-  let [_randomSeed, setRandomSeed] = useState<number>(Date.now());
-  const newRandomSeed = () => setRandomSeed(Date.now());
 
   return (
 
@@ -374,7 +371,9 @@ if (j==0) {
 
 		<RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
-					onSymbolsChange={newRandomSeed}
+					onSymbolsChange={(rng) => {
+            0
+          }}
            
         >
         </RandomizerWidget>
