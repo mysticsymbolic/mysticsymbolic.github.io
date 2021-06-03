@@ -350,7 +350,7 @@ if (j==0) {
     <> 
  
 	<div className="canvas clouds" style={{ backgroundColor: showbackground }}>
-      <svg viewBox={`-3000 -1000 ${screenWidth} 9000`} width="1280px" height="720px"  >
+      <svg viewBox="-3000 -1000 12000 9000" width="1280px" height="720px"  >
 			    {useMask ? (
 					
             <>   
