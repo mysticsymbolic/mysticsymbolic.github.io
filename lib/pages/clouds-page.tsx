@@ -7,26 +7,13 @@ import {
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Checkbox } from "../checkbox";
-import { ColorWidget } from "../color-widget";
 import { RandomizerWidget } from "../randomizer-widget";
-import { VocabularyWidget } from "../vocabulary-widget";
-import { SvgVocabulary, SvgVocabularyWithBlank } from "../svg-vocabulary";
-import {
-  EMPTY_SVG_SYMBOL_DATA,
-  noFillIfShowingSpecs,
-  SvgSymbolData,
-} from "../svg-symbol";
-import {
-  CompositionContextWidget,
-  createSvgCompositionContext,
-} from "../svg-composition-context";
-
 /* TO DO: Get symbols randomly or from a pulldown */
 /* CLOUD SVG */
 const Cloud: React.FC<{
   stroke: string;
   fill: string;
-	strokewidth: string; 
+	strokewidth: number; 
 }> = ({ stroke, fill, strokewidth}) => (
   <>
 <path fill={fill} fillRule="evenodd" stroke="none" d="M 360.000 596.177 C 500.811 596.177 614.404 482.584 614.404 341.774 C 614.404 200.963 500.811 87.370 360.000 87.370 C 219.189 87.370 105.596 200.963 105.596 341.774 C 105.596 482.584 219.189 596.177 360.000 596.177 Z"/>
@@ -41,8 +28,8 @@ const CLOUD_FILL = "#2b7c9e";
 const CLOUD_STROKEWIDTH = 30;
 const NUM_ELEMENTS = 7;
 const NUM_CLOUDS = 12;
-const MAX_CLOUDS = 12;
-const CLOUD_DISTANCE = 5;
+//const MAX_CLOUDS = 12;
+const CLOUD_DISTANCE = 9;
 const NUM_ROWS = 3;
 const ROW_DISTANCE = 5;
 const CLOUD_SPEED = 3;
@@ -93,11 +80,12 @@ const NumericSlider: React.FC<{
 
 /* SETTERS AND VARIABLES */
 const Clouds: React.FC<{}> = () => {
-  const [stroke, setStroke] = useState(CLOUD_STROKE);
+  //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
-  const [fill, setFill] = useState(CLOUD_FILL);
+  //const [fill, setFill] = useState(CLOUD_FILL);
   const [numElements, setnumElements] = useState(NUM_ELEMENTS);
-  let [numClouds, setnumClouds] = useState(NUM_CLOUDS);
+  //let [numClouds, setnumClouds] = useState(NUM_CLOUDS);
+	let numClouds = NUM_CLOUDS;
   const [cloudDistance, setcloudDistance] = useState(CLOUD_DISTANCE);
   let [numRows, setnumRows] = useState(NUM_ROWS);
   const [rowDistance, setrowDistance] = useState(ROW_DISTANCE);
@@ -115,6 +103,20 @@ const Clouds: React.FC<{}> = () => {
 	let [maskRadius, setMaskRadius] = useState(MASK_RADIUS); 
 	let [maskX, setMaskX] = useState(MASK_X); 
 	let [maskY, setMaskY] = useState(MASK_Y); 
+
+	
+	// simulate a Bezier pulse effect
+	let pulse2Value = pulseminValue;
+	let pulse3Value = pulseminValue;
+	let pulse4Value = pulseValue;
+	let pulseDiff = pulseValue - pulseminValue; // get the pulse difference
+	// if there is a difference then calculate the simulated Bezier effect
+	if (Math.abs(pulseDiff)>0) { 
+			pulse2Value = (pulseDiff / 7) + pulseminValue; /* pulse up to 1/7 difference  */
+			pulse3Value = (pulseDiff / 2) + pulseminValue; /* pulse up to 1/2 difference */
+			pulse4Value = pulseValue - (pulseDiff / 7); /* pulse up to 6/7 difference */
+	}
+
 
  
 	let rotationDuration = 0; //default to 0
@@ -134,38 +136,62 @@ const Clouds: React.FC<{}> = () => {
 	if ((compCtx.background=="#858585") && (compCtx.stroke=="#000000") && (compCtx.fill=="#ffffff")) {
 	compCtx.background = BG_COLOR;
 	compCtx.stroke = CLOUD_STROKE;
-	compCtx.strokewidth = CLOUD_STROKEWIDTH;
 	compCtx.fill = CLOUD_FILL;
 	}
 
-const newRandomSeed = () => setRandomSeed(Date.now());
-function getDownloadBasename(randomSeed: number) {
-  return `mystic-symbolic-creature-${randomSeed}`;
-}
-  const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
-    EMPTY_SVG_SYMBOL_DATA
-  );
+
+
+
 
 /* CLOUD ELEMENTS: create an array for the position of each element */
-	const cloudposx = [-400, 400, -900,   0,  900,  -400,    400, -1200, 1200, -900,   0,   900, -400,  400  ];
-	const cloudposy = [   400,   400,  1000, 1000,  1000,   1600,  1600,  1600, 1600, 2200, 2200, 2200, 2800, 2800  ];
+	let tempcloudposx = [  -400,   400,  -900,    0,   900,   -400,   400, -1200, 1200, -900,  0,   900, -400,  400  ];
+	let tempcloudposy = [   400,   400,  1000, 1000,  1000,   1600,  1600,  1600, 1600, 2200, 2200, 2200, 2800, 2800  ];
+	//const cloudposx = [-400, 400, -900,   0,  900,  -400,    400, -1200, 1200, -900,   0,   900, -400,  400  ];
+	//const cloudposy = [   400,   400,  1000, 1000,  1000,   1600,  1600,  1600, 1600, 2200, 2200, 2200, 2800, 2800  ];
+	// rearrange them to provide the correct pulse:
+	let cloudposx = new Array();
+	let cloudposy = new Array();
+	cloudposx[0] = tempcloudposx[0];
+	cloudposy[0] = tempcloudposy[0];
+	cloudposx[1] = tempcloudposx[1];
+	cloudposy[1] = tempcloudposy[1];
+	cloudposx[2] = tempcloudposx[3];
+	cloudposy[2] = tempcloudposy[3];
+	cloudposx[3] = tempcloudposx[2];
+	cloudposy[3] = tempcloudposy[2];
+	cloudposx[4] = tempcloudposx[4];
+	cloudposy[4] = tempcloudposy[4];
+	cloudposx[5] = tempcloudposx[6];
+	cloudposy[5] = tempcloudposy[6];
+	cloudposx[6] = tempcloudposx[5];
+	cloudposy[6] = tempcloudposy[5];
+	cloudposx[7] = tempcloudposx[7];
+	cloudposy[7] = tempcloudposy[7];
+	cloudposx[8] = tempcloudposx[8];
+	cloudposy[8] = tempcloudposy[8];
+	cloudposx[9] = tempcloudposx[10];
+	cloudposy[9] = tempcloudposy[10];
+	cloudposx[10] = tempcloudposx[9];
+	cloudposy[10] = tempcloudposy[9];
+	cloudposx[11] = tempcloudposx[11];
+	cloudposy[11] = tempcloudposy[11];
+	cloudposx[12] = tempcloudposx[13];
+	cloudposy[12] = tempcloudposy[13];
+	cloudposx[13] = tempcloudposx[12];
+	cloudposy[13] = tempcloudposy[12];
 
 /* SET MORE VARIABLES */
 
   let clouds: JSX.Element[] = [];
-	let maxClouds = MAX_CLOUDS; // max number of clouds
-	let xpos = 0; // set x position of elements
-	let xposbase = 0; // base for x pos
-	let ypos = 0; // set y position of elements
+	//let maxClouds = MAX_CLOUDS; // max number of clouds
 	let thisscaleValue = scaleValue;
 	let thisspacing = spacing;
 	let speedindex = 500; // this is the basis for the cloud speed - the higher the number the slower
 	let invertedcloudspeed = 0;  // this is for speed
-	let loopfactor = 1.1;
 	let keynum = 0; // to keep track of keys - to give each element a unique ID
-	let keynumA = 0; 
-	let keynumB = 0;
-	let keynumC = 0;
+	let keynumA = ''; 
+	let keynumB = '';
+	let keynumC = '';
   let adjustedY = 1200; // pushes down clouds on page
   let cloudW = 360;  // cloud width
   let cloudH = 360;  // cloud height
@@ -196,9 +222,9 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
   for (let i = 0; i < numElements; i++) {
 
 	keynum++; // keep track of the keys for unique elements
-	keynumA = keynum + "A";
-	keynumB = keynum + "B";
-	keynumC = keynum + "C";
+	keynumA = keynum.toString() + "A";
+	keynumB = keynum.toString() + "B";
+	keynumC = keynum.toString() + "C";
 
 	// clouds get bigger with each row
   thisscaleValue = scaleValue + (k * .6 * parallaxSize) ;
@@ -224,7 +250,7 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 	let cloudHneg = cloudH * -1;
 
 /* LOCATIONS OF CLOUDS */
-  xposbase  = 500 * thisscaleValue * cloudDistance; // basis for xpos
+  let xposbase  = 500 * thisscaleValue * cloudDistance; // basis for xpos
   let xpos = (cloudposx[i] * thisspacing) + (j * xposbase )  - cloudW;
   let ypos = (cloudposy[i] * thisspacing)  + (k * rowDistance * 100 * thisscaleValue) + adjustedY - cloudH;
 
@@ -297,7 +323,7 @@ if (j==0) {
 				attributeName="transform"
 				type="scale"
 				dur={`${pulseDuration}s`}
-				values = {`${pulseminValue};${pulseValue};${pulseminValue};`}
+				values = {`${pulseminValue};${pulse2Value};${pulse3Value};${pulse4Value};${pulseValue};${pulse4Value};${pulse3Value};${pulse2Value};${pulseminValue};`}
 				begin={`${starttime}s`}
 				repeatCount="indefinite"
 				additive="sum"
@@ -314,12 +340,17 @@ if (j==0) {
 
 }
 
+/* need these for the RandomizerWidget not to give a typeScript error */
+  let [_randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const newRandomSeed = () => setRandomSeed(Date.now());
 
   return (
+
+
     <> 
  
 	<div className="canvas clouds" style={{ backgroundColor: showbackground }}>
-      <svg  viewBox={`-3000 -1000 ${screenWidth} 9000`}  >
+      <svg viewBox={`-3000 -1000 ${screenWidth} 9000`} width="1280px" height="720px"  >
 			    {useMask ? (
 					
             <>   
@@ -343,7 +374,8 @@ if (j==0) {
 
 		<RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
-          /* onSymbolsChange={newRandomSeed} */
+					onSymbolsChange={newRandomSeed}
+           
         >
         </RandomizerWidget>
       <NumericSlider
@@ -516,9 +548,6 @@ if (j==0) {
 };
 
 export const CloudsPage: React.FC<{}> = () => {
-
-  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
-  const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
 
   return (
   <Page title="Clouds">
