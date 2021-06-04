@@ -9,8 +9,10 @@ import {
 import { Checkbox } from "../checkbox";
 import { RandomizerWidget } from "../randomizer-widget";
 /* TO DO: Get symbols randomly or from a pulldown */
+
+
 /* CLOUD SVG */
-const Cloud: React.FC<{
+const Cloud1: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
@@ -22,10 +24,109 @@ const Cloud: React.FC<{
 );
 
 
+const Cloud2: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+}> = ({ stroke, fill, strokewidth}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset="43.53%" stop-color="#ffffff"></stop>
+<stop offset="96.08%" stop-color="#000000"></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+const Cloud3: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+}> = ({ stroke, fill, strokewidth}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset="43.53%" stop-color="#000000"></stop>
+<stop offset="96.08%" stop-color="#ffffff"></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+
+const Cloud4: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+}> = ({ stroke, fill, strokewidth}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset="43.53%" stop-color="#ffffff"></stop>
+<stop offset="96.08%" stop-color={fill}></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+
+
+const Cloud5: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+}> = ({ stroke, fill, strokewidth}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset="43.53%" stop-color={fill}></stop>
+<stop offset="96.08%" stop-color={stroke}></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+
+
+const ElementSwitch: React.FC<{
+  thisstyle: number;
+	fill: string;
+	stroke: string;
+	strokewidth: number;
+}> = (props) => {
+		if (props.thisstyle == 2) {
+      return (
+			  <Cloud2 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			);
+		} else if (props.thisstyle == 3) {
+      return (
+			  <Cloud3 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			);
+		} else if (props.thisstyle == 4) {
+      return (
+			  <Cloud4 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			);
+		} else if (props.thisstyle == 5) {
+      return (
+			  <Cloud5 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			);
+		} else {
+      return (
+			  <Cloud1 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			);
+		}
+
+};
+
+
+
+
 /* INITIAL VALUES */
 const CLOUD_STROKE = "#79beda";
 const CLOUD_FILL = "#2b7c9e";
 const CLOUD_STROKEWIDTH = 30;
+const ELEMENT_STYLE = 1;
 const NUM_ELEMENTS = 7;
 const NUM_CLOUDS = 12;
 //const MAX_CLOUDS = 12;
@@ -78,11 +179,14 @@ const NumericSlider: React.FC<{
   );
 };
 
+
+
 /* SETTERS AND VARIABLES */
 const Clouds: React.FC<{}> = () => {
   //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
   //const [fill, setFill] = useState(CLOUD_FILL);
+  const [elementStyle, setelementStyle] = useState(ELEMENT_STYLE);
   const [numElements, setnumElements] = useState(NUM_ELEMENTS);
   //let [numClouds, setnumClouds] = useState(NUM_CLOUDS);
 	let numClouds = NUM_CLOUDS;
@@ -192,7 +296,7 @@ const Clouds: React.FC<{}> = () => {
 	let keynumA = ''; 
 	let keynumB = '';
 	let keynumC = '';
-  let adjustedY = 1200; // pushes down clouds on page
+  let adjustedY = 300; // pushes down clouds on page
   let cloudW = 360;  // cloud width
   let cloudH = 360;  // cloud height
 	let loopfromvalue = 0; // loop from value - where loop starts
@@ -209,9 +313,6 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 		numClouds--;
 	}
 		
-
-
-
 /* BUILD THE CLOUDS */
 
 	// cloud rows
@@ -226,15 +327,13 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 	keynumB = keynum.toString() + "B";
 	keynumC = keynum.toString() + "C";
 
-	// clouds get bigger with each row
+	// CLOUDS GET BIGGER WITH EACH ROW
   thisscaleValue = scaleValue + (k * .6 * parallaxSize) ;
   thisspacing = spacing + (k * .3 * parallaxSize) ;
-
 	thiscloudSpeed = Math.abs(cloudSpeed);
 
 
-
-	// clouds get faster with each row
+	// CLOUDS GET FASTER WITH EACH ROW
 	if (cloudSpeed == 0) {
 		 invertedcloudspeed = 2000;
 	} else {
@@ -259,9 +358,8 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 	// this is tricky to make smooth without skipping...  this also affects the speed
 	// make the calculations for the first cloud of each row - since that will determine the looping start and end points
 if (j==0) {
-	loopfromvalue =Math.round(xposbase * -1) ; // start of the loop is 2 clouds to the left
+	loopfromvalue =Math.round(xposbase * -1) ; // start of the loop is 1 cloud to the left
 	looptovalue = 0; 
-	//looptovalue = Math.round(xposbase * 5 * (Math.floor(maxClouds / numClouds / 2 )-1)) ; // end of loop - a bit tricky - some logic - some trial and error
 	if (cloudSpeed<0) { // reverse direction
 	  let newlooptovalue = loopfromvalue * -1;
 	  let newloopfromvalue = looptovalue * -1;
@@ -277,9 +375,6 @@ if (j==0) {
   //console.log('looptovalue:'+looptovalue);
 	}
 }
-
-
-
 
   clouds.push(
 
@@ -299,12 +394,18 @@ if (j==0) {
 			/>
 
 
-    <g key={`${keynumB}`} transform={`translate(${xpos} ${ypos}) scale(${thisscaleValue} ${thisscaleValue})`}> 
-
-   
+    <g key={`${keynumB}`} transform={`translate(${xpos} ${ypos}) scale(${thisscaleValue} ${thisscaleValue})`}>   
 
        <g key={`${keynumC}`}  transform={`translate(${cloudWneg},${cloudHneg})`}>
-		<Cloud fill={compCtx.fill} stroke={compCtx.stroke} strokewidth={strokewidth}  />
+			
+			/* render the style of cloud */
+			<ElementSwitch
+			   thisstyle={elementStyle}
+			   fill={compCtx.fill}
+			   stroke={compCtx.stroke}
+			   strokewidth={strokewidth}
+		   />
+
 		   /* rotate */
 			<animateTransform
 				attributeName="transform"
@@ -347,7 +448,7 @@ if (j==0) {
     <> 
  
 	<div className="canvas clouds" style={{ backgroundColor: showbackground }}>
-      <svg viewBox="-3000 -1000 12000 9000" width="1280px" height="720px"  >
+      <svg viewBox="-3000 -1000 12000 9000" width="100%" height="100%"  >
 			    {useMask ? (
 					
             <>   
@@ -377,6 +478,24 @@ if (j==0) {
            
         >
         </RandomizerWidget>
+      <NumericSlider
+        id="elementStyle"
+        label="Cloud Style"
+        min={1}
+        max={5}
+        value={elementStyle}
+        step={1}
+        onChange={setelementStyle}
+      />
+      <NumericSlider
+        id="strokewidth"
+        label="Stroke width"
+        min={1}
+        max={100}
+        value={strokewidth}
+        step={1}
+        onChange={setStrokewidth}
+      />
       <NumericSlider
         id="numElements"
         label="Number of elements"
@@ -449,7 +568,6 @@ if (j==0) {
         value={rotationSpeed}
         step={0.5}
         onChange={setRotationSpeed}
-        valueSuffix="s"
       />
       <NumericSlider
         id="spacing"
@@ -468,15 +586,6 @@ if (j==0) {
         value={scaleValue}
         step={0.1}
         onChange={setScaleValue}
-      />
-      <NumericSlider
-        id="strokewidth"
-        label="Stroke width"
-        min={1}
-        max={100}
-        value={strokewidth}
-        step={1}
-        onChange={setStrokewidth}
       />
       <NumericSlider
         id="pulseminValue"
