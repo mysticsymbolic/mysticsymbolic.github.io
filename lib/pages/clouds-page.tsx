@@ -1,15 +1,42 @@
 /* 2021-05-31 Dave Weaver, @webaissance - based on waves-page.tsx */
 /* IMPORTS */
 import React, { useState } from "react";
+import { RandomizerWidget } from "../randomizer-widget";
 import { Page } from "../page";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../svg-composition-context";
 import { Checkbox } from "../checkbox";
-import { RandomizerWidget } from "../randomizer-widget";
 /* TO DO: Get symbols randomly or from a pulldown */
 
+/* INITIAL VALUES */
+const CLOUD_STROKE = "#79beda";
+const CLOUD_FILL = "#2b7c9e";
+const CLOUD_STROKEWIDTH = 30;
+const ELEMENT_STYLE = 1;
+const NUM_ELEMENTS = 7;
+const NUM_CLOUDS = 12;
+//const MAX_CLOUDS = 12;
+const CLOUD_DISTANCE = 9;
+const NUM_ROWS = 3;
+const ROW_DISTANCE = 5;
+const CLOUD_SPEED = 3;
+const PARALLAX_SPEED = 2;
+const PARALLAX_SIZE = 1;
+const ROTATION_SPEED = 6;
+const CLOUD_SPACING = 0.5;
+const CLOUD_SCALE = 0.8;
+const CLOUD_PULSEMIN = 0.8;
+const CLOUD_PULSE = 1.7;
+const PULSE_DURATION = 2.6;
+const BG_COLOR = "#FFFFFF";
+const SCREEN_WIDTH = 12000;
+const MASK_RADIUS = 2000;
+const MASK_X = 4500;
+const MASK_Y = 3000;
+
+let screenWidth = SCREEN_WIDTH;
 
 /* CLOUD SVG */
 const Cloud1: React.FC<{
@@ -23,7 +50,6 @@ const Cloud1: React.FC<{
   </>
 );
 
-
 const Cloud2: React.FC<{
   stroke: string;
   fill: string;
@@ -31,8 +57,8 @@ const Cloud2: React.FC<{
 }> = ({ stroke, fill, strokewidth}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stop-color="#ffffff"></stop>
-<stop offset="96.08%" stop-color="#000000"></stop>
+<stop offset="43.53%" stopColor={fill}></stop>
+<stop offset="96.08%" stopColor={stroke}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
@@ -46,14 +72,13 @@ const Cloud3: React.FC<{
 }> = ({ stroke, fill, strokewidth}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stop-color="#000000"></stop>
-<stop offset="96.08%" stop-color="#ffffff"></stop>
+<stop offset="43.53%" stopColor="#ffffff"></stop>
+<stop offset="96.08%" stopColor="#000000"></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
-
 
 const Cloud4: React.FC<{
   stroke: string;
@@ -62,14 +87,13 @@ const Cloud4: React.FC<{
 }> = ({ stroke, fill, strokewidth}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stop-color="#ffffff"></stop>
-<stop offset="96.08%" stop-color={fill}></stop>
+<stop offset="43.53%" stopColor="#000000"></stop>
+<stop offset="96.08%" stopColor="#ffffff"></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
-
 
 
 const Cloud5: React.FC<{
@@ -79,16 +103,15 @@ const Cloud5: React.FC<{
 }> = ({ stroke, fill, strokewidth}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stop-color={fill}></stop>
-<stop offset="96.08%" stop-color={stroke}></stop>
+<stop offset="43.53%" stopColor="#ffffff"></stop>
+<stop offset="96.08%" stopColor={fill}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
 
-
-
+/* RETURN THE CLOUD STYLE WHICH WAS SELECTED */
 const ElementSwitch: React.FC<{
   thisstyle: number;
 	fill: string;
@@ -120,33 +143,6 @@ const ElementSwitch: React.FC<{
 };
 
 
-
-
-/* INITIAL VALUES */
-const CLOUD_STROKE = "#79beda";
-const CLOUD_FILL = "#2b7c9e";
-const CLOUD_STROKEWIDTH = 30;
-const ELEMENT_STYLE = 1;
-const NUM_ELEMENTS = 7;
-const NUM_CLOUDS = 12;
-//const MAX_CLOUDS = 12;
-const CLOUD_DISTANCE = 9;
-const NUM_ROWS = 3;
-const ROW_DISTANCE = 5;
-const CLOUD_SPEED = 3;
-const PARALLAX_SPEED = 2;
-const PARALLAX_SIZE = 1;
-const ROTATION_SPEED = 6;
-const CLOUD_SPACING = 0.5;
-const CLOUD_SCALE = 0.8;
-const CLOUD_PULSEMIN = 0.8;
-const CLOUD_PULSE = 1.7;
-const PULSE_DURATION = 2.6;
-const BG_COLOR = "#FFFFFF";
-const SCREEN_WIDTH = 12000;
-const MASK_RADIUS = 2000;
-const MASK_X = 4500;
-const MASK_Y = 3000;
 
 const NumericSlider: React.FC<{
   id: string;
@@ -180,34 +176,311 @@ const NumericSlider: React.FC<{
 };
 
 
+/* can't quite get this working to automatically generate the NumberSliders - DW
+const ShowSettings: React.FC<{
+  numSettings: number;
+	cS:  {
+			  id: string;
+				label: string;
+				setter: object;
+				value: object;
+				min: number;
+				max: number;
+				step: number;
+				suffix: string;
+	     }[];
+}> = (props) => {
+      for (let i = 0; i < props.numSettings; i++) {
+			return (
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        valueSuffix={cS[sN]['suffix']}
+        onChange={cS[sN]['setter']}
+      />
+				);
+		}
+};
+*/
 
 /* SETTERS AND VARIABLES */
+
+
 const Clouds: React.FC<{}> = () => {
   //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
   //const [fill, setFill] = useState(CLOUD_FILL);
-  const [elementStyle, setelementStyle] = useState(ELEMENT_STYLE);
-  const [numElements, setnumElements] = useState(NUM_ELEMENTS);
+  let [cloudStyle, setcloudStyle] = useState(ELEMENT_STYLE);
+  let [numElements, setnumElements] = useState(NUM_ELEMENTS);
   //let [numClouds, setnumClouds] = useState(NUM_CLOUDS);
 	let numClouds = NUM_CLOUDS;
-  const [cloudDistance, setcloudDistance] = useState(CLOUD_DISTANCE);
+  let [cloudDistance, setcloudDistance] = useState(CLOUD_DISTANCE);
   let [numRows, setnumRows] = useState(NUM_ROWS);
-  const [rowDistance, setrowDistance] = useState(ROW_DISTANCE);
-  const [cloudSpeed, setcloudSpeed] = useState(CLOUD_SPEED);
-  const [parallaxSpeed, setparallaxSpeed] = useState(PARALLAX_SPEED);
-  const [parallaxSize, setparallaxSize] = useState(PARALLAX_SIZE);
-  const [rotationSpeed, setRotationSpeed] = useState(ROTATION_SPEED);
-  const [pulseDuration, setPulseDuration] = useState(PULSE_DURATION);
+  let [rowDistance, setrowDistance] = useState(ROW_DISTANCE);
+  let [cloudSpeed, setcloudSpeed] = useState(CLOUD_SPEED);
+  let [parallaxSpeed, setparallaxSpeed] = useState(PARALLAX_SPEED);
+  let [parallaxSize, setparallaxSize] = useState(PARALLAX_SIZE);
+  let [rotationSpeed, setRotationSpeed] = useState(ROTATION_SPEED);
+  let [pulseDuration, setPulseDuration] = useState(PULSE_DURATION);
   let [spacing, setSpacing] = useState(CLOUD_SPACING);
   let [scaleValue, setScaleValue] = useState(CLOUD_SCALE); 
-  const [pulseValue, setPulseValue] = useState(CLOUD_PULSE); 
-  const [pulseminValue, setPulseminValue] = useState(CLOUD_PULSEMIN); 
-  const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
-  const [useMask, setUseMask] = useState(false);
+  let [pulseValue, setPulseValue] = useState(CLOUD_PULSE); 
+  let [pulseminValue, setPulseminValue] = useState(CLOUD_PULSEMIN); 
+  let [compCtx, setCompCtx] = useState(createSvgCompositionContext());
+  let [useMask, setUseMask] = useState(false);
 	let [maskRadius, setMaskRadius] = useState(MASK_RADIUS); 
 	let [maskX, setMaskX] = useState(MASK_X); 
 	let [maskY, setMaskY] = useState(MASK_Y); 
 
+
+ // cloud Settings - two dimensional object of settings
+let cS: { [key: string] : any } = {}; 
+let sN = 0; // setting number
+let numSettings =0; // count the settings
+
+cS[sN] = [];
+cS[sN]['id']="cloudStyle";
+cS[sN]['label']="Cloud Style";
+cS[sN]['value']=cloudStyle;
+cS[sN]['setter']=setcloudStyle;
+cS[sN]['min']= 1;
+cS[sN]['max']= 5;
+cS[sN]['step']= 1;
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "strokewidth";
+cS[sN]['label']= "Stroke width";
+cS[sN]['value']= strokewidth;
+cS[sN]['setter']= setStrokewidth;
+cS[sN]['min']= 1;
+cS[sN]['max']= 100;
+cS[sN]['step']= 1;
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "numElements"
+cS[sN]['label']= "Number of elements"
+cS[sN]['value']= numElements
+cS[sN]['setter']= setnumElements
+cS[sN]['min']= 1
+cS[sN]['max']= 14
+cS[sN]['step']= 1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "cloudDistance"
+cS[sN]['label']= "Distance between clouds"
+cS[sN]['value']= cloudDistance
+cS[sN]['setter']= setcloudDistance
+cS[sN]['min']= 5
+cS[sN]['max']= 14
+cS[sN]['step']= 1
+cS[sN]['suffix']=
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "numRows"
+cS[sN]['label']= "Number of rows"
+cS[sN]['value']= numRows
+cS[sN]['setter']= setnumRows
+cS[sN]['min']= 1
+cS[sN]['max']= 5
+cS[sN]['step']= 1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "rowDistance"
+cS[sN]['label']= "Distance between Rows"
+cS[sN]['value']= rowDistance
+cS[sN]['setter']= setrowDistance
+cS[sN]['min']= 0
+cS[sN]['max']= 20
+cS[sN]['step']= 1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "cloudSpeed"
+cS[sN]['label']= "Cloud speed"
+cS[sN]['value']= cloudSpeed
+cS[sN]['setter']= setcloudSpeed
+cS[sN]['min']= -10
+cS[sN]['max']= 10
+cS[sN]['step']= 1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']=  "parallaxSpeed"
+cS[sN]['label']= "Parallax speed"
+cS[sN]['value']= parallaxSpeed
+cS[sN]['setter']= setparallaxSpeed
+cS[sN]['min']= 0.5
+cS[sN]['max']= 5
+cS[sN]['step']= 0.1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "parallaxSize"
+cS[sN]['label']= "Parallax size"
+cS[sN]['value']= parallaxSize
+cS[sN]['setter']= setparallaxSize
+cS[sN]['min']= 0.3
+cS[sN]['max']= 2
+cS[sN]['step']= 0.1
+cS[sN]['suffix']= ''
+
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "rotationSpeed"
+cS[sN]['label']= "Rotation speed"
+cS[sN]['value']= rotationSpeed
+cS[sN]['setter']= setRotationSpeed
+cS[sN]['min']= -8
+cS[sN]['max']= 8
+cS[sN]['step']= 0.5
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "spacing"
+cS[sN]['label']= "Spacing"
+cS[sN]['value']= spacing
+cS[sN]['setter']= setSpacing
+cS[sN]['min']= .2
+cS[sN]['max']= 1
+cS[sN]['step']= .1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "scaleValue"
+cS[sN]['label']= "Scale"
+cS[sN]['value']= scaleValue
+cS[sN]['setter']= setScaleValue
+cS[sN]['min']= .3
+cS[sN]['max']= 1.5
+cS[sN]['step']= 0.1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "pulseminValue"
+cS[sN]['label']= "Pulse Size Min"
+cS[sN]['value']= pulseminValue
+cS[sN]['setter']= setPulseminValue
+cS[sN]['min']= 0.5
+cS[sN]['max']= 1
+cS[sN]['step']= 0.1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']= "pulseValue"
+cS[sN]['label']= "Pulse Size Max"
+cS[sN]['value']= pulseValue
+cS[sN]['setter']= setPulseValue
+cS[sN]['min']= 1
+cS[sN]['max']= 2.5
+cS[sN]['step']= 0.1
+cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']=  "pulseDuration"
+cS[sN]['label']= "Pulse duration"
+cS[sN]['value']= pulseDuration
+cS[sN]['setter']= setPulseDuration
+cS[sN]['min']= 0.8
+cS[sN]['max']= 8
+cS[sN]['step']= 0.2
+cS[sN]['suffix']= 's'
+
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']=  "maskRadius"
+cS[sN]['label']= "Mask Radius"
+cS[sN]['value']= maskRadius
+cS[sN]['setter']= setMaskRadius
+cS[sN]['min']= 500
+cS[sN]['max']= 5000
+cS[sN]['step']= 500
+cS[sN]['suffix']= ''
+
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']=  "maskY"
+cS[sN]['label']= "Mask Top"
+cS[sN]['value']= maskY
+cS[sN]['setter']= setMaskY
+cS[sN]['min']= -1000
+cS[sN]['max']= 7000
+cS[sN]['step']= 500
+cS[sN]['suffix']= ''
+
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']=  "maskX"
+cS[sN]['label']= "Mask Left"
+cS[sN]['value']= maskX
+cS[sN]['setter']= setMaskX
+cS[sN]['min']= -2000
+cS[sN]['max']= screenWidth
+cS[sN]['step']= 500
+cS[sN]['suffix']= ''
+
+numSettings = sN; // number of settings
+sN = 0; // go back to 0 for the setting controls below
+
+
+
+function randomizestylesorcolors (
+  mode: string
+) : void {
+      //props.onColorsChange(createRandomCompositionColors(paletteAlg));
+			//console.log('randomize styles! num of settings:' + numSettings);
+			for (let i = 0; i <= numSettings; i++) {
+			  let settingRange = cS[i]['max'] - cS[i]['min']; // get the range of values
+			  let newsetting = Math.floor(Math.random() * settingRange /  cS[i]['step'] ) *  cS[i]['step'] + cS[i]['min'];
+				if ((cS[i]['step']<1) && (cS[i]['step']>=0.1)) {
+					newsetting = Math.round(newsetting * 10) / 10;
+				}	else if (cS[i]['step']<.1) {
+					newsetting = Math.round(newsetting * 100) / 100;
+				}
+				
+				 cS[i]['setter'](newsetting); // set the new setting
+				 //console.log(cS[i]['label'] + ' newsetting:' + newsetting +' max: '+cS[i]['max'] +' min: '+cS[i]['min']);
+			}
+			if (mode=='withcolors') {
+			  if (document.getElementById("colorButton") == null) {
+           // if it can't find the button then nothing happens
+				} else if (document.getElementById("colorButton") !== null) {
+				  document.getElementById("colorButton").click(); // Click on the color button
+				}
+			}
+  }
+
+// TRIGGER THE RANDOMIZESTYLESORCOLORS FUNCTION - WITH OR WITHOUT COLORS
+function randomizestyles() {
+  randomizestylesorcolors('nocolors')
+}
+function randomizestylesandcolors() {
+  randomizestylesorcolors('withcolors')
+}
 	
 	// simulate a Bezier pulse effect
 	let pulse2Value = pulseminValue;
@@ -219,6 +492,10 @@ const Clouds: React.FC<{}> = () => {
 			pulse2Value = (pulseDiff / 7) + pulseminValue; /* pulse up to 1/7 difference  */
 			pulse3Value = (pulseDiff / 2) + pulseminValue; /* pulse up to 1/2 difference */
 			pulse4Value = pulseValue - (pulseDiff / 7); /* pulse up to 6/7 difference */
+
+			pulse2Value = Math.round(pulse2Value * 100) / 100;
+			pulse3Value = Math.round(pulse3Value * 100) / 100;
+			pulse4Value = Math.round(pulse4Value * 100) / 100;
 	}
 
 
@@ -234,7 +511,7 @@ const Clouds: React.FC<{}> = () => {
    rotationAngle = 360;
 	}
 
-	let screenWidth = SCREEN_WIDTH;
+	
 
 	/* set default colors upon init */
 	if ((compCtx.background=="#858585") && (compCtx.stroke=="#000000") && (compCtx.fill=="#ffffff")) {
@@ -303,6 +580,7 @@ const Clouds: React.FC<{}> = () => {
 	let looptovalue = 0; // loop to value - where the loop ends
 	let thiscloudSpeed = 0; // thiscloudspeed is so that clouds can go in both directions. this is the absolute value of cloudspeed
 
+
 	let showbackground = compCtx.background;
 if (useMask) { showbackground = "#fff"; }  /* use white background when using mask - need to get mask bg working ... */
 
@@ -349,7 +627,7 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 	let cloudHneg = cloudH * -1;
 
 /* LOCATIONS OF CLOUDS */
-  let xposbase  = 500 * thisscaleValue * cloudDistance; // basis for xpos
+  let xposbase  = 700 * thisscaleValue * cloudDistance; // basis for xpos
   let xpos = (cloudposx[i] * thisspacing) + (j * xposbase )  - cloudW;
   let ypos = (cloudposy[i] * thisspacing)  + (k * rowDistance * 100 * thisscaleValue) + adjustedY - cloudH;
 
@@ -358,14 +636,14 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 	// this is tricky to make smooth without skipping...  this also affects the speed
 	// make the calculations for the first cloud of each row - since that will determine the looping start and end points
 if (j==0) {
-	loopfromvalue =Math.round(xposbase * -1) ; // start of the loop is 1 cloud to the left
-	looptovalue = 0; 
+	loopfromvalue =Math.round(xposbase * -2) ; // start of the loop is 1 cloud to the left
+	looptovalue = Math.round(xposbase * -1); 
 	if (cloudSpeed<0) { // reverse direction
-	  let newlooptovalue = loopfromvalue * -1;
-	  let newloopfromvalue = looptovalue * -1;
+	  //let newlooptovalue = loopfromvalue * -1;
+	  //let newloopfromvalue = looptovalue * -1;
 		// these are tricky for some reason. add values to make it work right
-		loopfromvalue = newlooptovalue - screenWidth + 600;  
-		looptovalue = newloopfromvalue - screenWidth +600;
+		loopfromvalue =  - screenWidth;  
+		looptovalue =   Math.round(xposbase * -1) -screenWidth;
 	} else if (cloudSpeed==0) { // if not moving then start on the screen (not off)
 		loopfromvalue = Math.round(xposbase * 5 * -1) + 600;
 		looptovalue = loopfromvalue;
@@ -400,7 +678,7 @@ if (j==0) {
 			
 			/* render the style of cloud */
 			<ElementSwitch
-			   thisstyle={elementStyle}
+			   thisstyle={cloudStyle}
 			   fill={compCtx.fill}
 			   stroke={compCtx.stroke}
 			   strokewidth={strokewidth}
@@ -470,183 +748,218 @@ if (j==0) {
 
 	 <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
 
+
 		<RandomizerWidget
-          onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
+          onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}   
 					onSymbolsChange={(rng) => {
             0
           }}
-           
-        >
-        </RandomizerWidget>
-      <NumericSlider
-        id="elementStyle"
-        label="Cloud Style"
-        min={1}
-        max={5}
-        value={elementStyle}
-        step={1}
-        onChange={setelementStyle}
-      />
-      <NumericSlider
-        id="strokewidth"
-        label="Stroke width"
-        min={1}
-        max={100}
-        value={strokewidth}
-        step={1}
-        onChange={setStrokewidth}
-      />
-      <NumericSlider
-        id="numElements"
-        label="Number of elements"
-        min={1}
-        max={14}
-        value={numElements}
-        step={1}
-        onChange={setnumElements}
-      />
+      >
+     </RandomizerWidget>
 
-      <NumericSlider
-        id="cloudDistance"
-        label="Distance between clouds"
-        min={3}
-        max={14}
-        value={cloudDistance}
-        step={1}
-        onChange={setcloudDistance}
-      />
-      <NumericSlider
-        id="numRows"
-        label="Number of rows"
-        min={1}
-        max={5}
-        value={numRows}
-        step={1}
-        onChange={setnumRows}
-      />
-      <NumericSlider
-        id="rowDistance"
-        label="Distance between Rows"
-        min={0}
-        max={20}
-        value={rowDistance}
-        step={1}
-        onChange={setrowDistance}
-      />
-      <NumericSlider
-        id="cloudSpeed"
-        label="Cloud speed"
-        min={-20}
-        max={20}
-        value={cloudSpeed}
-        step={1}
-        onChange={setcloudSpeed}
-      />
-      <NumericSlider
-        id="parallaxSpeed"
-        label="Parallax speed"
-        min={0.5}
-        max={5}
-        value={parallaxSpeed}
-        step={0.1}
-        onChange={setparallaxSpeed}
-      />
-      <NumericSlider
-        id="parallaxSize"
-        label="Parallax size"
-        min={0.3}
-        max={2}
-        value={parallaxSize}
-        step={0.1}
-        onChange={setparallaxSize}
-      />
-      <NumericSlider
-        id="rotationSpeed"
-        label="Rotation speed"
-        min={-8}
-        max={8}
-        value={rotationSpeed}
-        step={0.5}
-        onChange={setRotationSpeed}
-      />
-      <NumericSlider
-        id="spacing"
-        label="Spacing"
-        min={.2}
-        max={1}
-        value={spacing}
-        step={.1}
-        onChange={setSpacing}
-      />
-      <NumericSlider
-        id="scaleValue"
-        label="Scale"
-        min={.3}
-        max={1.5}
-        value={scaleValue}
-        step={0.1}
-        onChange={setScaleValue}
-      />
-      <NumericSlider
-        id="pulseminValue"
-        label="Pulse Size Min"
-        min={0.5}
-        max={1}
-        value={pulseminValue}
-        step={0.1}
-        onChange={setPulseminValue}
-      />
-      <NumericSlider
-        id="pulseValue"
-        label="Pulse Size Max"
-        min={1}
-        max={2.5}
-        value={pulseValue}
-        step={0.1}
-        onChange={setPulseValue}
-      />
-      <NumericSlider
-        id="pulseDuration"
-        label="Pulse duration"
-        min={0.8}
-        max={8}
-        value={pulseDuration}
-        step={0.2}
-        onChange={setPulseDuration}
-        valueSuffix="s"
-      />
-        <Checkbox
+			<button accessKey="s" onClick={randomizestyles}  className="clouds button">
+        Randomize <u>S</u>ettings
+      </button>
+
+			<button accessKey="c" onClick={randomizestylesandcolors} className="clouds button">
+        Randomize Settings and <u>C</u>olors
+      </button>
+
+			 <Checkbox
           label="Mask with circle"
           value={useMask}
           onChange={setUseMask}
-        />
+       />
+
+    {/*  Trying to automate the below - not quite there - DW
+			<ShowSettings
+				numSettings={numSettings}
+				cS = {cS}
+			/>
+			*/}
+
       <NumericSlider
-        id="maskRadius"
-        label="Mask Radius"
-        min={500}
-        max={5000}
-        value={maskRadius}
-        step={500}
-        onChange={setMaskRadius}
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
       />
+			<code className="clouds code">{sN++}</code>
       <NumericSlider
-        id="maskY"
-        label="Mask Top"
-        min={-1000}
-        max={7000}
-        value={maskY}
-        step={500}
-        onChange={setMaskY}
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
       />
+			<code className="clouds code">{sN++}</code>
       <NumericSlider
-        id="maskX"
-        label="Mask Left"
-        min={-2000}
-        max={screenWidth}
-        value={maskX}
-        step={500}
-        onChange={setMaskX}
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
       />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+			<code className="clouds code">{sN++}</code>
+      <NumericSlider
+        id={cS[sN]['id']}
+        label={cS[sN]['label']}
+        min={cS[sN]['min']}
+        max={cS[sN]['max']}
+        value={cS[sN]['value']}
+        step={cS[sN]['step']}
+        onChange={cS[sN]['setter']}
+      />
+
+
 
       </div>
 

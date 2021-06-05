@@ -66,7 +66,7 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
         <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
       )}
       {props.children}
-      <button accessKey="r" onClick={randomize}>
+      <button accessKey="r" onClick={randomize} id="colorButton">
         <u>R</u>andomize!
       </button>
     </fieldset>
