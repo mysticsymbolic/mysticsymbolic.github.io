@@ -1,6 +1,7 @@
 import { SvgVocabulary } from "../../svg-vocabulary";
 import { SvgCompositionContext } from "../../svg-composition-context";
 import MandalaAvsc from "./mandala-design.avsc.json";
+import MandalaAvscV1 from "./mandala-design.v1.avsc.json";
 import type {
   AvroCircle,
   AvroMandalaDesign,
@@ -105,17 +106,9 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
 
 function migrate(version: string, value: string): string {
   if (version === "v1") {
-    const v1Json = JSON.parse(JSON.stringify(MandalaAvsc));
-    const fields: any[] = v1Json.fields[1].type.fields;
-    const field = fields.splice(4, 1)[0];
-    if (field.name !== "disableGradients") {
-      throw new Error("Assertion failure!");
-    }
-    const v1 = avro.parse(v1Json);
-    const resolver = avroMandalaDesign.createResolver(v1);
     const design = avroMandalaDesign.fromBuffer(
       fromBase64(value),
-      resolver,
+      avroMandalaDesign.createResolver(avro.parse(MandalaAvscV1)),
       true
     );
     return toBase64(avroMandalaDesign.toBuffer(design));
