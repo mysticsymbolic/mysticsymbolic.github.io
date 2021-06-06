@@ -16,6 +16,8 @@ import {
 import { fromBase64, toBase64 } from "../../base64";
 import { clampedBytesToRGBColor } from "../../color-util";
 
+const LATEST_VERSION = "v2";
+
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
 /**
@@ -101,12 +103,40 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
   },
 };
 
+function migrate(version: string, value: string): string {
+  if (version === "v1") {
+    const v1Json = JSON.parse(JSON.stringify(MandalaAvsc));
+    const fields: any[] = v1Json.fields[1].type.fields;
+    const field = fields.splice(4, 1)[0];
+    if (field.name !== "disableGradients") {
+      throw new Error("Assertion failure!");
+    }
+    const v1 = avro.parse(v1Json);
+    const resolver = avroMandalaDesign.createResolver(v1);
+    const design = avroMandalaDesign.fromBuffer(
+      fromBase64(value),
+      resolver,
+      true
+    );
+    return toBase64(avroMandalaDesign.toBuffer(design));
+  } else {
+    throw new Error(`Don't know how to migrate from ${version}`);
+  }
+}
+
 export function serializeMandalaDesign(value: MandalaDesign): string {
   const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
-  return toBase64(buf);
+  return `${LATEST_VERSION}.${toBase64(buf)}`;
 }
 
 export function deserializeMandalaDesign(value: string): MandalaDesign {
+  let version = "v1";
+  if (value.indexOf(".") !== -1) {
+    [version, value] = value.split(".", 2);
+  }
+  if (version !== LATEST_VERSION) {
+    value = migrate(version, value);
+  }
   const buf = fromBase64(value);
   return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(buf));
 }
