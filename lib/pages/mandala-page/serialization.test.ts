@@ -24,7 +24,7 @@ describe("Mandala design serialization/desrialization", () => {
     const design = decodeAndDeserialize(
       "AgZleWUAAB9DCAEAAIA%2FAAAAAAAAgD8AAAAAAADQlAKCjj3Ij%2F4PAACAPwAAQEABAA%3D%3D"
     );
-    expect(design.baseCompCtx.disableGradients).toBe(false);
+    expect(design.baseCompCtx.disableGradients).toBe(true);
     expect(design.circle1.numSymbols).toBe(4);
   });
 

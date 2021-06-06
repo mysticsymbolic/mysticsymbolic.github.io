@@ -104,7 +104,7 @@ const DEFAULT_CONTEXT: SvgSymbolContext = {
   fill: "#ffffff",
   showSpecs: false,
   uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
-  disableGradients: false,
+  disableGradients: true,
 };
 
 /**
