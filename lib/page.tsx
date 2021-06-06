@@ -1,4 +1,5 @@
 import React, { MouseEvent, useContext } from "react";
+import { Helmet } from "react-helmet";
 import type { PageName } from "./pages";
 
 export type PageContext = {
@@ -62,10 +63,15 @@ export type PageProps = {
 };
 
 export const Page: React.FC<PageProps> = ({ title, children }) => {
+  const fullTitle = ` Mystic Symbolic ${title}`;
+
   return (
     <div className="page">
+      <Helmet>
+        <title>{fullTitle}</title>
+      </Helmet>
       <header>
-        <h1>Mystic Symbolic {title}</h1>
+        <h1>{fullTitle}</h1>
         <Navbar />
       </header>
       {children}
