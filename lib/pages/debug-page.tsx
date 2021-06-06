@@ -60,17 +60,18 @@ const EYE_CREATURE = (
 );
 
 const RandomColorSampling: React.FC<{}> = () => {
+  const [paletteConfig, setPaletteConfig] = useState({})
   const [paletteAlg, setPaletteAlg] = useState<RandomPaletteAlgorithm>(
     DEFAULT_RANDOM_PALETTE_ALGORITHM
   );
   const [seed, setSeed] = useState(Date.now());
   const NUM_COLORS = 100;
   const rng = new Random(seed);
-  const palette = createRandomColorPalette(NUM_COLORS, rng, paletteAlg);
+  const palette = createRandomColorPalette(NUM_COLORS, rng, paletteAlg, paletteConfig);
 
   return (
     <>
-      <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
+      <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} onPaletteConfigChange={setPaletteConfig} />
       <div className="thingy">
         <div style={{ fontSize: 0 }}>
           {range(NUM_COLORS).map((i) => (

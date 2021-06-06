@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { PaletteAlgorithmWidget } from "./palette-algorithm-widget";
 import { Random } from "./random";
 import {
   createRandomColorPalette,
-  DEFAULT_RANDOM_PALETTE_ALGORITHM,
+  DEFAULT_RANDOM_PALETTE_ALGORITHM, PaletteAlgorithmConfig,
   RandomPaletteAlgorithm,
 } from "./random-colors";
 import { SvgCompositionContext } from "./svg-composition-context";
@@ -14,12 +14,14 @@ type SvgCompositionColors = Pick<
 >;
 
 function createRandomCompositionColors(
-  alg: RandomPaletteAlgorithm
+  alg: RandomPaletteAlgorithm,
+  config?: PaletteAlgorithmConfig
 ): SvgCompositionColors {
   const [background, stroke, fill] = createRandomColorPalette(
     3,
     undefined,
-    alg
+    alg,
+    config
   );
   return { background, stroke, fill };
 }
@@ -34,15 +36,19 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
   const [paletteAlg, setPaletteAlg] = useState<RandomPaletteAlgorithm>(
     DEFAULT_RANDOM_PALETTE_ALGORITHM
   );
+  const [paletteConfig, setPaletteConfig] = useState({})
   const [randType, setRandType] = useState<RandType>("colors and symbols");
   const randomize = () => {
     if (randType === "colors" || randType === "colors and symbols") {
-      props.onColorsChange(createRandomCompositionColors(paletteAlg));
+      props.onColorsChange(createRandomCompositionColors(paletteAlg, paletteConfig));
     }
     if (randType === "symbols" || randType === "colors and symbols") {
       props.onSymbolsChange(new Random(Date.now()));
     }
   };
+  useEffect(() => {
+    props.onColorsChange(createRandomCompositionColors(paletteAlg, paletteConfig));
+  }, [paletteConfig])
   const makeRadio = (kind: RandType) => (
     <label className="checkbox">
       <input
@@ -63,7 +69,7 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
       {makeRadio("symbols")}
       {makeRadio("colors and symbols")}
       {randType !== "symbols" && (
-        <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
+        <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} onPaletteConfigChange={setPaletteConfig} />
       )}
       {props.children}
       <button accessKey="r" onClick={randomize}>
