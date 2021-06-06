@@ -32,8 +32,7 @@
           { "name": "stroke", "type": "int" },
           { "name": "fill", "type": "int" },
           { "name": "background", "type": "int" },
-          { "name": "uniformStrokeWidth", "type": "float" },
-          { "name": "disableGradients", "type": "boolean", "default": false }
+          { "name": "uniformStrokeWidth", "type": "float" }
         ]
       }
     },

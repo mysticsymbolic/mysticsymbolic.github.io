@@ -26,6 +26,13 @@ function useUniqueIds(count: number): string[] {
   return result;
 }
 
+/**
+ * A regular expression to match a `url()` function expression
+ * that points to an anchor on the current document. For example,
+ * when passed the string `url(#boop)`, it will match to `boop`.
+ */
+export const URL_FUNC_TO_ANCHOR_RE = /^url\(\#(.+)\)$/;
+
 export class UniqueIdMap extends Map<string, string> {
   /**
    * Returns the globally-unique identifier for the given
@@ -56,7 +63,7 @@ export class UniqueIdMap extends Map<string, string> {
    * that may refer to locally-unique identifiers.
    */
   rewriteUrl(value: string): string {
-    const match = value.match(/^url\(\#(.+)\)$/);
+    const match = value.match(URL_FUNC_TO_ANCHOR_RE);
 
     if (!match) {
       return value;

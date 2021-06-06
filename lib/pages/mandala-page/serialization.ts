@@ -1,6 +1,7 @@
 import { SvgVocabulary } from "../../svg-vocabulary";
 import { SvgCompositionContext } from "../../svg-composition-context";
 import MandalaAvsc from "./mandala-design.avsc.json";
+import MandalaAvscV1 from "./mandala-design.v1.avsc.json";
 import type {
   AvroCircle,
   AvroMandalaDesign,
@@ -15,6 +16,8 @@ import {
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
 import { clampedBytesToRGBColor } from "../../color-util";
+
+const LATEST_VERSION = "v2";
 
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
@@ -101,12 +104,30 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
   },
 };
 
+function loadSchemaVersion(version: string, buf: Buffer): AvroMandalaDesign {
+  switch (version) {
+    case "v1":
+      const res = avroMandalaDesign.createResolver(avro.parse(MandalaAvscV1));
+      return avroMandalaDesign.fromBuffer(buf, res);
+
+    case LATEST_VERSION:
+      return avroMandalaDesign.fromBuffer(buf);
+
+    default:
+      throw new Error(`Don't know how to load schema version ${version}`);
+  }
+}
+
 export function serializeMandalaDesign(value: MandalaDesign): string {
   const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
-  return toBase64(buf);
+  return `${LATEST_VERSION}.${toBase64(buf)}`;
 }
 
 export function deserializeMandalaDesign(value: string): MandalaDesign {
+  let version = "v1";
+  if (value.indexOf(".") !== -1) {
+    [version, value] = value.split(".", 2);
+  }
   const buf = fromBase64(value);
-  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(buf));
+  return DesignConfigPacker.unpack(loadSchemaVersion(version, buf));
 }
