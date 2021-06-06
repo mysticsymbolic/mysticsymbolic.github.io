@@ -161,6 +161,13 @@ function getFill(
   if (fill) {
     if (URL_FUNC_TO_ANCHOR_RE.test(fill)) {
       if (ctx.disableGradients) {
+        // Note that we could actually interpret the gradient here
+        // and use whichever color (fill or stroke) is most dominant
+        // in it, but at the time of this writing, it's always the
+        // fill color, so we're just using that. For more details,
+        // see:
+        //
+        //   https://github.com/mysticsymbolic/mysticsymbolic.github.io/issues/140
         fill = ctx.fill;
       } else {
         fill = uidMap.rewriteUrl(fill);
