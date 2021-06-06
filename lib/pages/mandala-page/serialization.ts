@@ -104,16 +104,17 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
   },
 };
 
-function migrate(version: string, value: string): string {
-  if (version === "v1") {
-    const design = avroMandalaDesign.fromBuffer(
-      fromBase64(value),
-      avroMandalaDesign.createResolver(avro.parse(MandalaAvscV1)),
-      true
-    );
-    return toBase64(avroMandalaDesign.toBuffer(design));
-  } else {
-    throw new Error(`Don't know how to migrate from ${version}`);
+function loadSchemaVersion(version: string, buf: Buffer): AvroMandalaDesign {
+  switch (version) {
+    case "v1":
+      const res = avroMandalaDesign.createResolver(avro.parse(MandalaAvscV1));
+      return avroMandalaDesign.fromBuffer(buf, res);
+
+    case LATEST_VERSION:
+      return avroMandalaDesign.fromBuffer(buf);
+
+    default:
+      throw new Error(`Don't know how to load schema version ${version}`);
   }
 }
 
@@ -127,9 +128,6 @@ export function deserializeMandalaDesign(value: string): MandalaDesign {
   if (value.indexOf(".") !== -1) {
     [version, value] = value.split(".", 2);
   }
-  if (version !== LATEST_VERSION) {
-    value = migrate(version, value);
-  }
   const buf = fromBase64(value);
-  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(buf));
+  return DesignConfigPacker.unpack(loadSchemaVersion(version, buf));
 }
