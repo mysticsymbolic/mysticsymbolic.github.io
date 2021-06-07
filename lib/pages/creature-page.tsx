@@ -36,8 +36,10 @@ import { VocabularyWidget } from "../vocabulary-widget";
 /**
  * The minimum number of attachment points that any symbol used as the main body
  * of a creature must have.
+ *
+ * Note that this number is inclusive of a symbol's anchor point.
  */
-const MIN_ROOT_ATTACHMENT_POINTS = 1;
+const MIN_ROOT_ATTACHMENT_POINTS = 2;
 
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
