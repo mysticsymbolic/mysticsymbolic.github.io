@@ -78,8 +78,20 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
       <footer>
         <p>
           For more details about this project, see its{" "}
-          <a href="https://github.com/toolness/mystic-symbolic" target="_blank">
+          <a
+            href="https://github.com/toolness/mystic-symbolic"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub repository
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://blog.ninapaley.com/category/mysticsymbolic/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Nina Paley's blog
           </a>
           .
         </p>
