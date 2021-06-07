@@ -33,9 +33,18 @@ import { Page } from "../page";
 import { RandomizerWidget } from "../randomizer-widget";
 import { VocabularyWidget } from "../vocabulary-widget";
 
+/**
+ * The minimum number of attachment points that any symbol used as the main body
+ * of a creature must have.
+ */
+const MIN_ROOT_ATTACHMENT_POINTS = 1;
+
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
 const ROOT_SYMBOLS = SvgVocabulary.items.filter(
-  (data) => data.meta?.always_be_nested !== true
+  (data) =>
+    data.meta?.always_be_nested !== true &&
+    Array.from(iterAttachmentPoints(data.specs || {})).length >=
+      MIN_ROOT_ATTACHMENT_POINTS
 );
 
 type AttachmentSymbolMap = {
