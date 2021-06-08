@@ -15,7 +15,7 @@ import { Checkbox } from "../checkbox";
 const CLOUD_STROKE = "#79beda";
 const CLOUD_FILL = "#2b7c9e";
 const CLOUD_STROKEWIDTH = 30;
-const CLOUD_STYLE = 1;
+const CLOUD_STYLE = 2;
 const GRADIENT_OFFSET1 = 43;
 const GRADIENT_OFFSET2 = 96;
 const NUM_ELEMENTS = 7;
@@ -96,150 +96,6 @@ const Cloud2: React.FC<{
   </>
 );
 
-const Cloud3: React.FC<{
-  stroke: string;
-  fill: string;
-  strokewidth: number;
-  gradientOffset1: number;
-  gradientOffset2: number;
-}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2 }) => (
-  <>
-    <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-      <stop offset={gradientOffset1 + "%"} stopColor={stroke}></stop>
-      <stop offset={gradientOffset2 + "%"} stopColor={fill}></stop>
-    </radialGradient>
-    <path
-      fill="url(#uid_41)"
-      fillRule="evenodd"
-      stroke="none"
-      d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"
-    />
-    <path
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokewidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "
-    />
-  </>
-);
-
-const Cloud4: React.FC<{
-  stroke: string;
-  fill: string;
-  strokewidth: number;
-  gradientOffset1: number;
-  gradientOffset2: number;
-}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2 }) => (
-  <>
-    <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-      <stop offset={gradientOffset1 + "%"} stopColor="#ffffff"></stop>
-      <stop offset={gradientOffset2 + "%"} stopColor={fill}></stop>
-    </radialGradient>
-    <path
-      fill="url(#uid_41)"
-      fillRule="evenodd"
-      stroke="none"
-      d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"
-    />
-    <path
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokewidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "
-    />
-  </>
-);
-
-const Cloud5: React.FC<{
-  stroke: string;
-  fill: string;
-  strokewidth: number;
-  gradientOffset1: number;
-  gradientOffset2: number;
-}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2 }) => (
-  <>
-    <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-      <stop offset={gradientOffset1 + "%"} stopColor="#ffffff"></stop>
-      <stop offset={gradientOffset2 + "%"} stopColor={stroke}></stop>
-    </radialGradient>
-    <path
-      fill="url(#uid_41)"
-      fillRule="evenodd"
-      stroke="none"
-      d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"
-    />
-    <path
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokewidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "
-    />
-  </>
-);
-
-const Cloud6: React.FC<{
-  stroke: string;
-  fill: string;
-  strokewidth: number;
-  gradientOffset1: number;
-  gradientOffset2: number;
-}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2 }) => (
-  <>
-    <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-      <stop offset={gradientOffset1 + "%"} stopColor="#ffffff"></stop>
-      <stop offset={gradientOffset2 + "%"} stopColor="#000000"></stop>
-    </radialGradient>
-    <path
-      fill="url(#uid_41)"
-      fillRule="evenodd"
-      stroke="none"
-      d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"
-    />
-    <path
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokewidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "
-    />
-  </>
-);
-
-const Cloud7: React.FC<{
-  stroke: string;
-  fill: string;
-  strokewidth: number;
-  gradientOffset1: number;
-  gradientOffset2: number;
-}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2 }) => (
-  <>
-    <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-      <stop offset={gradientOffset1 + "%"} stopColor="#000000"></stop>
-      <stop offset={gradientOffset2 + "%"} stopColor="#ffffff"></stop>
-    </radialGradient>
-    <path
-      fill="url(#uid_41)"
-      fillRule="evenodd"
-      stroke="none"
-      d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"
-    />
-    <path
-      fill="none"
-      stroke={stroke}
-      strokeWidth={strokewidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "
-    />
-  </>
-);
 
 /* RETURN THE CLOUD STYLE WHICH WAS SELECTED */
 const ElementSwitch: React.FC<{
@@ -253,56 +109,6 @@ const ElementSwitch: React.FC<{
   if (props.thisstyle == 2) {
     return (
       <Cloud2
-        fill={props.fill}
-        stroke={props.stroke}
-        strokewidth={props.strokewidth}
-        gradientOffset1={props.gradientOffset1}
-        gradientOffset2={props.gradientOffset2}
-      />
-    );
-  } else if (props.thisstyle == 3) {
-    return (
-      <Cloud3
-        fill={props.fill}
-        stroke={props.stroke}
-        strokewidth={props.strokewidth}
-        gradientOffset1={props.gradientOffset1}
-        gradientOffset2={props.gradientOffset2}
-      />
-    );
-  } else if (props.thisstyle == 4) {
-    return (
-      <Cloud4
-        fill={props.fill}
-        stroke={props.stroke}
-        strokewidth={props.strokewidth}
-        gradientOffset1={props.gradientOffset1}
-        gradientOffset2={props.gradientOffset2}
-      />
-    );
-  } else if (props.thisstyle == 5) {
-    return (
-      <Cloud5
-        fill={props.fill}
-        stroke={props.stroke}
-        strokewidth={props.strokewidth}
-        gradientOffset1={props.gradientOffset1}
-        gradientOffset2={props.gradientOffset2}
-      />
-    );
-  } else if (props.thisstyle == 6) {
-    return (
-      <Cloud6
-        fill={props.fill}
-        stroke={props.stroke}
-        strokewidth={props.strokewidth}
-        gradientOffset1={props.gradientOffset1}
-        gradientOffset2={props.gradientOffset2}
-      />
-    );
-  } else if (props.thisstyle == 7) {
-    return (
-      <Cloud7
         fill={props.fill}
         stroke={props.stroke}
         strokewidth={props.strokewidth}
@@ -353,7 +159,7 @@ const Clouds: React.FC<{}> = () => {
   //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
   //const [fill, setFill] = useState(CLOUD_FILL);
-  let [cloudStyle, setcloudStyle] = useState(CLOUD_STYLE);
+  let [cloudStyle] = useState(CLOUD_STYLE);
   let [gradientOffset1, setgradientOffset1] = useState(GRADIENT_OFFSET1);
   let [gradientOffset2, setgradientOffset2] = useState(GRADIENT_OFFSET2);
   let [numElements, setnumElements] = useState(NUM_ELEMENTS);
@@ -389,17 +195,18 @@ const Clouds: React.FC<{}> = () => {
   let numSettings = 0; // count the settings
 
   // SET UP THE SETTINS - with Min, Max and Step
+	/* DISABLE THIS - PER NINA
   cS[sN] = [];
   cS[sN]["id"] = "cloudStyle";
   cS[sN]["label"] = "Cloud Style";
   cS[sN]["value"] = cloudStyle;
   cS[sN]["setter"] = setcloudStyle;
   cS[sN]["min"] = 1;
-  cS[sN]["max"] = 7;
+  cS[sN]["max"] = 2;
   cS[sN]["step"] = 1;
   cS[sN]["suffix"] = "";
+  sN++;  */
 
-  sN++;
   cS[sN] = [];
   cS[sN]["id"] = "gradientOffset1";
   cS[sN]["label"] = "Gradient Offset 1";
