@@ -209,10 +209,10 @@ const ShowSettings: React.FC<{
    cS: { [key: string] : any };
 }> = (props) => {
 			let controls = [];
-      for (let sN = 0; sN < props.numSettings; sN++) {
+      for (let sN = 0; sN <= props.numSettings; sN++) {
 			controls.push(
-			<>
-      <NumericSlider key={sN+props.cS[sN]['id']}
+			<React.Fragment key={props.cS[sN]['id']}>
+      <NumericSlider 
         id={ props.cS[sN]['id']}
         label={ props.cS[sN]['label']}
         min={ props.cS[sN]['min']}
@@ -222,7 +222,7 @@ const ShowSettings: React.FC<{
         valueSuffix={ props.cS[sN]['suffix']}
         onChange={ props.cS[sN]['setter']}
       />
-			</>
+			</React.Fragment>
 				);
 		}
 		return <> {controls} </>;
@@ -488,9 +488,8 @@ cS[sN]['max']= screenWidth
 cS[sN]['step']= 500
 cS[sN]['suffix']= ''
 
-numSettings = sN; // number of settings
-sN = 0; // go back to 0 for the setting controls below
 
+numSettings = sN; // number of settings
 
 function randomizestylesorcolors (
   mode: string
@@ -814,7 +813,7 @@ if (j==0) {
        />
 
 		<div className="cloud-settings">
-			<ShowSettings
+			<ShowSettings 
 				numSettings={numSettings}
 				cS = {cS}
 			/>
