@@ -18,7 +18,7 @@ export type PageName = keyof typeof Pages;
 
 export const pageNames = Object.keys(Pages) as PageName[];
 
-export const DEFAULT_PAGE: PageName = "mandala";
+export const DEFAULT_PAGE: PageName = "creature";
 
 export function isPageName(page: string): page is PageName {
   return pageNames.includes(page as any);

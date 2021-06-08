@@ -4,7 +4,11 @@ import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { AttachmentPointType, PointWithNormal, Specs } from "./specs";
 import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
-import { UniqueIdMap, useUniqueIdMap } from "./unique-id";
+import {
+  UniqueIdMap,
+  URL_FUNC_TO_ANCHOR_RE,
+  useUniqueIdMap,
+} from "./unique-id";
 import { VisibleSpecs } from "./visible-specs";
 
 const DEFAULT_UNIFORM_STROKE_WIDTH = 1;
@@ -87,6 +91,12 @@ export type SvgSymbolContext = {
    * *not* vary as the symbol is scaled.
    */
   uniformStrokeWidth?: number;
+
+  /**
+   * Whether or not to disable any gradients in the symbol. Defaults
+   * to `false`.
+   */
+  disableGradients: boolean;
 };
 
 const DEFAULT_CONTEXT: SvgSymbolContext = {
@@ -94,6 +104,7 @@ const DEFAULT_CONTEXT: SvgSymbolContext = {
   fill: "#ffffff",
   showSpecs: false,
   uniformStrokeWidth: DEFAULT_UNIFORM_STROKE_WIDTH,
+  disableGradients: true,
 };
 
 /**
@@ -141,6 +152,31 @@ function getColor(
   return color;
 }
 
+function getFill(
+  ctx: SvgSymbolContext,
+  fill: string | undefined,
+  uidMap: UniqueIdMap
+): string | undefined {
+  fill = getColor(ctx, fill);
+  if (fill) {
+    if (URL_FUNC_TO_ANCHOR_RE.test(fill)) {
+      if (ctx.disableGradients) {
+        // Note that we could actually interpret the gradient here
+        // and use whichever color (fill or stroke) is most dominant
+        // in it, but at the time of this writing, it's always the
+        // fill color, so we're just using that. For more details,
+        // see:
+        //
+        //   https://github.com/mysticsymbolic/mysticsymbolic.github.io/issues/140
+        fill = ctx.fill;
+      } else {
+        fill = uidMap.rewriteUrl(fill);
+      }
+    }
+  }
+  return fill;
+}
+
 function reactifySvgSymbolElement(
   ctx: SvgSymbolContext,
   uidMap: UniqueIdMap,
@@ -149,11 +185,8 @@ function reactifySvgSymbolElement(
 ): JSX.Element {
   let { fill, stroke, strokeWidth } = el.props;
   let vectorEffect;
-  fill = getColor(ctx, fill);
+  fill = getFill(ctx, fill, uidMap);
   stroke = getColor(ctx, stroke);
-  if (fill) {
-    fill = uidMap.rewriteUrl(fill);
-  }
   if (strokeWidth !== undefined && typeof ctx.uniformStrokeWidth === "number") {
     strokeWidth = ctx.uniformStrokeWidth;
     vectorEffect = "non-scaling-stroke";
@@ -183,13 +216,13 @@ const SvgSymbolDef: React.FC<
   ));
   switch (def.type) {
     case "radialGradient":
-      return (
+      return ctx.disableGradients ? null : (
         <radialGradient id={id} cx={def.cx} cy={def.cy} r={def.r}>
           {stops}
         </radialGradient>
       );
     case "linearGradient":
-      return (
+      return ctx.disableGradients ? null : (
         <linearGradient id={id} x1={def.x1} y1={def.y1} x2={def.x2} y2={def.y2}>
           {stops}
         </linearGradient>

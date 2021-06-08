@@ -29,6 +29,19 @@ To run tests interactively, run:
 npm run test:watch
 ```
 
+## Type checking
+
+To make sure that everything type-checks okay, run:
+
+```
+npm run typecheck
+```
+
+Note that you may want to install a [TypeScript plugin for your favorite editor][ts-editor].  Aside from telling you what type errors you have in real-time, editor integration also provides code autocompletion and other affordances that can greatly improve your productivity. For more details, see Atul's [Fun with TypeScript][] series of videos.
+
+[ts-editor]: https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support
+[Fun with TypeScript]: https://www.youtube.com/playlist?list=PL79r88piDzwZVwCI_26T3ZjC3xKvQLgjh
+
 ## Code style
 
 All code styling is managed by [Prettier][].
