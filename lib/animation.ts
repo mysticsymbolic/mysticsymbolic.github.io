@@ -15,9 +15,8 @@ import { useEffect, useState } from "react";
  */
 export function useAnimationPct(durationMs: number): number {
   const [pct, setPct] = useState(0);
-  const [lastTimestamp, setLastTimestamp] = useState<number | undefined>(
-    undefined
-  );
+  const [lastTimestamp, setLastTimestamp] =
+    useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (!durationMs) {

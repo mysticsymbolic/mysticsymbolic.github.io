@@ -2,6 +2,7 @@
 /* IMPORTS */
 import React, { useState } from "react";
 import { RandomizerWidget } from "../randomizer-widget";
+import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
 import {
   CompositionContextWidget,
@@ -14,7 +15,9 @@ import { Checkbox } from "../checkbox";
 const CLOUD_STROKE = "#79beda";
 const CLOUD_FILL = "#2b7c9e";
 const CLOUD_STROKEWIDTH = 30;
-const ELEMENT_STYLE = 1;
+const CLOUD_STYLE = 1;
+const GRADIENT_OFFSET1 = 43;
+const GRADIENT_OFFSET2 = 96;
 const NUM_ELEMENTS = 7;
 const NUM_CLOUDS = 12;
 //const MAX_CLOUDS = 12;
@@ -43,7 +46,9 @@ const Cloud1: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
-}> = ({ stroke, fill, strokewidth}) => (
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
   <>
 <path fill={fill} fillRule="evenodd" stroke="none" d="M 360.000 596.177 C 500.811 596.177 614.404 482.584 614.404 341.774 C 614.404 200.963 500.811 87.370 360.000 87.370 C 219.189 87.370 105.596 200.963 105.596 341.774 C 105.596 482.584 219.189 596.177 360.000 596.177 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.098 371.149 C 602.507 412.416 597.237 433.275 575.983 476.189 M 530.256 180.457 C 583.769 228.655 607.192 290.877 604.098 371.149 M 212.437 216.472 C 280.858 106.327 437.914 97.287 530.256 180.457 M 208.196 406.565 C 175.078 346.560 176.784 273.866 212.437 216.472 M 437.019 451.501 C 365.701 513.810 255.178 491.691 208.196 406.565 M 479.177 353.518 C 480.210 390.509 464.892 427.148 437.019 451.501 M 383.232 252.404 C 437.329 252.139 477.731 301.781 479.177 353.518 M 315.724 293.646 C 329.002 268.221 355.037 252.543 383.232 252.404 M 324.498 355.831 C 305.359 339.494 306.332 311.630 315.724 293.646 M 347.839 363.173 C 337.678 362.940 332.207 362.412 324.498 355.831 M 366.134 334.409 C 377.849 347.389 363.196 363.525 347.839 363.173 M 354.460 336.520 C 354.806 332.878 362.306 330.168 366.134 334.409 M 105.596 341.774 C 105.596 482.584 219.189 596.177 360.000 596.177 C 500.811 596.177 614.404 482.584 614.404 341.774 C 614.404 200.963 500.811 87.370 360.000 87.370 C 219.189 87.370 105.596 200.963 105.596 341.774 "/>
@@ -54,11 +59,13 @@ const Cloud2: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
-}> = ({ stroke, fill, strokewidth}) => (
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stopColor={fill}></stop>
-<stop offset="96.08%" stopColor={stroke}></stop>
+<stop offset={gradientOffset1+'%'} stopColor={fill}></stop>
+<stop offset={gradientOffset2+'%'} stopColor={stroke}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
@@ -69,47 +76,90 @@ const Cloud3: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
-}> = ({ stroke, fill, strokewidth}) => (
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stopColor="#ffffff"></stop>
-<stop offset="96.08%" stopColor="#000000"></stop>
+<stop offset={gradientOffset1+'%'} stopColor={stroke}></stop>
+<stop offset={gradientOffset2+'%'} stopColor={fill}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
+
 
 const Cloud4: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
-}> = ({ stroke, fill, strokewidth}) => (
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stopColor="#000000"></stop>
-<stop offset="96.08%" stopColor="#ffffff"></stop>
+<stop offset={gradientOffset1+'%'} stopColor="#ffffff"></stop>
+<stop offset={gradientOffset2+'%'} stopColor={fill}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
-
 
 const Cloud5: React.FC<{
   stroke: string;
   fill: string;
 	strokewidth: number; 
-}> = ({ stroke, fill, strokewidth}) => (
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
   <>
 <radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
-<stop offset="43.53%" stopColor="#ffffff"></stop>
-<stop offset="96.08%" stopColor={fill}></stop>
+<stop offset={gradientOffset1+'%'} stopColor="#ffffff"></stop>
+<stop offset={gradientOffset2+'%'} stopColor={stroke}></stop>
 </radialGradient>
 <path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
 <path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
   </>
 );
+
+const Cloud6: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset={gradientOffset1+'%'} stopColor="#ffffff"></stop>
+<stop offset={gradientOffset2+'%'} stopColor="#000000"></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+const Cloud7: React.FC<{
+  stroke: string;
+  fill: string;
+	strokewidth: number; 
+	gradientOffset1: number; 
+	gradientOffset2: number; 
+}> = ({ stroke, fill, strokewidth, gradientOffset1, gradientOffset2}) => (
+  <>
+<radialGradient id="uid_41" cx="50.00%" cy="50.00%" r="50.00%">
+<stop offset={gradientOffset1+'%'} stopColor="#000000"></stop>
+<stop offset={gradientOffset2+'%'} stopColor="#ffffff"></stop>
+</radialGradient>
+<path fill="url(#uid_41)" fillRule="evenodd" stroke="none" d="M 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 Z"/>
+<path fill="none" stroke={stroke} strokeWidth={strokewidth} strokeLinecap="round" strokeLinejoin="round" d="M 604.402 371.163 C 602.809 412.482 597.532 433.366 576.252 476.334 M 530.468 180.233 C 584.048 228.491 607.500 290.791 604.402 371.163 M 212.253 216.293 C 280.760 106.011 438.011 96.960 530.468 180.233 M 208.007 406.623 C 174.848 346.544 176.555 273.758 212.253 216.293 M 437.115 451.615 C 365.708 514.002 255.048 491.855 208.007 406.623 M 479.325 353.509 C 480.360 390.547 465.022 427.232 437.115 451.615 M 383.261 252.270 C 437.425 252.004 477.877 301.708 479.325 353.509 M 315.669 293.563 C 328.963 268.106 355.031 252.409 383.261 252.270 M 324.454 355.826 C 305.291 339.468 306.266 311.569 315.669 293.563 M 347.824 363.177 C 337.650 362.944 332.173 362.415 324.454 355.826 M 366.141 334.377 C 377.871 347.373 363.200 363.529 347.824 363.177 M 354.453 336.490 C 354.799 332.844 362.308 330.130 366.141 334.377 M 105.279 341.751 C 105.279 482.737 219.014 596.472 360.000 596.472 C 500.986 596.472 614.721 482.737 614.721 341.751 C 614.721 200.765 500.986 87.030 360.000 87.030 C 219.014 87.030 105.279 200.765 105.279 341.751 "/>
+  </>
+);
+
+
+
 
 /* RETURN THE CLOUD STYLE WHICH WAS SELECTED */
 const ElementSwitch: React.FC<{
@@ -117,104 +167,169 @@ const ElementSwitch: React.FC<{
 	fill: string;
 	stroke: string;
 	strokewidth: number;
+	gradientOffset1: number; 
+	gradientOffset2: number; 
 }> = (props) => {
 		if (props.thisstyle == 2) {
       return (
-			  <Cloud2 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			  <Cloud2 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2}  />
 			);
 		} else if (props.thisstyle == 3) {
       return (
-			  <Cloud3 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			  <Cloud3 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
 			);
 		} else if (props.thisstyle == 4) {
       return (
-			  <Cloud4 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			  <Cloud4 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
 			);
 		} else if (props.thisstyle == 5) {
       return (
-			  <Cloud5 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			  <Cloud5 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
+			);
+		} else if (props.thisstyle == 6) {
+      return (
+			  <Cloud6 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
+			);
+		} else if (props.thisstyle == 7) {
+      return (
+			  <Cloud7 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
 			);
 		} else {
       return (
-			  <Cloud1 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth}  />
+			  <Cloud1 fill={props.fill} stroke={props.stroke} strokewidth={props.strokewidth} gradientOffset1={props.gradientOffset1} gradientOffset2={props.gradientOffset2} />
 			);
 		}
 
 };
 
 
-
-const NumericSlider: React.FC<{
-  id: string;
-  label: string;
-  onChange: (value: number) => void;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  valueSuffix?: string;
-}> = (props) => {
-  return (
-    <p>
-      <label htmlFor={props.id}>{props.label}</label>
-      <input
-        type="range"
-        id={props.id}
-        min={props.min}
-        max={props.max}
-        value={props.value}
-        step={props.step}
-        onChange={(e) => props.onChange(parseFloat(e.target.value))}
-      />
-      <span>
-        {" "}
-        {props.value}
-        {props.valueSuffix}
-      </span>
-    </p>
-  );
-};
-
-
-/* can't quite get this working to automatically generate the NumberSliders - DW
-const ShowSettings: React.FC<{
+/*
+interface ShowSettingsProps{
   numSettings: number;
-	cS:  {
-			  id: string;
-				label: string;
-				setter: object;
-				value: object;
-				min: number;
-				max: number;
-				step: number;
-				suffix: string;
-	     }[];
-}> = (props) => {
-      for (let i = 0; i < props.numSettings; i++) {
-			return (
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        valueSuffix={cS[sN]['suffix']}
-        onChange={cS[sN]['setter']}
+  cS:{
+		id: number[];
+		label: string[];
+		min: number[];
+		max: number[];
+		value: object[];
+		step: number[];
+		valueSuffix: string[];
+		setter: object[];
+	}
+}
+*/
+
+/*
+function ShowSettings (
+   numSettings: number,
+   cS: any,
+	 ) : [] {
+			let controls = [];
+      for (let sN = 0; sN < numSettings; sN++) {
+			controls.push(
+			<React.Fragment key={sN+cS[sN]['id']}>
+      <NumericSlider key={sN+cS[sN]['id']}
+        id={ cS[sN]['id']}
+        label={ cS[sN]['label']}
+        min={ cS[sN]['min']}
+        max={ cS[sN]['max']}
+        value={ cS[sN]['value']}
+        step={ cS[sN]['step']}
+        valueSuffix={ cS[sN]['suffix']}
+        onChange={ cS[sN]['setter']}
       />
+			</React.Fragment>
 				);
 		}
+		return controls;
+}
+*/
+
+/*
+const ShowSettings = (<ShowSettingsProps>) => {
+			let controls = [];
+      for (let sN = 0; sN < numSettings; sN++) {
+			controls.push(
+			<React.Fragment key={sN+cS[sN]['id']}>
+      <NumericSlider key={sN+cS[sN]['id']}
+        id={ cS[sN]['id']}
+        label={ cS[sN]['label']}
+        min={ cS[sN]['min']}
+        max={ cS[sN]['max']}
+        value={ cS[sN]['value']}
+        step={ cS[sN]['step']}
+        valueSuffix={ cS[sN]['suffix']}
+        onChange={ cS[sN]['setter']}
+      />
+			</React.Fragment>
+				);
+		}
+		return controls;
 };
 */
 
-/* SETTERS AND VARIABLES */
+/* SHOW THE SETTINGS */
+/*
+const ShowSettings: React.FC<ShowSettingsProps>  = ({ numSettings, cS}) => (
+			let controls = [];
+      for (let sN = 0; sN < numSettings; sN++) {
+			controls.push(
+			<>
+      <NumericSlider key={sN+cS[sN]['id']}
+        id={ cS[sN]['id']}
+        label={ cS[sN]['label']}
+        min={ cS[sN]['min']}
+        max={ cS[sN]['max']}
+        value={ cS[sN]['value']}
+        step={ cS[sN]['step']}
+        valueSuffix={ cS[sN]['suffix']}
+        onChange={ cS[sN]['setter']}
+      />
+			</>
+				);
+		}
+		return controls;
+};
+*/
 
+/* SHOW THE SETTINGS */
+
+
+const ShowSettings: React.FC<{
+   numSettings: number;
+   cS: { [key: string] : any };
+}> = (props) => {
+			let controls = [];
+      for (let sN = 0; sN < props.numSettings; sN++) {
+			controls.push(
+			<>
+      <NumericSlider key={sN+props.cS[sN]['id']}
+        id={ props.cS[sN]['id']}
+        label={ props.cS[sN]['label']}
+        min={ props.cS[sN]['min']}
+        max={ props.cS[sN]['max']}
+        value={ props.cS[sN]['value']}
+        step={ props.cS[sN]['step']}
+        valueSuffix={ props.cS[sN]['suffix']}
+        onChange={ props.cS[sN]['setter']}
+      />
+			</>
+				);
+		}
+		return <> {controls} </>;
+};
+
+
+
+/* SETTERS AND VARIABLES */
 
 const Clouds: React.FC<{}> = () => {
   //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
   //const [fill, setFill] = useState(CLOUD_FILL);
-  let [cloudStyle, setcloudStyle] = useState(ELEMENT_STYLE);
+  let [cloudStyle, setcloudStyle] = useState(CLOUD_STYLE);
+  let [gradientOffset1, setgradientOffset1] = useState(GRADIENT_OFFSET1);
+  let [gradientOffset2, setgradientOffset2] = useState(GRADIENT_OFFSET2);
   let [numElements, setnumElements] = useState(NUM_ELEMENTS);
   //let [numClouds, setnumClouds] = useState(NUM_CLOUDS);
 	let numClouds = NUM_CLOUDS;
@@ -239,6 +354,7 @@ const Clouds: React.FC<{}> = () => {
 
  // cloud Settings - two dimensional object of settings
 let cS: { [key: string] : any } = {}; 
+//let cS = [];
 let sN = 0; // setting number
 let numSettings =0; // count the settings
 
@@ -248,9 +364,31 @@ cS[sN]['label']="Cloud Style";
 cS[sN]['value']=cloudStyle;
 cS[sN]['setter']=setcloudStyle;
 cS[sN]['min']= 1;
-cS[sN]['max']= 5;
+cS[sN]['max']= 7;
 cS[sN]['step']= 1;
 cS[sN]['suffix']= ''
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']="gradientOffset1";
+cS[sN]['label']="Gradient Offset 1";
+cS[sN]['value']=gradientOffset1;
+cS[sN]['setter']=setgradientOffset1;
+cS[sN]['min']= 1
+cS[sN]['max']= 50;
+cS[sN]['step']= 1;
+cS[sN]['suffix']= '%'
+
+sN++;
+cS[sN] = [];
+cS[sN]['id']="gradientOffset2";
+cS[sN]['label']="Gradient Offset 2";
+cS[sN]['value']=gradientOffset2;
+cS[sN]['setter']=setgradientOffset2;
+cS[sN]['min']= 51;
+cS[sN]['max']= 100;
+cS[sN]['step']= 1;
+cS[sN]['suffix']= '%'
 
 sN++;
 cS[sN] = [];
@@ -448,14 +586,15 @@ sN = 0; // go back to 0 for the setting controls below
 
 
 
+
 function randomizestylesorcolors (
   mode: string
 ) : void {
       //props.onColorsChange(createRandomCompositionColors(paletteAlg));
 			//console.log('randomize styles! num of settings:' + numSettings);
 			for (let i = 0; i <= numSettings; i++) {
-			  let settingRange = cS[i]['max'] - cS[i]['min']; // get the range of values
-			  let newsetting = Math.floor(Math.random() * settingRange /  cS[i]['step'] ) *  cS[i]['step'] + cS[i]['min'];
+			  let settingRange = cS[i]['max'] - cS[i]['min'] ; // get the range of values
+			  let newsetting = Math.round(Math.random() * settingRange /  cS[i]['step'] ) *  cS[i]['step'] + cS[i]['min'];
 				if ((cS[i]['step']<1) && (cS[i]['step']>=0.1)) {
 					newsetting = Math.round(newsetting * 10) / 10;
 				}	else if (cS[i]['step']<.1) {
@@ -466,10 +605,11 @@ function randomizestylesorcolors (
 				 //console.log(cS[i]['label'] + ' newsetting:' + newsetting +' max: '+cS[i]['max'] +' min: '+cS[i]['min']);
 			}
 			if (mode=='withcolors') {
-			  if (document.getElementById("colorButton") == null) {
+			  const colorButton = document.getElementById("colorButton")
+			  if (colorButton === null) {
            // if it can't find the button then nothing happens
-				} else if (document.getElementById("colorButton") !== null) {
-				  document.getElementById("colorButton").click(); // Click on the color button
+				} else {
+				  colorButton.click(); // Click on the color button
 				}
 			}
   }
@@ -514,6 +654,7 @@ function randomizestylesandcolors() {
 	
 
 	/* set default colors upon init */
+
 	if ((compCtx.background=="#858585") && (compCtx.stroke=="#000000") && (compCtx.fill=="#ffffff")) {
 	compCtx.background = BG_COLOR;
 	compCtx.stroke = CLOUD_STROKE;
@@ -567,7 +708,7 @@ function randomizestylesandcolors() {
 	//let maxClouds = MAX_CLOUDS; // max number of clouds
 	let thisscaleValue = scaleValue;
 	let thisspacing = spacing;
-	let speedindex = 500; // this is the basis for the cloud speed - the higher the number the slower
+	let speedindex = 1000; // this is the basis for the cloud speed - the higher the number the slower
 	let invertedcloudspeed = 0;  // this is for speed
 	let keynum = 0; // to keep track of keys - to give each element a unique ID
 	let keynumA = ''; 
@@ -682,7 +823,9 @@ if (j==0) {
 			   fill={compCtx.fill}
 			   stroke={compCtx.stroke}
 			   strokewidth={strokewidth}
-		   />
+			   gradientOffset1={ gradientOffset1}
+			   gradientOffset2={ gradientOffset2}		  
+			  />
 
 		   /* rotate */
 			<animateTransform
@@ -771,201 +914,17 @@ if (j==0) {
           onChange={setUseMask}
        />
 
-    {/*  Trying to automate the below - not quite there - DW
+		<div className="cloud-settings">
 			<ShowSettings
 				numSettings={numSettings}
 				cS = {cS}
 			/>
-			*/}
+		</div>
 
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
+			</div>
+			 </>
+    );
 
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-			<code className="clouds code">{sN++}</code>
-      <NumericSlider
-        id={cS[sN]['id']}
-        label={cS[sN]['label']}
-        min={cS[sN]['min']}
-        max={cS[sN]['max']}
-        value={cS[sN]['value']}
-        step={cS[sN]['step']}
-        onChange={cS[sN]['setter']}
-      />
-
-
-
-      </div>
-
-
-    </>
-  );
 };
 
 export const CloudsPage: React.FC<{}> = () => {
