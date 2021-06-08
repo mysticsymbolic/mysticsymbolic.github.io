@@ -96,7 +96,6 @@ const Cloud2: React.FC<{
   </>
 );
 
-
 /* RETURN THE CLOUD STYLE WHICH WAS SELECTED */
 const ElementSwitch: React.FC<{
   thisstyle: number;
@@ -195,7 +194,7 @@ const Clouds: React.FC<{}> = () => {
   let numSettings = 0; // count the settings
 
   // SET UP THE SETTINS - with Min, Max and Step
-	/* DISABLE THIS - PER NINA
+  /* DISABLE THIS - PER NINA
   cS[sN] = [];
   cS[sN]["id"] = "cloudStyle";
   cS[sN]["label"] = "Cloud Style";
