@@ -252,7 +252,11 @@ const Clouds: React.FC<{}> = () => {
   let [scaleValue, setScaleValue] = useState(CLOUD_SCALE); 
   let [pulseValue, setPulseValue] = useState(CLOUD_PULSE); 
   let [pulseminValue, setPulseminValue] = useState(CLOUD_PULSEMIN); 
-  let [compCtx, setCompCtx] = useState(createSvgCompositionContext());
+  let [compCtx, setCompCtx] = useState(createSvgCompositionContext({
+    background: BG_COLOR,
+    stroke: CLOUD_STROKE,
+    fill: CLOUD_FILL
+  }));
   let [useMask, setUseMask] = useState(false);
 	let [maskRadius, setMaskRadius] = useState(MASK_RADIUS); 
 	let [maskX, setMaskX] = useState(MASK_X); 
@@ -551,15 +555,6 @@ function randomizestylesandcolors() {
 	let rotationAngle = -360;
 	if (rotationSpeed<0) {
    rotationAngle = 360;
-	}
-
-
-	/* set default colors upon init */
-
-	if ((compCtx.background=="#858585") && (compCtx.stroke=="#000000") && (compCtx.fill=="#ffffff")) {
-	compCtx.background = BG_COLOR;
-	compCtx.stroke = CLOUD_STROKE;
-	compCtx.fill = CLOUD_FILL;
 	}
 
 
