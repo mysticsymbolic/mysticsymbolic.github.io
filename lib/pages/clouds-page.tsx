@@ -371,7 +371,13 @@ const Clouds: React.FC<{}> = () => {
   let [scaleValue, setScaleValue] = useState(CLOUD_SCALE);
   let [pulseValue, setPulseValue] = useState(CLOUD_PULSE);
   let [pulseminValue, setPulseminValue] = useState(CLOUD_PULSEMIN);
-  let [compCtx, setCompCtx] = useState(createSvgCompositionContext());
+  let [compCtx, setCompCtx] = useState(
+    createSvgCompositionContext({
+      background: BG_COLOR,
+      stroke: CLOUD_STROKE,
+      fill: CLOUD_FILL,
+    })
+  );
   let [useMask, setUseMask] = useState(false);
   let [maskRadius, setMaskRadius] = useState(MASK_RADIUS);
   let [maskX, setMaskX] = useState(MASK_X);
@@ -667,18 +673,6 @@ const Clouds: React.FC<{}> = () => {
     rotationAngle = 360;
   }
 
-  /* set default colors upon init */
-
-  if (
-    compCtx.background == "#858585" &&
-    compCtx.stroke == "#000000" &&
-    compCtx.fill == "#ffffff"
-  ) {
-    compCtx.background = BG_COLOR;
-    compCtx.stroke = CLOUD_STROKE;
-    compCtx.fill = CLOUD_FILL;
-  }
-
   /* CLOUD ELEMENTS: create an array for the position of each element */
   let tempcloudposx = [
     -400, 400, -900, 0, 900, -400, 400, -1200, 1200, -900, 0, 900, -400, 400,
@@ -687,6 +681,8 @@ const Clouds: React.FC<{}> = () => {
     400, 400, 1000, 1000, 1000, 1600, 1600, 1600, 1600, 2200, 2200, 2200, 2800,
     2800,
   ];
+  //const cloudposx = [-400, 400, -900,   0,  900,  -400,    400, -1200, 1200, -900,   0,   900, -400,  400  ];
+  //const cloudposy = [   400,   400,  1000, 1000,  1000,   1600,  1600,  1600, 1600, 2200, 2200, 2200, 2800, 2800  ];
   // rearrange them to provide the correct pulse:
   let cloudposx = new Array();
   let cloudposy = new Array();
