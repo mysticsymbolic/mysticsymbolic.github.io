@@ -160,7 +160,6 @@ const Cloud7: React.FC<{
 
 
 
-
 /* RETURN THE CLOUD STYLE WHICH WAS SELECTED */
 const ElementSwitch: React.FC<{
   thisstyle: number;
@@ -203,98 +202,8 @@ const ElementSwitch: React.FC<{
 };
 
 
-/*
-interface ShowSettingsProps{
-  numSettings: number;
-  cS:{
-		id: number[];
-		label: string[];
-		min: number[];
-		max: number[];
-		value: object[];
-		step: number[];
-		valueSuffix: string[];
-		setter: object[];
-	}
-}
-*/
-
-/*
-function ShowSettings (
-   numSettings: number,
-   cS: any,
-	 ) : [] {
-			let controls = [];
-      for (let sN = 0; sN < numSettings; sN++) {
-			controls.push(
-			<React.Fragment key={sN+cS[sN]['id']}>
-      <NumericSlider key={sN+cS[sN]['id']}
-        id={ cS[sN]['id']}
-        label={ cS[sN]['label']}
-        min={ cS[sN]['min']}
-        max={ cS[sN]['max']}
-        value={ cS[sN]['value']}
-        step={ cS[sN]['step']}
-        valueSuffix={ cS[sN]['suffix']}
-        onChange={ cS[sN]['setter']}
-      />
-			</React.Fragment>
-				);
-		}
-		return controls;
-}
-*/
-
-/*
-const ShowSettings = (<ShowSettingsProps>) => {
-			let controls = [];
-      for (let sN = 0; sN < numSettings; sN++) {
-			controls.push(
-			<React.Fragment key={sN+cS[sN]['id']}>
-      <NumericSlider key={sN+cS[sN]['id']}
-        id={ cS[sN]['id']}
-        label={ cS[sN]['label']}
-        min={ cS[sN]['min']}
-        max={ cS[sN]['max']}
-        value={ cS[sN]['value']}
-        step={ cS[sN]['step']}
-        valueSuffix={ cS[sN]['suffix']}
-        onChange={ cS[sN]['setter']}
-      />
-			</React.Fragment>
-				);
-		}
-		return controls;
-};
-*/
 
 /* SHOW THE SETTINGS */
-/*
-const ShowSettings: React.FC<ShowSettingsProps>  = ({ numSettings, cS}) => (
-			let controls = [];
-      for (let sN = 0; sN < numSettings; sN++) {
-			controls.push(
-			<>
-      <NumericSlider key={sN+cS[sN]['id']}
-        id={ cS[sN]['id']}
-        label={ cS[sN]['label']}
-        min={ cS[sN]['min']}
-        max={ cS[sN]['max']}
-        value={ cS[sN]['value']}
-        step={ cS[sN]['step']}
-        valueSuffix={ cS[sN]['suffix']}
-        onChange={ cS[sN]['setter']}
-      />
-			</>
-				);
-		}
-		return controls;
-};
-*/
-
-/* SHOW THE SETTINGS */
-
-
 const ShowSettings: React.FC<{
    numSettings: number;
    cS: { [key: string] : any };
@@ -320,9 +229,7 @@ const ShowSettings: React.FC<{
 };
 
 
-
 /* SETTERS AND VARIABLES */
-
 const Clouds: React.FC<{}> = () => {
   //const [stroke, setStroke] = useState(CLOUD_STROKE);
   let [strokewidth, setStrokewidth] = useState(CLOUD_STROKEWIDTH);
@@ -354,10 +261,10 @@ const Clouds: React.FC<{}> = () => {
 
  // cloud Settings - two dimensional object of settings
 let cS: { [key: string] : any } = {}; 
-//let cS = [];
 let sN = 0; // setting number
 let numSettings =0; // count the settings
 
+// SET UP THE SETTINS - with Min, Max and Step
 cS[sN] = [];
 cS[sN]['id']="cloudStyle";
 cS[sN]['label']="Cloud Style";
@@ -585,12 +492,9 @@ numSettings = sN; // number of settings
 sN = 0; // go back to 0 for the setting controls below
 
 
-
-
 function randomizestylesorcolors (
   mode: string
 ) : void {
-      //props.onColorsChange(createRandomCompositionColors(paletteAlg));
 			//console.log('randomize styles! num of settings:' + numSettings);
 			for (let i = 0; i <= numSettings; i++) {
 			  let settingRange = cS[i]['max'] - cS[i]['min'] ; // get the range of values
@@ -614,7 +518,7 @@ function randomizestylesorcolors (
 			}
   }
 
-// TRIGGER THE RANDOMIZESTYLESORCOLORS FUNCTION - WITH OR WITHOUT COLORS
+// TRIGGER THE randomizestylesorcolors FUNCTION - WITH OR WITHOUT COLORS
 function randomizestyles() {
   randomizestylesorcolors('nocolors')
 }
@@ -638,8 +542,7 @@ function randomizestylesandcolors() {
 			pulse4Value = Math.round(pulse4Value * 100) / 100;
 	}
 
-
- 
+ // ROTATION SETTINGS
 	let rotationDuration = 0; //default to 0
 	if (rotationSpeed>0) {
 		rotationDuration = 8.5 - rotationSpeed; 
@@ -651,7 +554,6 @@ function randomizestylesandcolors() {
    rotationAngle = 360;
 	}
 
-	
 
 	/* set default colors upon init */
 
@@ -660,9 +562,6 @@ function randomizestylesandcolors() {
 	compCtx.stroke = CLOUD_STROKE;
 	compCtx.fill = CLOUD_FILL;
 	}
-
-
-
 
 
 /* CLOUD ELEMENTS: create an array for the position of each element */
@@ -759,8 +658,8 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
 		invertedcloudspeed = speedindex / ((thiscloudSpeed +3) * (thiscloudSpeed +3) * ((k * parallaxSpeed * .2) + 1)); // the greater the speed the smaller the inverted cloud speed
 	}
 
-
-  let starttime = ((pulseDuration / numElements) * i) - 10; // creates the rhythmic pulsing effect
+ // CREATES THE RHYTHMIC PULSING EFFECT - WITH DIFFERENT STARTTIMES
+  let starttime = ((pulseDuration / numElements) * i) - 10;
 
 
 	// get negative values for cloud size - for offsets
@@ -773,7 +672,6 @@ if (useMask) { showbackground = "#fff"; }  /* use white background when using ma
   let ypos = (cloudposy[i] * thisspacing)  + (k * rowDistance * 100 * thisscaleValue) + adjustedY - cloudH;
 
 	  // CALCULATE LOOPING
-	// the fewer clouds the larger the loop value. 
 	// this is tricky to make smooth without skipping...  this also affects the speed
 	// make the calculations for the first cloud of each row - since that will determine the looping start and end points
 if (j==0) {
@@ -795,6 +693,7 @@ if (j==0) {
 	}
 }
 
+// CREATE THE CLOUDS
   clouds.push(
 
 <g key={`${keynumA}`} transform={`translate(${cloudWneg},${cloudHneg})`} >
