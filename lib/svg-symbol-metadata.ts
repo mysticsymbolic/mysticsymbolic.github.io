@@ -55,9 +55,10 @@ export type SvgSymbolMetadata = SvgSymbolMetadataBooleans & {
   attach_to?: AttachmentPointType[];
 };
 
-export function validateSvgSymbolMetadata(
-  obj: any
-): { metadata: SvgSymbolMetadata; unknownProperties: string[] } {
+export function validateSvgSymbolMetadata(obj: any): {
+  metadata: SvgSymbolMetadata;
+  unknownProperties: string[];
+} {
   const metadata: SvgSymbolMetadata = {};
   const unknownProperties: string[] = [];
   for (let key in obj) {
