@@ -26,8 +26,9 @@ export function createSvgCompositionContext(
   };
 }
 
-export type CompositionContextWidgetProps<T extends SvgCompositionContext> =
-  SymbolContextWidgetProps<T>;
+export type CompositionContextWidgetProps<
+  T extends SvgCompositionContext
+> = SymbolContextWidgetProps<T>;
 
 export function CompositionContextWidget<T extends SvgCompositionContext>({
   ctx,
