@@ -14,18 +14,18 @@ import { Checkbox } from "../checkbox";
 /* INITIAL VALUES */
 const CLOUD_STROKE = "#79beda";
 const CLOUD_FILL = "#2b7c9e";
-const CLOUD_STROKEWIDTH = 30;
+const CLOUD_STROKEWIDTH = 20;
 const CLOUD_STYLE = 2;
 const GRADIENT_OFFSET1 = 43;
 const GRADIENT_OFFSET2 = 96;
 const NUM_ELEMENTS = 7;
-const NUM_CLOUDS = 12;
-//const MAX_CLOUDS = 12;
+const NUM_CLOUDS = 3;
 const CLOUD_DISTANCE = 9;
+const MAX_CLOUD_DISTANCE = 30;
 const NUM_ROWS = 3;
 const ROW_DISTANCE = 5;
 const CLOUD_SPEED = 3;
-const PARALLAX_SPEED = 2;
+const PARALLAX_SPEED = 1;
 const PARALLAX_SIZE = 1;
 const ROTATION_SPEED = 6;
 const CLOUD_SPACING = 0.5;
@@ -212,7 +212,7 @@ const Clouds: React.FC<{}> = () => {
   cS[sN]["value"] = gradientOffset1;
   cS[sN]["setter"] = setgradientOffset1;
   cS[sN]["min"] = 1;
-  cS[sN]["max"] = 50;
+  cS[sN]["max"] = 70;
   cS[sN]["step"] = 1;
   cS[sN]["suffix"] = "%";
 
@@ -222,7 +222,7 @@ const Clouds: React.FC<{}> = () => {
   cS[sN]["label"] = "Gradient Offset 2";
   cS[sN]["value"] = gradientOffset2;
   cS[sN]["setter"] = setgradientOffset2;
-  cS[sN]["min"] = 51;
+  cS[sN]["min"] = 71;
   cS[sN]["max"] = 100;
   cS[sN]["step"] = 1;
   cS[sN]["suffix"] = "%";
@@ -234,7 +234,7 @@ const Clouds: React.FC<{}> = () => {
   cS[sN]["value"] = strokewidth;
   cS[sN]["setter"] = setStrokewidth;
   cS[sN]["min"] = 1;
-  cS[sN]["max"] = 100;
+  cS[sN]["max"] = 60;
   cS[sN]["step"] = 1;
   cS[sN]["suffix"] = "";
 
@@ -255,10 +255,12 @@ const Clouds: React.FC<{}> = () => {
   cS[sN]["label"] = "Distance between clouds";
   cS[sN]["value"] = cloudDistance;
   cS[sN]["setter"] = setcloudDistance;
-  cS[sN]["min"] = 5;
-  cS[sN]["max"] = 14;
+  cS[sN]["min"] = 2;
+  cS[sN]["max"] = MAX_CLOUD_DISTANCE;
   cS[sN]["step"] = 1;
-  cS[sN]["suffix"] = sN++;
+  cS[sN]["suffix"] = "";
+
+  sN++;
   cS[sN] = [];
   cS[sN]["id"] = "numRows";
   cS[sN]["label"] = "Number of rows";
@@ -297,8 +299,8 @@ const Clouds: React.FC<{}> = () => {
   cS[sN]["label"] = "Parallax speed";
   cS[sN]["value"] = parallaxSpeed;
   cS[sN]["setter"] = setparallaxSpeed;
-  cS[sN]["min"] = 0.5;
-  cS[sN]["max"] = 5;
+  cS[sN]["min"] = 0.1;
+  cS[sN]["max"] = 2;
   cS[sN]["step"] = 0.1;
   cS[sN]["suffix"] = "";
 
@@ -527,7 +529,7 @@ const Clouds: React.FC<{}> = () => {
   //let maxClouds = MAX_CLOUDS; // max number of clouds
   let thisscaleValue = scaleValue;
   let thisspacing = spacing;
-  let speedindex = 1000; // this is the basis for the cloud speed - the higher the number the slower
+  let speedindex = 4000; // this is the basis for the cloud speed - the higher the number the slower
   let invertedcloudspeed = 0; // this is for speed
   let keynum = 0; // to keep track of keys - to give each element a unique ID
   let keynumA = "";
@@ -536,20 +538,44 @@ const Clouds: React.FC<{}> = () => {
   let adjustedY = 300; // pushes down clouds on page
   let cloudW = 360; // cloud width
   let cloudH = 360; // cloud height
-  let loopfromvalue = 0; // loop from value - where loop starts
-  let looptovalue = 0; // loop to value - where the loop ends
-  let thiscloudSpeed = 0; // thiscloudspeed is so that clouds can go in both directions. this is the absolute value of cloudspeed
+  let cloudWneg = cloudW * -1; // get negative values for cloud size - for offsets
+  let cloudHneg = cloudH * -1;
+  let loopfromvalue = 0; // loop from value - where loop starts.
+  let looptovalue = 0; // loop to value - where the loop ends.
+  let loopstartadjust = -8; // adjust the loopstart based on distance between clouds.
+  //The smaller the space between clouds the farther to the left it needs to start
+  let loopendadjust = -7; // adjust the loopend based on distance between clouds.
+  // The bigger the space between clouds the farther to the right it needs to end
+  let thiscloudSpeed = 0; // thiscloudspeed is so that clouds can go in both directions.  This is the absolute value of cloudspeed
 
   let showbackground = compCtx.background;
   if (useMask) {
     showbackground = "#fff";
   } /* use white background when using mask - need to get mask bg working ... */
 
+  /* Adjust the number of clouds based on cloud distance, scale and spacing  */
+  numClouds =
+    Math.round(
+      (MAX_CLOUD_DISTANCE + 14) / cloudDistance / (scaleValue / 3 + spacing / 2)
+    ) + 14;
+
   /* prevent overloading - maximum number of elements */
-  while (numElements * numRows * numClouds > 430) {
-    numRows--;
-    numClouds--;
+  while (numElements * numRows * numClouds > 1500) {
+    while (numElements * numRows * numClouds > 3000) {
+      numRows--;
+    }
+    numElements--;
   }
+
+  /* Adjust the speed based on number of clouds. Needs to speed up as numClouds increases */
+  speedindex = Math.round(speedindex * (cloudDistance / 100));
+
+  /* Adjust the loop start and end based on number of clouds */
+  loopstartadjust =
+    loopstartadjust -
+    Math.round(MAX_CLOUD_DISTANCE / cloudDistance / (3 * scaleValue));
+  loopendadjust = loopstartadjust + 1;
+  //loopendadjust = loopendadjust - Math.round(MAX_CLOUD_DISTANCE / cloudDistance / 3);
 
   /* BUILD THE CLOUDS */
 
@@ -577,18 +603,14 @@ const Clouds: React.FC<{}> = () => {
             speedindex /
             ((thiscloudSpeed + 3) *
               (thiscloudSpeed + 3) *
-              (k * parallaxSpeed * 0.2 + 1)); // the greater the speed the smaller the inverted cloud speed
+              (k * parallaxSpeed * 0.08 + 1)); // the greater the speed the smaller the inverted cloud speed
         }
 
         // CREATES THE RHYTHMIC PULSING EFFECT - WITH DIFFERENT STARTTIMES
         let starttime = (pulseDuration / numElements) * i - 10;
 
-        // get negative values for cloud size - for offsets
-        let cloudWneg = cloudW * -1;
-        let cloudHneg = cloudH * -1;
-
         /* LOCATIONS OF CLOUDS */
-        let xposbase = 700 * thisscaleValue * cloudDistance; // basis for xpos
+        let xposbase = 500 * thisscaleValue * cloudDistance; // basis for xpos
         let xpos = cloudposx[i] * thisspacing + j * xposbase - cloudW;
         let ypos =
           cloudposy[i] * thisspacing +
@@ -600,18 +622,23 @@ const Clouds: React.FC<{}> = () => {
         // this is tricky to make smooth without skipping...  this also affects the speed
         // make the calculations for the first cloud of each row - since that will determine the looping start and end points
         if (j == 0) {
-          loopfromvalue = Math.round(xposbase * -2); // start of the loop is 1 cloud to the left
-          looptovalue = Math.round(xposbase * -1);
+          loopfromvalue = Math.round(xposbase * loopstartadjust); // start of the loop is 5 clouds to the left
+          looptovalue = Math.round(xposbase * loopendadjust);
           if (cloudSpeed < 0) {
             // reverse direction
-            //let newlooptovalue = loopfromvalue * -1;
-            //let newloopfromvalue = looptovalue * -1;
             // these are tricky for some reason. add values to make it work right
-            loopfromvalue = -screenWidth;
-            looptovalue = Math.round(xposbase * -1) - screenWidth;
+            let temploopfromvalue = loopfromvalue;
+            let templooptovalue = looptovalue;
+            loopfromvalue = templooptovalue;
+            looptovalue = temploopfromvalue;
+            //loopfromvalue = -screenWidth;
+            //looptovalue = Math.round(xposbase * (loopstartadjust + 3)) - screenWidth;
           } else if (cloudSpeed == 0) {
             // if not moving then start on the screen (not off)
-            loopfromvalue = Math.round(xposbase * 5 * -1) + 600;
+            loopfromvalue =
+              Math.round(
+                xposbase * (MAX_CLOUD_DISTANCE / cloudDistance / 1) * -1
+              ) + 600;
             looptovalue = loopfromvalue;
           }
           if (cloudSpeed != 0) {
