@@ -93,6 +93,14 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
           >
             Nina Paley's blog
           </a>
+          . You can also{" "}
+          <a
+            href="https://www.gofundme.com/f/mysticsymbolic-development"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            donate to the project
+          </a>
           .
         </p>
       </footer>
