@@ -1,24 +1,38 @@
 import { WavesPage } from "./waves-page";
 import { CloudsPage } from "./clouds-page";
+import { CanvasPage } from "./canvas-page";
 import { VocabularyPage } from "./vocabulary-page";
 import { CreaturePage } from "./creature-page";
 import { MandalaPage } from "./mandala-page";
 import { DebugPage } from "./debug-page";
 
 export const Pages = {
-  vocabulary: VocabularyPage,
+  canvas: CanvasPage,
+  mandala: MandalaPage,
   creature: CreaturePage,
   waves: WavesPage,
   clouds: CloudsPage,
-  mandala: MandalaPage,
+  vocabulary: VocabularyPage,
   debug: DebugPage,
 };
+
+/*
+export const Pages = {
+  mandala: MandalaPage,
+  canvas: CanvasPage,
+  creature: CreaturePage,
+  waves: WavesPage,
+  clouds: CloudsPage,
+  vocabulary: VocabularyPage,
+  debug: DebugPage,
+};
+*/
 
 export type PageName = keyof typeof Pages;
 
 export const pageNames = Object.keys(Pages) as PageName[];
 
-export const DEFAULT_PAGE: PageName = "creature";
+export const DEFAULT_PAGE: PageName = "canvas";
 
 export function isPageName(page: string): page is PageName {
   return pageNames.includes(page as any);
