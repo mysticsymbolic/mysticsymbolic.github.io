@@ -21,6 +21,10 @@ npm run watch
 
 then visit http://localhost:1234.
 
+## Adding symbols
+
+Documentation for adding and changing symbols can be found in [`assets/symbols/_instructions.md`](assets/symbols/_instructions.md).
+
 ## Running tests
 
 To run tests interactively, run:
