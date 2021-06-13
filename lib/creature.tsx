@@ -22,7 +22,7 @@ import {
   NestedCreatureSymbol,
 } from "./creature-symbol";
 import { HoverDebugHelper } from "./hover-debug-helper";
-import { svgScale, SvgTransform } from "./svg-transform";
+import { svgScale, SvgTransform, svgRotate } from "./svg-transform";
 import { NumericSlider } from "./numeric-slider";
 import { Checkbox } from "./checkbox";
 import {
@@ -182,8 +182,9 @@ const COMPLEXITY_LEVEL_GENERATORS: CreatureGenerator[] = [
 ];
 
 const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
-
 const INITIAL_COMPLEXITY_LEVEL = 2;
+const INITIAL_ROTATION = 0;
+const INITIAL_SCALE = 0.5;
 
 function getDownloadBasename(randomSeed: number) {
   return `mystic-symbolic-creature-${randomSeed}`;
@@ -229,6 +230,10 @@ const CreatureRender: React.FC<{}> = () => {
   const [randomlyInvert, setRandomlyInvert] = useState(true);
   const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
   const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
+
+  const [creature_rot, setCreatureX] = useState(INITIAL_ROTATION);
+  const [creature_scale, setCreatureScale] = useState(INITIAL_SCALE);
+
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = noFillIfShowingSpecs({
@@ -258,7 +263,9 @@ const CreatureRender: React.FC<{}> = () => {
         <CreatureContext.Provider value={ctx}>
           <HoverDebugHelper>
             <AutoSizingSvg padding={20} ref={svgRef} bgColor="#ffffff00">
-              <SvgTransform transform={svgScale(0.5)}>
+              <SvgTransform
+                transform={[svgScale(creature_scale), svgRotate(creature_rot)]}
+              >
                 <CreatureSymbol {...creature} />
               </SvgTransform>
             </AutoSizingSvg>
@@ -272,6 +279,22 @@ const CreatureRender: React.FC<{}> = () => {
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomSeed}
         >
+          <NumericSlider
+            label="Scale"
+            min={0.05}
+            max={0.8}
+            value={creature_scale}
+            step={0.05}
+            onChange={setCreatureScale}
+          />
+          <NumericSlider
+            label="Rotation"
+            min={-180}
+            max={180}
+            value={creature_rot}
+            step={5}
+            onChange={setCreatureX}
+          />
           <div className="thingy">
             <VocabularyWidget
               label="Always include this symbol"

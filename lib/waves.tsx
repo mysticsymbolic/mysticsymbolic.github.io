@@ -60,7 +60,7 @@ const Wave: React.FC<{
 
 const NUM_WAVES = 8;
 const WAVE_DURATION = 1;
-const WAVE_PARALLAX_SCALE_START = 1.5;
+const WAVE_PARALLAX_SCALE_START = 2.5;
 const WAVE_PARALLAX_TRANSLATE_START = 10;
 const WAVE_PARALLAX_SCALE_VELOCITY = 1.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
@@ -116,7 +116,7 @@ const WavesRender: React.FC<{}> = () => {
   return (
     <>
       <div className="canvas waves">
-        <svg width="100%" height="720px" viewBox="0 0 1280 720">
+        <svg width="100%" height="100%" viewBox="300 0 1280 720">
           {useMask ? (
             <>
               <mask id="circle-mask">

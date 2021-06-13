@@ -1,0 +1,9 @@
+.canvas.creature {
+  height:84vh;
+}
+
+.sidebar.creature {
+  height:84vh;
+  	overflow-y:scroll;
+	overflow-x:hidden;
+}

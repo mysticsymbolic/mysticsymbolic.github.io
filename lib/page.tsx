@@ -68,10 +68,21 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
   return (
     <div className="page">
       <Helmet>
+        <meta charSet="utf-8" />
         <title>{fullTitle}</title>
+        <link rel="icon" href="img/mystic-symbolic-icon.png" />
+        <link rel="stylesheet" href="css/style.css" />
       </Helmet>
       <header>
-        <h1>{fullTitle}</h1>
+        <h1>
+          <img
+            src="img/mystic-symbolic-logo.png"
+            alt="Mystic Symbolic"
+            title="Mystic Symbolic"
+            className="MSlogo"
+          />{" "}
+          {title}
+        </h1>
         <Navbar />
       </header>
       {children}

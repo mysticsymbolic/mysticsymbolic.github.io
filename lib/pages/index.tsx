@@ -16,18 +16,6 @@ export const Pages = {
   debug: DebugPage,
 };
 
-/*
-export const Pages = {
-  mandala: MandalaPage,
-  canvas: CanvasPage,
-  creature: CreaturePage,
-  waves: WavesPage,
-  clouds: CloudsPage,
-  vocabulary: VocabularyPage,
-  debug: DebugPage,
-};
-*/
-
 export type PageName = keyof typeof Pages;
 
 export const pageNames = Object.keys(Pages) as PageName[];
