@@ -1,0 +1,26 @@
+.canvas.landscapes {
+  height:84vh;
+}
+
+.sidebar.landscapes {
+  height:84vh;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+/* hide unused parts */
+.sidebar.landscapes .thingy .checkbox {
+  display: none;
+}
+.sidebar.landscapes  .thingy.numeric-slider {
+    display: none; 
+}
+/* show landscape settings */
+.sidebar.landscapes .landscape-settings .thingy.numeric-slider {
+   display: block; 
+}
+.sidebar.landscapes  fieldset label {
+    display: none;
+}
+.landscapes.button{
+	margin-top:20px;
+}
