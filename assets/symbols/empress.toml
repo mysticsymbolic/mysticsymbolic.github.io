@@ -22,4 +22,4 @@ never_be_nested = false
 
 # symbol’s nesting area should have its colors inverted.
 
-invert_nested = true
+invert_nested = false
