@@ -65,6 +65,43 @@ const WAVE_PARALLAX_SCALE_VELOCITY = 1.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
 const WAVE_PARALLAX_TRANSLATE_ACCEL = 10;
 
+type HillProps = {
+  idPrefix: string;
+  xScale: number;
+  yScale: number;
+  cx: number;
+  cy: number;
+  r: number;
+};
+
+const DEFAULT_HILL_PROPS: HillProps = {
+  idPrefix: "",
+  xScale: 1,
+  yScale: 1,
+  cx: 50,
+  cy: 50,
+  r: 50,
+};
+
+const Hill: React.FC<Partial<HillProps>> = (props) => {
+  const { idPrefix, xScale, yScale, cx, cy, r } = {
+    ...DEFAULT_HILL_PROPS,
+    ...props,
+  };
+  const gradientId = `${idPrefix}HillGradient`;
+  const gradientUrl = `url(#${gradientId})`;
+
+  return (
+    <g transform={`translate(${cx} ${cy}) scale(${xScale} ${yScale})`}>
+      <radialGradient id={gradientId}>
+        <stop offset="75%" stopColor="#aeb762" />
+        <stop offset="100%" stopColor="#616934" />
+      </radialGradient>
+      <circle cx={0} cy={0} r={r} fill={gradientUrl} />
+    </g>
+  );
+};
+
 const Waves: React.FC<{}> = () => {
   const [stroke, setStroke] = useState(WAVE_STROKE);
   const [fill, setFill] = useState(WAVE_FILL);
@@ -85,6 +122,7 @@ const Waves: React.FC<{}> = () => {
   for (let i = 0; i < numWaves; i++) {
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
+        <Hill idPrefix={`wave${i}`} cx={i * 30} />
         <g>
           <Wave fill={fill} stroke={stroke} />
           <animateTransform
