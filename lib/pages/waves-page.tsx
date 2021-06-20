@@ -3,6 +3,7 @@ import { Checkbox } from "../checkbox";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
+import { Random } from "../random";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -57,7 +58,7 @@ const Wave: React.FC<{
   </>
 );
 
-const NUM_WAVES = 8;
+const NUM_WAVES = 10;
 const WAVE_DURATION = 1;
 const WAVE_PARALLAX_SCALE_START = 1.2;
 const WAVE_PARALLAX_TRANSLATE_START = 10;
@@ -103,6 +104,9 @@ const Hill: React.FC<Partial<HillProps>> = (props) => {
 };
 
 const Waves: React.FC<{}> = () => {
+  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const newRandomSeed = () => setRandomSeed(Date.now());
+  const rng = new Random(randomSeed);
   const [stroke, setStroke] = useState(WAVE_STROKE);
   const [fill, setFill] = useState(WAVE_FILL);
   const [numWaves, setNumWaves] = useState(NUM_WAVES);
@@ -122,7 +126,12 @@ const Waves: React.FC<{}> = () => {
   for (let i = 0; i < numWaves; i++) {
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
-        <Hill idPrefix={`wave${i}`} cx={i * 30} />
+        <Hill
+          idPrefix={`wave${i}`}
+          cx={rng.inInterval({ min: 0, max: 1280 / scale })}
+          r={rng.inInterval({ min: 50, max: 100 })}
+          xScale={rng.inInterval({ min: 1, max: 1.25 })}
+        />
         <g>
           <Wave fill={fill} stroke={stroke} />
           <animateTransform
@@ -210,6 +219,9 @@ const Waves: React.FC<{}> = () => {
           value={useMask}
           onChange={setUseMask}
         />
+        <button accessKey="r" onClick={newRandomSeed}>
+          <u>R</u>andomize hills!
+        </button>
       </div>
     </>
   );
