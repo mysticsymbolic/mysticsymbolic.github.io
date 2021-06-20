@@ -4,6 +4,7 @@ import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
 import { Random } from "../random";
+import { range } from "../util";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -124,14 +125,21 @@ const Waves: React.FC<{}> = () => {
   let waves: JSX.Element[] = [];
 
   for (let i = 0; i < numWaves; i++) {
+    const numHills = Math.floor(rng.inInterval({ min: 0, max: numWaves - i }));
+
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
-        <Hill
-          idPrefix={`wave${i}`}
-          cx={rng.inInterval({ min: 0, max: 1280 / scale })}
-          r={rng.inInterval({ min: 50, max: 100 })}
-          xScale={rng.inInterval({ min: 1, max: 1.25 })}
-        />
+        {range(numHills).map((j) => {
+          return (
+            <Hill
+              key={j}
+              idPrefix={`wave${i}_${j}_`}
+              cx={rng.inInterval({ min: 0, max: 1280 / scale })}
+              r={rng.inInterval({ min: 50, max: 100 })}
+              xScale={rng.inInterval({ min: 1, max: 1.25 })}
+            />
+          );
+        })}
         <g>
           <Wave fill={fill} stroke={stroke} />
           <animateTransform
