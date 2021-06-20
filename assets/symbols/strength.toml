@@ -1,1 +1,6 @@
+# If set to an array of strings, this indicates the kinds of
+# attachment points that this symbol can attach to.  If not
+# defined, this symbol will be able to attach to any attachment
+# point.
+
 attach_to = []
