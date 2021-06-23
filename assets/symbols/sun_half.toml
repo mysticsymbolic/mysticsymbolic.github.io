@@ -3,4 +3,4 @@
 
 invert_nested = true
 
-attach_to = ["tail", "arm", "crown"]
+attach_to = ["tail", "crown"]
