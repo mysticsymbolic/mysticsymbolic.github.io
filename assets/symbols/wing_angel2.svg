@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.5 build 20210422 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
+<g id="wing_angel_2">
+<g id="wing_angel2">
+<path id="S12" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 373.426 162.826 C 313.578 168.501 255.509 173.995 207.564 185.951 C 205.904 300.507 168.415 415.403 53.851 414.447 C 53.851 414.456 53.851 498.932 53.851 498.940 C 53.855 498.941 86.556 502.261 102.564 502.219 C 119.243 502.175 135.704 500.783 151.576 498.092 C 166.595 495.545 181.255 491.753 195.264 486.857 C 211.368 481.230 226.960 473.859 241.449 465.101 C 256.292 456.132 269.553 446.176 281.762 435.037 C 293.699 424.147 304.779 411.904 314.742 398.647 C 324.283 385.954 332.937 372.037 340.456 357.303 C 347.685 343.140 353.636 328.966 358.614 314.215 C 363.797 298.864 368.133 281.547 371.143 263.672 C 373.965 246.935 375.624 228.139 375.804 208.956 C 375.947 193.788 375.165 178.383 373.426 162.826 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 53.851 498.940 C 53.855 498.941 86.556 502.261 102.564 502.219 "/>
+<path id="S13" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 102.564 502.219 C 106.608 523.658 110.651 545.097 114.695 566.536 C 96.726 580.504 68.648 574.315 53.851 556.184 C 53.851 556.184 53.851 498.946 53.851 498.940 C 53.855 498.941 86.556 502.261 102.564 502.219 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 102.564 502.219 C 106.608 523.658 110.651 545.097 114.695 566.536 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 151.576 498.092 C 135.704 500.783 119.243 502.175 102.564 502.219 "/>
+<path id="S14" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 102.564 502.219 C 106.608 523.658 110.651 545.097 114.695 566.536 C 130.414 585.317 160.296 588.642 176.724 570.995 C 168.341 546.694 159.959 522.393 151.576 498.092 C 135.704 500.783 119.243 502.175 102.564 502.219 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 151.576 498.092 C 159.959 522.393 168.341 546.694 176.724 570.995 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 195.264 486.857 C 181.255 491.753 166.595 495.545 151.576 498.092 "/>
+<path id="S15" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 151.576 498.092 C 159.959 522.393 168.341 546.694 176.724 570.995 C 198.065 586.268 225.917 583.560 243.313 566.078 C 227.296 539.671 211.280 513.264 195.264 486.857 C 181.255 491.753 166.595 495.545 151.576 498.092 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 195.264 486.857 C 211.280 513.264 227.296 539.671 243.313 566.078 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 241.449 465.101 C 226.960 473.859 211.368 481.230 195.264 486.857 "/>
+<path id="S16" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 195.264 486.857 C 211.280 513.264 227.296 539.671 243.313 566.078 C 265.671 575.938 294.599 567.858 310.019 545.718 C 287.162 518.846 264.306 491.973 241.449 465.101 C 226.960 473.859 211.368 481.230 195.264 486.857 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 241.449 465.101 C 264.306 491.973 287.162 518.846 310.019 545.718 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 281.762 435.037 C 269.553 446.176 256.292 456.132 241.449 465.101 "/>
+<path id="S17" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 241.449 465.101 C 264.306 491.973 287.162 518.846 310.019 545.718 C 331.136 549.461 356.568 535.565 364.382 508.410 C 336.842 483.952 309.302 459.495 281.762 435.037 C 269.553 446.176 256.292 456.132 241.449 465.101 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 281.762 435.037 C 309.302 459.495 336.842 483.952 364.382 508.410 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 314.742 398.647 C 304.779 411.904 293.699 424.147 281.762 435.037 "/>
+<path id="S18" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 281.762 435.037 C 309.302 459.495 336.842 483.952 364.382 508.410 C 386.683 505.387 407.741 479.395 404.643 453.480 C 374.676 435.203 344.709 416.925 314.742 398.647 C 304.779 411.904 293.699 424.147 281.762 435.037 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 314.742 398.647 C 344.709 416.925 374.676 435.203 404.643 453.480 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 340.456 357.303 C 332.937 372.037 324.283 385.954 314.742 398.647 "/>
+<path id="S19" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 314.742 398.647 C 344.709 416.925 374.676 435.203 404.643 453.480 C 426.466 442.007 440.965 413.032 434.076 389.267 C 402.870 378.612 371.663 367.958 340.456 357.303 C 332.937 372.037 324.283 385.954 314.742 398.647 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 340.456 357.303 C 371.663 367.958 402.870 378.612 434.076 389.267 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 358.614 314.215 C 353.636 328.966 347.685 343.140 340.456 357.303 "/>
+<path id="S20" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 340.456 357.303 C 371.663 367.958 402.870 378.612 434.076 389.267 C 490.131 397.146 556.555 371.448 556.870 341.716 C 490.785 332.549 424.699 323.382 358.614 314.215 C 353.636 328.966 347.685 343.140 340.456 357.303 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 358.614 314.215 C 424.699 323.382 490.785 332.549 556.870 341.716 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 371.143 263.672 C 368.133 281.547 363.797 298.864 358.614 314.215 "/>
+<path id="S21" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 358.614 314.215 C 424.699 323.382 490.785 332.549 556.870 341.716 C 593.996 338.110 627.030 304.463 623.257 279.028 C 539.219 273.909 455.181 268.791 371.143 263.672 C 368.133 281.547 363.797 298.864 358.614 314.215 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 371.143 263.672 C 455.181 268.791 539.219 273.909 623.257 279.028 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 375.804 208.956 C 375.624 228.139 373.965 246.935 371.143 263.672 "/>
+<path id="S22" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 371.143 263.672 C 455.181 268.791 539.219 273.909 623.257 279.028 C 651.581 266.898 665.971 232.721 654.562 213.781 C 561.643 212.173 468.723 210.565 375.804 208.956 C 375.624 228.139 373.965 246.935 371.143 263.672 Z"/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 375.804 208.956 C 468.723 210.565 561.643 212.173 654.562 213.781 "/>
+<path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 373.426 162.826 C 375.165 178.383 375.947 193.788 375.804 208.956 "/>
+<path id="S23" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 375.804 208.956 C 468.723 210.565 561.643 212.173 654.562 213.781 C 678.628 205.415 704.926 150.633 666.149 149.005 C 622.837 147.186 495.261 151.271 373.426 162.826 C 375.165 178.383 375.947 193.788 375.804 208.956 Z"/>
+</g>
+<g id="specs_2">
+<path fill="#ff0000" fill-rule="evenodd" stroke="none" d="M 77.524 476.081 C 77.521 476.082 42.715 488.512 42.712 488.514 C 42.713 488.512 54.279 476.082 54.280 476.081 C 54.279 476.079 42.713 463.649 42.712 463.648 C 42.715 463.649 77.521 476.079 77.524 476.081 Z"/>
+</g>
+</g>
+</svg>
