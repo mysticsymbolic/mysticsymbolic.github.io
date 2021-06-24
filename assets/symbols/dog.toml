@@ -1,0 +1,6 @@
+
+
+background = true
+
+
+attach_to = ["leg", "arm", "horn", "crown"]
