@@ -3,3 +3,5 @@
 invert_nested = true
 
 rotate_clockwise = true
+
+attach_to = ["crown"]

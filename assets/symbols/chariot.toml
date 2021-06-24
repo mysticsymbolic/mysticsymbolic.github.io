@@ -2,4 +2,6 @@ always_nest = true
 
 invert_nested = true
 
+never_be_nested = true
+
 attach_to = ["crown"]

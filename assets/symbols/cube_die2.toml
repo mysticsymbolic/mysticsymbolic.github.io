@@ -1,9 +1,5 @@
 
-
-always_nest = true
-
-
-invert_nested = true
+rotate_clockwise = false
 
 
 background = true
