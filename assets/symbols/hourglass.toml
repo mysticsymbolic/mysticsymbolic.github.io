@@ -1,8 +1,5 @@
 
-
-invert_nested = true
-
-background = true
+rotate_clockwise = true
 
 
 attach_to = ["tail", "leg", "arm", "horn", "crown"]

@@ -1,0 +1,8 @@
+
+rotate_clockwise = true
+
+
+background = true
+
+
+attach_to = ["horn", "crown"]
