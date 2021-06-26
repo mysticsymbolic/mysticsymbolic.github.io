@@ -18,7 +18,6 @@ import {
   CompositionContextWidget,
   createSvgCompositionContext,
 } from "../../svg-composition-context";
-import { Page } from "../../page";
 import { MandalaCircle, MandalaCircleParams } from "../../mandala-circle";
 import { useAnimationPct } from "../../animation";
 import { RandomizerWidget } from "../../randomizer-widget";
@@ -342,7 +341,7 @@ export const MandalaPageWithDefaults: React.FC<{
   );
 
   return (
-    <Page title="Mandala!">
+    <>
       <div className="sidebar">
         <CompositionContextWidget ctx={baseCompCtx} onChange={setBaseCompCtx} />
         <fieldset>
@@ -423,6 +422,6 @@ export const MandalaPageWithDefaults: React.FC<{
           </AutoSizingSvg>
         </HoverDebugHelper>
       </div>
-    </Page>
+    </>
   );
 };
