@@ -169,6 +169,33 @@ ul.navbar li:last-child {
   bottom: 0;
   right: 0;
 }
+
+/* clouds styles */
+.sidebar.clouds {
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+/* hide unused parts */
+.sidebar.clouds .thingy .checkbox {
+  display: none;
+}
+.sidebar.clouds  .thingy.numeric-slider {
+    display: none; 
+}
+/* show cloud settings */
+.sidebar.clouds .cloud-settings .thingy.numeric-slider {
+   display: block; 
+}
+.sidebar.clouds  fieldset label {
+    display: none;
+}
+.clouds.button{
+	margin-top:20px;
+}
+.clouds.code{
+	display:none;
+}
+
 </style>
 <noscript>
   <p>Alas, you need JavaScript to peruse this page.</p>

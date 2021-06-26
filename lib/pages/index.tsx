@@ -1,4 +1,5 @@
 import { WavesPage } from "./waves-page";
+import { CloudsPage } from "./clouds-page";
 import { VocabularyPage } from "./vocabulary-page";
 import { CreaturePage } from "./creature-page";
 import { MandalaPage } from "./mandala-page";
@@ -8,6 +9,7 @@ export const Pages = {
   vocabulary: VocabularyPage,
   creature: CreaturePage,
   waves: WavesPage,
+  clouds: CloudsPage,
   mandala: MandalaPage,
   debug: DebugPage,
 };
