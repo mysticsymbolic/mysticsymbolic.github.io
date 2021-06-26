@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.5 build 20210422 -->
+<!-- Generator: Moho 13.5.1 build 20210623 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="wing_egypt">
@@ -11,6 +11,7 @@
 </g>
 <g id="specs_2">
 <path fill="#ff0000" fill-rule="evenodd" stroke="none" d="M 79.411 333.303 C 79.407 333.304 45.388 345.453 45.385 345.455 C 45.386 345.453 56.691 333.304 56.692 333.303 C 56.691 333.302 45.386 321.152 45.385 321.151 C 45.388 321.152 79.407 333.302 79.411 333.303 Z"/>
+<path fill="#00ff00" fill-rule="evenodd" stroke="none" d="M 8.568 333.303 C 8.571 333.304 42.590 345.453 42.594 345.455 C 42.593 345.453 31.288 333.304 31.287 333.303 C 31.288 333.302 42.593 321.152 42.594 321.151 C 42.590 321.152 8.571 333.302 8.568 333.303 Z"/>
 </g>
 </g>
 </svg>
