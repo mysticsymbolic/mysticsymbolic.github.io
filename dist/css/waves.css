@@ -1,0 +1,11 @@
+.canvas.waves {
+  height:84vh;
+}
+
+.sidebar.waves {
+  height:84vh;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+
+

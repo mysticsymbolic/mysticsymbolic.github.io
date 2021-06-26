@@ -58,7 +58,10 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
 
   return (
     <fieldset>
-      <legend>Randomizer</legend>
+      <legend></legend>
+      <button accessKey="r" onClick={randomize} id="colorButton">
+        <u>R</u>andomize!
+      </button>
       {makeRadio("colors")}
       {makeRadio("symbols")}
       {makeRadio("colors and symbols")}
@@ -66,9 +69,6 @@ export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
         <PaletteAlgorithmWidget value={paletteAlg} onChange={setPaletteAlg} />
       )}
       {props.children}
-      <button accessKey="r" onClick={randomize}>
-        <u>R</u>andomize!
-      </button>
     </fieldset>
   );
 };
