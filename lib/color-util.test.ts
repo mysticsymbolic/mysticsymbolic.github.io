@@ -1,4 +1,8 @@
-import { clampedBytesToRGBColor, clampedByteToHex } from "./color-util";
+import {
+  clampedBytesToRGBColor,
+  clampedByteToHex,
+  parseHexColor,
+} from "./color-util";
 
 describe("clampedBytesToRGBColor", () => {
   it("works", () => {
@@ -21,5 +25,11 @@ describe("clampedByteToHex", () => {
 
   it("works with numbers that don't need zero-padding", () => {
     expect(clampedByteToHex(22)).toBe("16");
+  });
+});
+
+describe("parseHexColor", () => {
+  it("works", () => {
+    expect(parseHexColor("#ff001a")).toEqual([255, 0, 26]);
   });
 });

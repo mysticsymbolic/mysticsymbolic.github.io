@@ -21,3 +21,14 @@ export function clampedByteToHex(value: number): string {
 export function clampedBytesToRGBColor(values: number[]): string {
   return "#" + values.map(clampedByteToHex).join("");
 }
+
+/**
+ * Convert the given hex color string, e.g. `#abcdef`, to an
+ * Array of RGB numbers.
+ */
+export function parseHexColor(value: string): [number, number, number] {
+  const red = parseInt(value.substring(1, 3), 16);
+  const green = parseInt(value.substring(3, 5), 16);
+  const blue = parseInt(value.substring(5, 7), 16);
+  return [red, green, blue];
+}
