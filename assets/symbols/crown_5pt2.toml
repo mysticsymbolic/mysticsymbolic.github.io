@@ -1,0 +1,9 @@
+
+
+rotate_clockwise = false
+
+
+background = true
+
+
+attach_to = ["crown"]

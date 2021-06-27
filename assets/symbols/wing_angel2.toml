@@ -4,4 +4,4 @@ never_be_nested = true
 
 rotate_clockwise = true
 
-attach_to = ["arm"]
+attach_to = ["leg", "arm", "horn"]

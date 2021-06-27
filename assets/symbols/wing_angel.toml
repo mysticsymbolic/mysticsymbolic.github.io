@@ -1,9 +1,4 @@
 
+never_be_nested = true
 
-always_nest = false
-
-
-always_be_nested = false
-
-
-rotate_clockwise = true
+attach_to = ["leg", "arm", "horn"]

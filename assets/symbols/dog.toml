@@ -1,0 +1,8 @@
+
+invert_nested = true
+
+
+background = true
+
+
+attach_to = ["leg", "arm", "horn", "crown"]
