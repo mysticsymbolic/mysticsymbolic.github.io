@@ -15,7 +15,7 @@ import {
   getCirclesFromDesign,
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
-import { clampedBytesToRGBColor } from "../../color-util";
+import { clampedBytesToRGBColor, parseHexColor } from "../../color-util";
 
 const LATEST_VERSION = "v2";
 
@@ -64,9 +64,7 @@ const SvgCompositionContextPacker: Packer<
 
 export const ColorPacker: Packer<string, number> = {
   pack: (string) => {
-    const red = parseInt(string.substring(1, 3), 16);
-    const green = parseInt(string.substring(3, 5), 16);
-    const blue = parseInt(string.substring(5, 7), 16);
+    const [red, green, blue] = parseHexColor(string);
     return (red << 16) + (green << 8) + blue;
   },
   unpack: (number) => {
