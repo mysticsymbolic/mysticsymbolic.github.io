@@ -5,7 +5,7 @@ import {
   serializeMandalaDesign,
 } from "./serialization";
 
-export const MandalaPage = createPageWithShareableState({
+export const Mandala = createPageWithShareableState({
   defaultValue: MANDALA_DESIGN_DEFAULTS,
   serialize: serializeMandalaDesign,
   deserialize: deserializeMandalaDesign,

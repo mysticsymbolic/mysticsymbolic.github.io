@@ -7,7 +7,7 @@ const { avroToTypeScript } = require("avro-typescript");
  * These are all the Avro AVSC JSON files we want to have
  * TypeScript representations for.
  */
-const AVSC_FILES = ["./lib/pages/mandala-page/mandala-design.avsc.json"];
+const AVSC_FILES = ["./lib/pages/mandala/mandala-design.avsc.json"];
 
 /**
  * Convert the given Avro AVSC JSON file into its TypeScript representation,
