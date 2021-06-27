@@ -1,3 +1,5 @@
+import { lerp } from "./util";
+
 /**
  * Clamp the given number to be between 0 and 255, then
  * convert it to hexadecimal.
@@ -31,4 +33,16 @@ export function parseHexColor(value: string): [number, number, number] {
   const green = parseInt(value.substring(3, 5), 16);
   const blue = parseInt(value.substring(5, 7), 16);
   return [red, green, blue];
+}
+
+/**
+ * Mix two colors together. The first color will be tinted by
+ * the second color by the given percentage (from 0 to 1).
+ */
+export function mixColor(a: string, b: string, amount: number) {
+  const aRGB = parseHexColor(a);
+  const bRGB = parseHexColor(b);
+  return clampedBytesToRGBColor(
+    aRGB.map((aValue, i) => Math.floor(lerp(aValue, bRGB[i], amount)))
+  );
 }

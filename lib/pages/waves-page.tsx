@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Checkbox } from "../checkbox";
+import { mixColor } from "../color-util";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
 import { Random } from "../random";
-import { range } from "../util";
+import { lerp, range } from "../util";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -59,6 +60,8 @@ const Wave: React.FC<{
   </>
 );
 
+const BG_COLOR = "#FFFFFF";
+const BG_MAX_BLEND = 0.33;
 const NUM_WAVES = 10;
 const WAVE_DURATION = 1;
 const WAVE_PARALLAX_SCALE_START = 1.2;
@@ -74,6 +77,8 @@ type HillProps = {
   cx: number;
   cy: number;
   r: number;
+  highlight: string;
+  shadow: string;
 };
 
 const DEFAULT_HILL_PROPS: HillProps = {
@@ -83,10 +88,12 @@ const DEFAULT_HILL_PROPS: HillProps = {
   cx: 50,
   cy: 50,
   r: 50,
+  highlight: "#aeb762",
+  shadow: "#616934",
 };
 
 const Hill: React.FC<Partial<HillProps>> = (props) => {
-  const { idPrefix, xScale, yScale, cx, cy, r } = {
+  const { idPrefix, xScale, yScale, cx, cy, r, highlight, shadow } = {
     ...DEFAULT_HILL_PROPS,
     ...props,
   };
@@ -96,8 +103,8 @@ const Hill: React.FC<Partial<HillProps>> = (props) => {
   return (
     <g transform={`translate(${cx} ${cy}) scale(${xScale} ${yScale})`}>
       <radialGradient id={gradientId}>
-        <stop offset="75%" stopColor="#aeb762" />
-        <stop offset="100%" stopColor="#616934" />
+        <stop offset="75%" stopColor={highlight} />
+        <stop offset="100%" stopColor={shadow} />
       </radialGradient>
       <circle cx={0} cy={0} r={r} fill={gradientUrl} />
     </g>
@@ -126,6 +133,16 @@ const Waves: React.FC<{}> = () => {
 
   for (let i = 0; i < numWaves; i++) {
     const numHills = Math.floor(rng.inInterval({ min: 0, max: numWaves - i }));
+    const hazeAmt = lerp(
+      0,
+      BG_MAX_BLEND,
+      // The furthest-away waves (the first ones we draw) should be the
+      // most hazy. Scale the amount quadratically so that the waves in
+      // front tend to be less hazy.
+      Math.pow(1 - i / Math.max(numWaves - 1, 1), 2)
+    );
+    const blendedFill = mixColor(fill, BG_COLOR, hazeAmt);
+    const blendedStroke = mixColor(stroke, BG_COLOR, hazeAmt);
 
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
@@ -137,11 +154,17 @@ const Waves: React.FC<{}> = () => {
               cx={rng.inInterval({ min: 0, max: 1280 / scale })}
               r={rng.inInterval({ min: 50, max: 100 })}
               xScale={rng.inInterval({ min: 1, max: 1.25 })}
+              highlight={mixColor(
+                DEFAULT_HILL_PROPS.highlight,
+                BG_COLOR,
+                hazeAmt
+              )}
+              shadow={mixColor(DEFAULT_HILL_PROPS.shadow, BG_COLOR, hazeAmt)}
             />
           );
         })}
         <g>
-          <Wave fill={fill} stroke={stroke} />
+          <Wave fill={blendedFill} stroke={blendedStroke} />
           <animateTransform
             attributeName="transform"
             type="translate"
