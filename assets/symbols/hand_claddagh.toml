@@ -2,14 +2,10 @@
 
 always_nest = true
 
-
-always_be_nested = false
-
-
-never_be_nested = false
-
+never_be_nested = true
 
 invert_nested = true
 
-
 rotate_clockwise = true
+
+attach_to = ["tail", "leg", "arm", "horn", "crown"]

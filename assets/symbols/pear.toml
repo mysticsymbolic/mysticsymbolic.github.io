@@ -1,7 +1,5 @@
 always_nest = true
 
-
-always_be_nested = false
-
-
 invert_nested = true
+
+attach_to = ["tail", "leg"]
