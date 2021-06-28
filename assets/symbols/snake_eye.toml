@@ -1,13 +1,5 @@
-# If true, this indicates that the symbol should always have
 
-# a symbol nested within its nesting area(s).
-
-always_nest = false
+background = true
 
 
-
-# If true, this indicates that the symbol should always
-
-# be nested inside another symbol's nesting area.
-
-always_be_nested = false
+attach_to = ["tail", "leg", "arm", "horn", "crown"]
