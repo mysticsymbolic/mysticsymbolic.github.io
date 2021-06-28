@@ -4,9 +4,21 @@
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="pear">
 <g id="pear">
-<path id="S1" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 351.247 194.917 C 469.384 152.272 437.708 290.124 529.800 411.042 C 612.231 519.275 492.066 694.041 360.000 651.306 C 227.934 694.041 107.824 519.317 190.200 411.042 C 281.770 290.681 231.255 153.015 351.247 194.917 Z"/>
-<path id="S2" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 346.491 200.040 C 346.234 148.585 358.749 95.256 426.633 52.511 C 433.675 54.991 435.820 59.713 441.098 67.646 C 370.676 109.056 362.515 148.469 355.152 203.752 C 354.784 206.513 346.027 202.048 346.491 200.040 Z"/>
-<path id="S3" fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 240.913 76.944 C 282.502 151.798 312.030 112.830 351.735 147.207 C 354.651 64.820 283.929 71.171 240.913 76.944 Z"/>
+<radialGradient id="AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_0" cx="50.00%" cy="50.15%" r="74.19%">
+<stop offset="50.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</radialGradient>
+<path id="S1" fill="url(#AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 351.247 194.917 C 469.384 152.272 437.708 290.124 529.800 411.042 C 612.231 519.275 492.066 694.041 360.000 651.306 C 227.934 694.041 107.824 519.317 190.200 411.042 C 281.770 290.681 231.255 153.015 351.247 194.917 Z"/>
+<linearGradient id="AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_1" x1="12.95%" y1="72.84%" x2="108.10%" y2="-28.65%">
+<stop offset="14.51%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</linearGradient>
+<path id="S2" fill="url(#AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_1)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 346.491 200.040 C 346.234 148.585 358.749 95.256 426.633 52.511 C 433.675 54.991 435.820 59.713 441.098 67.646 C 370.676 109.056 362.515 148.469 355.152 203.752 C 354.784 206.513 346.027 202.048 346.491 200.040 Z"/>
+<linearGradient id="AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_2" x1="73.44%" y1="25.98%" x2="42.90%" y2="110.47%">
+<stop offset="14.51%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</linearGradient>
+<path id="S3" fill="url(#AD382CC9-E48B-4987-8376-DE8CFBEE6BC8_2)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 240.913 76.944 C 282.502 151.798 312.030 112.830 351.735 147.207 C 354.651 64.820 283.929 71.171 240.913 76.944 Z"/>
 </g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 250.436 629.540 C 250.458 629.540 462.566 629.540 462.587 629.540 C 462.587 629.505 462.587 277.239 462.587 277.204 C 462.566 277.204 250.458 277.204 250.436 277.204 C 250.436 277.239 250.436 629.505 250.436 629.540 Z"/>

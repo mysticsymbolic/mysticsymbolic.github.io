@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.5 build 20210422 -->
+<!-- Generator: Moho 13.5.1 build 20210623 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="triangle">
 <g id="triangle">
-<radialGradient id="FF7D93F5-77F2-46FD-B596-1EF0381D61B0_0" cx="50.35%" cy="66.22%" r="113.76%">
-<stop offset="24.71%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<radialGradient id="FF7D93F5-77F2-46FD-B596-1EF0381D61B0_0" cx="50.00%" cy="63.23%" r="84.82%">
+<stop offset="41.18%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 </radialGradient>
 <path fill="url(#FF7D93F5-77F2-46FD-B596-1EF0381D61B0_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 73.898 C 360.033 73.955 690.329 646.045 690.362 646.102 C 690.296 646.102 29.704 646.102 29.638 646.102 C 29.671 646.045 359.967 73.955 360.000 73.898 Z"/>
 </g>
 <g id="specs_2">
-<path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 230.023 577.667 C 230.049 577.667 490.101 577.667 490.127 577.667 C 490.127 577.641 490.127 317.588 490.127 317.562 C 490.101 317.562 230.049 317.562 230.023 317.562 C 230.023 317.588 230.023 577.641 230.023 577.667 Z"/>
+<path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 230.023 560.475 C 230.049 560.475 490.101 560.475 490.127 560.475 C 490.127 560.449 490.127 300.396 490.127 300.370 C 490.101 300.370 230.049 300.370 230.023 300.370 C 230.023 300.396 230.023 560.449 230.023 560.475 Z"/>
 <path fill="#ff0000" fill-rule="evenodd" stroke="none" d="M 360.000 654.133 C 360.001 654.136 370.660 683.981 370.661 683.984 C 370.660 683.983 360.001 674.065 360.000 674.065 C 359.999 674.065 349.340 683.983 349.339 683.984 C 349.340 683.981 359.999 654.136 360.000 654.133 Z"/>
 <path fill="#0000ff" fill-rule="evenodd" stroke="none" d="M 360.075 66.215 C 360.075 66.217 366.267 83.553 366.267 83.555 C 366.267 83.554 360.075 77.794 360.075 77.793 C 360.074 77.794 353.883 83.554 353.882 83.555 C 353.883 83.553 360.074 66.217 360.075 66.215 Z"/>
 <path fill="#00ff00" fill-rule="evenodd" stroke="none" d="M 184.374 353.304 C 184.376 353.305 202.502 356.519 202.504 356.520 C 202.503 356.520 194.431 359.042 194.430 359.043 C 194.430 359.043 196.365 367.276 196.365 367.277 C 196.364 367.275 184.375 353.306 184.374 353.304 Z"/>
