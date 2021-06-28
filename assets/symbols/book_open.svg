@@ -9,7 +9,7 @@
 <stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 </linearGradient>
 <path id="S3" fill="url(#7C5CE3FA-9701-4637-B003-15005D1A2706_0)" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 643.669 176.090 C 643.675 176.127 700.388 546.638 700.394 546.675 C 700.362 546.675 379.946 549.511 379.914 549.511 C 379.912 549.510 370.858 540.264 360.885 540.058 C 350.161 539.836 340.088 549.510 340.086 549.511 C 340.054 549.511 19.638 546.675 19.606 546.675 C 19.611 546.638 76.325 176.127 76.331 176.090 C 76.387 176.090 453.244 177.691 643.669 176.090 Z"/>
-<linearGradient id="7C5CE3FA-9701-4637-B003-15005D1A2706_1" x1="-12.57%" y1="45.57%" x2="116.25%" y2="51.63%">
+<linearGradient id="7C5CE3FA-9701-4637-B003-15005D1A2706_1" x1="-12.57%" y1="45.57%" x2="109.64%" y2="51.50%">
 <stop offset="0.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 <stop offset="28.24%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="74.51%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
@@ -31,7 +31,7 @@
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 154.904 511.787 C 193.989 509.989 213.016 487.244 267.859 490.047 "/>
 <path fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round" d="M 267.859 490.047 C 314.062 492.409 355.581 511.895 360.885 517.202 "/>
 <path id="S5" fill="url(#7C5CE3FA-9701-4637-B003-15005D1A2706_3)" fill-rule="evenodd" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M 151.762 539.432 C 106.340 540.116 38.437 534.775 38.425 534.775 C 48.507 525.060 58.589 515.346 68.671 505.632 C 68.679 505.632 108.676 513.914 154.904 511.787 C 193.989 509.989 213.016 487.244 267.859 490.047 C 314.062 492.409 355.581 511.895 360.885 517.202 C 342.717 517.202 334.067 536.091 334.064 536.093 C 334.057 536.093 291.298 531.528 262.634 531.551 C 218.120 531.588 196.270 538.762 151.762 539.432 Z"/>
-<linearGradient id="7C5CE3FA-9701-4637-B003-15005D1A2706_4" x1="113.86%" y1="44.41%" x2="-17.35%" y2="51.99%">
+<linearGradient id="7C5CE3FA-9701-4637-B003-15005D1A2706_4" x1="113.86%" y1="44.41%" x2="-12.19%" y2="51.55%">
 <stop offset="0.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 <stop offset="28.24%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="74.51%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
