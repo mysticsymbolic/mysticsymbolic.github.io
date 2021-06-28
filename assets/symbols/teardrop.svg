@@ -4,8 +4,8 @@
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="teardrop">
 <g id="teardrop">
-<radialGradient id="CB8A8C54-6EDD-452A-9436-9147768C797E_0" cx="49.69%" cy="73.72%" r="92.90%">
-<stop offset="50.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<radialGradient id="CB8A8C54-6EDD-452A-9436-9147768C797E_0" cx="50.10%" cy="74.21%" r="85.80%">
+<stop offset="26.67%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
 <stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
 </radialGradient>
 <path fill="url(#CB8A8C54-6EDD-452A-9436-9147768C797E_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 56.483 C 360.011 56.518 376.847 204.487 465.432 402.672 C 549.385 590.491 465.408 697.069 360.000 696.605 C 265.953 696.192 170.941 597.759 254.568 402.672 C 339.372 204.838 359.989 56.518 360.000 56.483 Z"/>
