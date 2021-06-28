@@ -94,8 +94,8 @@ function randHue(rng: Random): string[] {
 
   //Now we have 3 lightness values, pick a random hue and sat
   let h1 = rng.inInterval({ min: 0, max: 360 }),
-  h2 = rng.inInterval({ min: 0, max: 360 }),
-  h3 = rng.inInterval({ min: 0, max: 360 });
+    h2 = rng.inInterval({ min: 0, max: 360 }),
+    h3 = rng.inInterval({ min: 0, max: 360 });
 
   let Hs = [h1, h2, h3];
 
@@ -114,7 +114,6 @@ function randHue(rng: Random): string[] {
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
   return hexcolors;
 }
-
 
 /**
  * Factory function to take a function that generates a random color
@@ -156,7 +155,7 @@ const PALETTE_GENERATORS: {
   RGB: createSimplePaletteGenerator(createRandomRGBColor),
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(threeVColor),
-  randHue: createTriadPaletteGenerator(randHue)
+  randHue: createTriadPaletteGenerator(randHue),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
