@@ -1,13 +1,13 @@
 import { SvgVocabulary } from "../../svg-vocabulary";
 import { SvgCompositionContext } from "../../svg-composition-context";
 import MandalaAvsc from "./mandala-design.avsc.json";
+import MandalaAvscV1 from "./mandala-design.v1.avsc.json";
 import type {
   AvroCircle,
   AvroMandalaDesign,
   AvroSvgCompositionContext,
 } from "./mandala-design.avsc";
 import * as avro from "avro-js";
-import { clampedByteToHex } from "../../random-colors";
 import {
   MANDALA_DESIGN_DEFAULTS,
   ExtendedMandalaCircleParams,
@@ -15,6 +15,9 @@ import {
   getCirclesFromDesign,
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
+import { clampedBytesToRGBColor, parseHexColor } from "../../color-util";
+
+const LATEST_VERSION = "v2";
 
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
 
@@ -61,16 +64,14 @@ const SvgCompositionContextPacker: Packer<
 
 export const ColorPacker: Packer<string, number> = {
   pack: (string) => {
-    const red = parseInt(string.substring(1, 3), 16);
-    const green = parseInt(string.substring(3, 5), 16);
-    const blue = parseInt(string.substring(5, 7), 16);
+    const [red, green, blue] = parseHexColor(string);
     return (red << 16) + (green << 8) + blue;
   },
   unpack: (number) => {
     const red = (number >> 16) & 0xff;
     const green = (number >> 8) & 0xff;
     const blue = number & 0xff;
-    return "#" + [red, green, blue].map(clampedByteToHex).join("");
+    return clampedBytesToRGBColor([red, green, blue]);
   },
 };
 
@@ -101,12 +102,30 @@ const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {
   },
 };
 
+function loadSchemaVersion(version: string, buf: Buffer): AvroMandalaDesign {
+  switch (version) {
+    case "v1":
+      const res = avroMandalaDesign.createResolver(avro.parse(MandalaAvscV1));
+      return avroMandalaDesign.fromBuffer(buf, res);
+
+    case LATEST_VERSION:
+      return avroMandalaDesign.fromBuffer(buf);
+
+    default:
+      throw new Error(`Don't know how to load schema version ${version}`);
+  }
+}
+
 export function serializeMandalaDesign(value: MandalaDesign): string {
   const buf = avroMandalaDesign.toBuffer(DesignConfigPacker.pack(value));
-  return toBase64(buf);
+  return `${LATEST_VERSION}.${toBase64(buf)}`;
 }
 
 export function deserializeMandalaDesign(value: string): MandalaDesign {
+  let version = "v1";
+  if (value.indexOf(".") !== -1) {
+    [version, value] = value.split(".", 2);
+  }
   const buf = fromBase64(value);
-  return DesignConfigPacker.unpack(avroMandalaDesign.fromBuffer(buf));
+  return DesignConfigPacker.unpack(loadSchemaVersion(version, buf));
 }

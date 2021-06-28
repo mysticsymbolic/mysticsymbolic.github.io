@@ -1,7 +1,7 @@
 node_modules
-dist
-dist-watch
 .cache
 lib/_svg-vocabulary-pretty-printed.json
 lib/_svg-vocabulary.ts
 lib/**/*.avsc.ts
+dist/browser-main.js
+dist/browser-main.js.map

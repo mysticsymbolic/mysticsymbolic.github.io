@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { PageContext, PAGE_QUERY_ARG } from "./page";
 import { pageNames, Pages, toPageName, DEFAULT_PAGE } from "./pages";
@@ -30,15 +30,21 @@ function usePushState(onPushOrPopState: () => void) {
     };
   }, [onPushOrPopState]);
 
-  return function pushState(href: string) {
-    window.history.pushState(null, "", href);
-    onPushOrPopState();
-  };
+  return useCallback(
+    function pushState(href: string) {
+      window.history.pushState(null, "", href);
+      onPushOrPopState();
+    },
+    [onPushOrPopState]
+  );
 }
 
 const App: React.FC<{}> = (props) => {
   const [search, setSearch] = useState(getWindowSearch());
-  const updateSearchFromWindow = () => setSearch(getWindowSearch());
+  const updateSearchFromWindow = useCallback(
+    () => setSearch(getWindowSearch()),
+    []
+  );
   const currPage = toPageName(search.get(PAGE_QUERY_ARG) || "", DEFAULT_PAGE);
   const PageComponent = Pages[currPage];
   const pushState = usePushState(updateSearchFromWindow);

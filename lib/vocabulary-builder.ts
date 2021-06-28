@@ -3,9 +3,16 @@ import path from "path";
 import cheerio from "cheerio";
 import { getSvgBoundingBox } from "./bounding-box";
 import { extractSpecs } from "./specs";
-import { SvgSymbolData, SvgSymbolElement } from "./svg-symbol";
+import {
+  SvgSymbolData,
+  SvgSymbolDef,
+  SvgSymbolElement,
+  SvgSymbolGradientStop,
+} from "./svg-symbol";
 import toml from "toml";
 import { validateSvgSymbolMetadata } from "./svg-symbol-metadata";
+import { withoutNulls } from "./util";
+import { clampedBytesToRGBColor } from "./color-util";
 
 const SUPPORTED_SVG_TAG_ARRAY: SvgSymbolElement["tagName"][] = ["g", "path"];
 const SUPPORTED_SVG_TAGS = new Set(SUPPORTED_SVG_TAG_ARRAY);
@@ -70,22 +77,101 @@ function attribsToProps(el: cheerio.TagElement): any {
   return result;
 }
 
+function getNonEmptyAttrib(el: cheerio.TagElement, attr: string): string {
+  const result = el.attribs[attr];
+
+  if (!result) {
+    throw new Error(
+      `Expected <${el.tagName}> to have a non-empty '${attr}' attribute!`
+    );
+  }
+
+  return result;
+}
+
+function parseGradientStops(
+  els: cheerio.TagElement["children"]
+): SvgSymbolGradientStop[] {
+  const stops: SvgSymbolGradientStop[] = [];
+  for (let el of els) {
+    if (el.type === "tag") {
+      if (el.tagName !== "stop") {
+        throw new Error(
+          `Expected an SVG gradient to only contain <stop> elements!`
+        );
+      }
+      const style = getNonEmptyAttrib(el, "style");
+      const color = style.match(/stop-color\:rgb\((\d+),(\d+),(\d+)\)/);
+      if (!color) {
+        throw new Error(`Expected "${style}" to contain a stop-color!`);
+      }
+      const rgb = Array.from(color)
+        .slice(1)
+        .map((value) => parseInt(value));
+      stops.push({
+        offset: getNonEmptyAttrib(el, "offset"),
+        color: clampedBytesToRGBColor(rgb),
+      });
+    }
+  }
+  return stops;
+}
+
+function parseLinearGradient(el: cheerio.TagElement): SvgSymbolDef {
+  return {
+    type: "linearGradient",
+    id: getNonEmptyAttrib(el, "id"),
+    x1: getNonEmptyAttrib(el, "x1"),
+    y1: getNonEmptyAttrib(el, "y1"),
+    x2: getNonEmptyAttrib(el, "x2"),
+    y2: getNonEmptyAttrib(el, "y2"),
+    stops: parseGradientStops(el.children),
+  };
+}
+
+function parseRadialGradient(el: cheerio.TagElement): SvgSymbolDef {
+  return {
+    type: "radialGradient",
+    id: getNonEmptyAttrib(el, "id"),
+    cx: getNonEmptyAttrib(el, "cx"),
+    cy: getNonEmptyAttrib(el, "cy"),
+    r: getNonEmptyAttrib(el, "r"),
+    stops: parseGradientStops(el.children),
+  };
+}
+
+/**
+ * Attempt to convert the given SVG element into a `SvgSymbolElement`
+ * and/or a list of accompanying `SvgSymbolDef` objects.
+ *
+ * Note that the latter will be "returned" to the caller via the
+ * `defsOutput` argument.
+ */
 function serializeSvgSymbolElement(
   $: cheerio.Root,
-  el: cheerio.TagElement
-): SvgSymbolElement {
-  let children = onlyTags(el.children).map((child) =>
-    serializeSvgSymbolElement($, child)
-  );
+  el: cheerio.TagElement,
+  defsOutput: SvgSymbolDef[]
+): SvgSymbolElement | null {
   const { tagName } = el;
-  if (isSupportedSvgTag(tagName)) {
-    return {
-      tagName,
-      props: attribsToProps(el) as any,
-      children,
-    };
+  if (tagName === "radialGradient") {
+    defsOutput.push(parseRadialGradient(el));
+    return null;
+  } else if (tagName === "linearGradient") {
+    defsOutput.push(parseLinearGradient(el));
+    return null;
+  } else if (!isSupportedSvgTag(tagName)) {
+    throw new Error(`Unsupported SVG element: <${tagName}>`);
   }
-  throw new Error(`Unsupported SVG element: <${tagName}>`);
+  let children = withoutNulls(
+    onlyTags(el.children).map((child) =>
+      serializeSvgSymbolElement($, child, defsOutput)
+    )
+  );
+  return {
+    tagName,
+    props: attribsToProps(el) as any,
+    children,
+  };
 }
 
 function removeEmptyGroups(s: SvgSymbolElement[]): SvgSymbolElement[] {
@@ -104,17 +190,24 @@ export function convertSvgMarkupToSymbolData(
   const name = path.basename(filename, SVG_EXT).toLowerCase();
   const $ = cheerio.load(svgMarkup);
   const svgEl = $("svg");
+  const outputDefs: SvgSymbolDef[] = [];
   const rawLayers = removeEmptyGroups(
-    onlyTags(svgEl.children()).map((ch) => serializeSvgSymbolElement($, ch))
+    withoutNulls(
+      onlyTags(svgEl.children()).map((ch) =>
+        serializeSvgSymbolElement($, ch, outputDefs)
+      )
+    )
   );
   const [specs, layers] = extractSpecs(rawLayers);
   const bbox = getSvgBoundingBox(layers);
+  const defs = outputDefs.length ? outputDefs : undefined;
 
   const symbol: SvgSymbolData = {
     name,
     bbox,
     layers,
     specs,
+    defs,
   };
   return symbol;
 }

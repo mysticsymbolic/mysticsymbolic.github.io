@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { PageContext, PAGE_QUERY_ARG } from "./page";
 
 export type ComponentWithShareableStateProps<T> = {
@@ -82,8 +82,8 @@ export function createPageWithShareableState<T>({
       console.log(`Error deserializing state: ${e}`);
     }
 
-    const onChange = useMemo(
-      () => (value: T) => {
+    const onChange = useCallback(
+      (value: T) => {
         const newState = serialize(value);
         if (state !== newState) {
           const newSearch = new URLSearchParams();
@@ -95,7 +95,7 @@ export function createPageWithShareableState<T>({
           setIsInOnChange(false);
         }
       },
-      [state, currPage]
+      [state, currPage, pushState]
     );
 
     useEffect(() => {
@@ -104,7 +104,7 @@ export function createPageWithShareableState<T>({
         setLatestState(state);
         setKey(key + 1);
       }
-    });
+    }, [isInOnChange, state, latestState, key]);
 
     return <Component key={key} defaults={defaults} onChange={onChange} />;
   };

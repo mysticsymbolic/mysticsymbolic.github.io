@@ -1,4 +1,5 @@
 import React, { MouseEvent, useContext } from "react";
+import { Helmet } from "react-helmet";
 import type { PageName } from "./pages";
 
 export type PageContext = {
@@ -62,18 +63,43 @@ export type PageProps = {
 };
 
 export const Page: React.FC<PageProps> = ({ title, children }) => {
+  const fullTitle = ` Mystic Symbolic ${title}`;
+
   return (
     <div className="page">
+      <Helmet>
+        <title>{fullTitle}</title>
+      </Helmet>
       <header>
-        <h1>Mystic Symbolic {title}</h1>
+        <h1>{fullTitle}</h1>
         <Navbar />
       </header>
       {children}
       <footer>
         <p>
           For more details about this project, see its{" "}
-          <a href="https://github.com/toolness/mystic-symbolic" target="_blank">
+          <a
+            href="https://github.com/toolness/mystic-symbolic"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub repository
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://blog.ninapaley.com/category/mysticsymbolic/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Nina Paley's blog
+          </a>
+          . You can also{" "}
+          <a
+            href="https://www.gofundme.com/f/mysticsymbolic-development"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            donate to the project
           </a>
           .
         </p>

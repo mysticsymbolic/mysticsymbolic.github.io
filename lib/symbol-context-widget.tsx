@@ -43,6 +43,11 @@ export function SymbolContextWidget<T extends SvgSymbolContext>({
         value={ctx.showSpecs}
         onChange={(showSpecs) => updateCtx({ showSpecs })}
       />
+      <Checkbox
+        label="Disable gradients"
+        value={ctx.disableGradients}
+        onChange={(disableGradients) => updateCtx({ disableGradients })}
+      />
       {ctx.uniformStrokeWidth !== undefined && (
         <div className="thingy">
           <NumericSlider

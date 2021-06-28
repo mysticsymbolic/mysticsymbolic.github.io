@@ -33,3 +33,9 @@ invert_nested = false
 # defined, this symbol will be able to attach to any attachment
 # point.
 attach_to = ["tail", "leg", "arm", "horn", "crown"]
+
+# If true, symbol will rotate clockwise instead of default counter-clockwise
+rotate_clockwise = false
+
+# If true, symbol may be used as large background shape in some compositions.
+background = false

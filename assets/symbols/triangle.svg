@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 12.5 build 22414 -->
+<!-- Generator: Moho 13.5.1 build 20210623 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="triangle">
 <g id="triangle">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 73.898 C 360.033 73.955 690.329 646.045 690.362 646.102 C 690.296 646.102 29.704 646.102 29.638 646.102 C 29.671 646.045 359.967 73.955 360.000 73.898 Z"/>
+<radialGradient id="FF7D93F5-77F2-46FD-B596-1EF0381D61B0_0" cx="50.00%" cy="63.23%" r="84.82%">
+<stop offset="41.18%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</radialGradient>
+<path fill="url(#FF7D93F5-77F2-46FD-B596-1EF0381D61B0_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 73.898 C 360.033 73.955 690.329 646.045 690.362 646.102 C 690.296 646.102 29.704 646.102 29.638 646.102 C 29.671 646.045 359.967 73.955 360.000 73.898 Z"/>
 </g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 230.023 560.475 C 230.049 560.475 490.101 560.475 490.127 560.475 C 490.127 560.449 490.127 300.396 490.127 300.370 C 490.101 300.370 230.049 300.370 230.023 300.370 C 230.023 300.396 230.023 560.449 230.023 560.475 Z"/>

@@ -1,15 +1,6 @@
 
-
 always_nest = true
 
 
-always_be_nested = false
 
-
-never_be_nested = false
-
-
-invert_nested = false
-
-
-rotate_clockwise = true
+attach_to = []

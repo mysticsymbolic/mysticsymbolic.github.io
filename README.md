@@ -21,6 +21,10 @@ npm run watch
 
 then visit http://localhost:1234.
 
+## Adding symbols
+
+Documentation for adding and changing symbols can be found in [`assets/symbols/_instructions.md`](assets/symbols/_instructions.md).
+
 ## Running tests
 
 To run tests interactively, run:
@@ -28,6 +32,19 @@ To run tests interactively, run:
 ```
 npm run test:watch
 ```
+
+## Type checking
+
+To make sure that everything type-checks okay, run:
+
+```
+npm run typecheck
+```
+
+Note that you may want to install a [TypeScript plugin for your favorite editor][ts-editor].  Aside from telling you what type errors you have in real-time, editor integration also provides code autocompletion and other affordances that can greatly improve your productivity. For more details, see Atul's [Fun with TypeScript][] series of videos.
+
+[ts-editor]: https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support
+[Fun with TypeScript]: https://www.youtube.com/playlist?list=PL79r88piDzwZVwCI_26T3ZjC3xKvQLgjh
 
 ## Code style
 
@@ -54,4 +71,4 @@ npm run deploy
 [NodeJS]: https://nodejs.org/en/
 [Nina Paley]: https://blog.ninapaley.com/
 [Atul Varma]: https://portfolio.toolness.org/
-[viewed online]: https://toolness.github.io/mystic-symbolic/
+[viewed online]: https://mysticsymbolic.art/

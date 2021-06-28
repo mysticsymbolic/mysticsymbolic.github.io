@@ -57,7 +57,10 @@ export type SvgSymbolMetadata = SvgSymbolMetadataBooleans & {
 
 export function validateSvgSymbolMetadata(
   obj: any
-): { metadata: SvgSymbolMetadata; unknownProperties: string[] } {
+): {
+  metadata: SvgSymbolMetadata;
+  unknownProperties: string[];
+} {
   const metadata: SvgSymbolMetadata = {};
   const unknownProperties: string[] = [];
   for (let key in obj) {

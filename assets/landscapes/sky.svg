@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Moho 13.0.3 build 635 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280px" height="720px">
+<g id="sky">
+<linearGradient id="CA4FA9B6-6897-470B-8FBE-E87582CC875B_0" x1="49.81%" y1="42.72%" x2="49.81%" y2="-27.90%">
+<stop offset="0.00%" style="stop-color:rgb(63,191,206);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(41,51,148);stop-opacity:1.00" />
+</linearGradient>
+<path fill="url(#CA4FA9B6-6897-470B-8FBE-E87582CC875B_0)" fill-rule="evenodd" stroke="none" d="M -21.587 -24.315 C -21.454 -24.315 1301.455 -24.315 1301.587 -24.315 C 1301.587 -24.268 1301.587 448.564 1301.587 448.611 C 1301.455 448.611 -21.454 448.611 -21.587 448.611 C -21.587 448.564 -21.587 -24.268 -21.587 -24.315 Z"/>
+</g>
+<g id="trees_and_hills">
+</g>
+</svg>

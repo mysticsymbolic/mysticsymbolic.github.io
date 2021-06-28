@@ -109,3 +109,18 @@ export function toFriendlyDecimal(value: number, maxDecimalDigits = 2): string {
 
   return str.length < fixedStr.length ? str : fixedStr;
 }
+
+/**
+ * Given an array consisting of a nullable type, filter out all the nulls.
+ */
+export function withoutNulls<T>(arr: (T | null)[]): T[] {
+  const result: T[] = [];
+
+  for (let item of arr) {
+    if (item !== null) {
+      result.push(item);
+    }
+  }
+
+  return result;
+}

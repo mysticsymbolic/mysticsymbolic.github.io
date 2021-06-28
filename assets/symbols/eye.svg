@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 12.5 build 22414 -->
+<!-- Generator: Moho 13.5 build 20210422 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="eye">
 <g id="eye">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 192.972 C 564.753 192.972 704.919 359.983 704.953 360.000 C 704.919 360.017 564.753 527.028 360.000 527.028 C 155.247 527.028 15.081 360.017 15.047 360.000 C 15.081 359.983 155.247 192.972 360.000 192.972 Z"/>
+<radialGradient id="AB73A7F7-98AF-4043-895F-7E3AE0D791B3_0" cx="50.00%" cy="50.00%" r="93.35%">
+<stop offset="0.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="45.88%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</radialGradient>
+<path fill="url(#AB73A7F7-98AF-4043-895F-7E3AE0D791B3_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 192.972 C 564.753 192.972 704.919 359.983 704.953 360.000 C 704.919 360.017 564.753 527.028 360.000 527.028 C 155.247 527.028 15.081 360.017 15.047 360.000 C 15.081 359.983 155.247 192.972 360.000 192.972 Z"/>
 <path fill="#000000" fill-rule="evenodd" stroke="none" d="M 360.000 221.924 C 436.424 221.924 498.076 283.576 498.076 360.000 C 498.076 436.424 436.424 498.076 360.000 498.076 C 283.576 498.076 221.924 436.424 221.924 360.000 C 221.924 283.576 283.576 221.924 360.000 221.924 Z"/>
 <path fill="#ffffff" fill-rule="evenodd" stroke="none" d="M 360.000 331.602 C 375.718 331.602 388.398 344.282 388.398 360.000 C 388.398 375.718 375.718 388.398 360.000 388.398 C 344.282 388.398 331.602 375.718 331.602 360.000 C 331.602 344.282 344.282 331.602 360.000 331.602 Z"/>
 </g>

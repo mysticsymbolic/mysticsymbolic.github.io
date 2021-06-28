@@ -1,15 +1,3 @@
 
 
-always_nest = false
-
-
-always_be_nested = false
-
-
-never_be_nested = false
-
-
 invert_nested = true
-
-
-rotate_clockwise = true
