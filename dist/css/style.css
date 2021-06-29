@@ -13,7 +13,7 @@ html, body {
   height: 100vh;
   width: 100vw;
   grid-template-columns: auto 20em;
-  grid-template-rows: 3em auto 3em;
+  grid-template-rows: 3em auto 1em;
   grid-template-areas:
     "header header"
     "canvas sidebar"
@@ -74,6 +74,11 @@ footer a {
 
 footer a:hover {
   text-decoration: none;
+}
+
+footer p {
+  margin-block-start: 0.2em;
+  margin-block-end: 0.2em;
 }
 
 select, input[type="text"] {
