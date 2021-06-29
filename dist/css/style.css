@@ -27,12 +27,12 @@ header {
 
 @font-face {
   font-family: 'Copperplate';
-  src: url('/fonts/Copperplate V1.woff2')  format('woff');
+  src: url('../fonts/Copperplate_V1.woff2')  format('woff');
 }
 
 @font-face {
   font-family: 'OPTICopperplate';
-	 src: url('/fonts/OPTICopperplate.woff2')  format('woff');  
+  src: url('../fonts/OPTICopperplate.woff2')  format('woff');  
 }
 
 header h1 {
@@ -40,16 +40,16 @@ header h1 {
   flex-grow: 1;
   font-size: 1.0em;
   text-transform: uppercase;
-	font-weight:500;
+  font-weight:500;
   color:#333;
   font-family: 'OPTICopperplate';
   letter-spacing: 1px;
 }
 
 .MSlogo {
-	height:50px;
-	vertical-align:middle;
-	margin-bottom: 3px;
+  height:50px;
+  vertical-align:middle;
+  margin-bottom: 3px;
 }
 
 .sidebar {
@@ -58,23 +58,22 @@ header h1 {
 }
 
 label,button, select, legend, h1, h2, h3, p, div, title, input, g {
-    font-family: 'Copperplate';
+   /* font-family: 'Copperplate'; */
 }
 
 footer {
   grid-area: footer;
-	font-family: 'Copperplate';
-	text-transform: uppercase;
-	color: #333;
-	font-weight:500;
-	font-size:0.8em;
+  font-family: 'Copperplate';
+  color: #333;
+  font-weight:500;
+  font-size:1em;
 }
 footer a {
-	color: #333;
+  color: #333;
 }
 
 footer a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 select, input[type="text"] {
@@ -111,20 +110,20 @@ ul.navbar {
   list-style-type: none;
   padding: 0;
   justify-content: flex-end;
-	font-family: 'Copperplate';
-	text-transform: uppercase;
-	color: #333;
-	font-weight:500;
-	font-size:0.8em;
+  font-family: 'Copperplate';
+  text-transform: uppercase;
+  color: #333;
+  font-weight:500;
+  font-size:0.8em;
 }
 
 ul.navbar a{
-	color: #333;
-	font-weight:500;
+  color: #333;
+  font-weight:500;
 }
 
 ul.navbar a:hover{
-	text-decoration:none;
+  text-decoration:none;
 }
 
 
