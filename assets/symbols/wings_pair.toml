@@ -1,0 +1,20 @@
+
+
+always_nest = true
+
+
+never_be_nested = true
+
+
+invert_nested = true
+
+
+rotate_clockwise = true
+
+
+background = true
+
+
+attach_to = ["horn", "crown"]
+
+
