@@ -15,6 +15,6 @@ rotate_clockwise = true
 background = true
 
 
-attach_to = ["tail", "leg", "arm", "horn", "crown"]
+attach_to = ["horn", "crown"]
 
 
