@@ -124,3 +124,11 @@ export function withoutNulls<T>(arr: (T | null)[]): T[] {
 
   return result;
 }
+
+/**
+ * Linearly interpolate between the given numbers by the
+ * given percentage (from 0 to 1).
+ */
+export function lerp(a: number, b: number, amount: number) {
+  return a + amount * (b - a);
+}
