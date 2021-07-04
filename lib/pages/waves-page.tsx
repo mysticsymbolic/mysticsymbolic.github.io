@@ -122,6 +122,7 @@ const Waves: React.FC<{}> = () => {
   const [initialYVel, setInitialYVel] = useState(
     WAVE_PARALLAX_TRANSLATE_VELOCITY
   );
+  const [showHills, setShowHills] = useState(false);
   const [yAccel, setYAccel] = useState(WAVE_PARALLAX_TRANSLATE_ACCEL);
   const [scaleVel, setScaleVel] = useState(WAVE_PARALLAX_SCALE_VELOCITY);
   const [useMask, setUseMask] = useState(false);
@@ -146,23 +147,24 @@ const Waves: React.FC<{}> = () => {
 
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
-        {range(numHills).map((j) => {
-          return (
-            <Hill
-              key={j}
-              idPrefix={`wave${i}_${j}_`}
-              cx={rng.inInterval({ min: 0, max: 1280 / scale })}
-              r={rng.inInterval({ min: 50, max: 100 })}
-              xScale={rng.inInterval({ min: 1, max: 1.25 })}
-              highlight={mixColor(
-                DEFAULT_HILL_PROPS.highlight,
-                BG_COLOR,
-                hazeAmt
-              )}
-              shadow={mixColor(DEFAULT_HILL_PROPS.shadow, BG_COLOR, hazeAmt)}
-            />
-          );
-        })}
+        {showHills &&
+          range(numHills).map((j) => {
+            return (
+              <Hill
+                key={j}
+                idPrefix={`wave${i}_${j}_`}
+                cx={rng.inInterval({ min: 0, max: 1280 / scale })}
+                r={rng.inInterval({ min: 50, max: 100 })}
+                xScale={rng.inInterval({ min: 1, max: 1.25 })}
+                highlight={mixColor(
+                  DEFAULT_HILL_PROPS.highlight,
+                  BG_COLOR,
+                  hazeAmt
+                )}
+                shadow={mixColor(DEFAULT_HILL_PROPS.shadow, BG_COLOR, hazeAmt)}
+              />
+            );
+          })}
         <g>
           <Wave fill={blendedFill} stroke={blendedStroke} />
           <animateTransform
@@ -250,9 +252,12 @@ const Waves: React.FC<{}> = () => {
           value={useMask}
           onChange={setUseMask}
         />
-        <button accessKey="r" onClick={newRandomSeed}>
-          <u>R</u>andomize hills!
-        </button>
+        <Checkbox label="Hills" value={showHills} onChange={setShowHills} />
+        {showHills && (
+          <button accessKey="r" onClick={newRandomSeed}>
+            <u>R</u>andomize hills!
+          </button>
+        )}
       </div>
     </>
   );
