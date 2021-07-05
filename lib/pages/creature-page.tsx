@@ -64,6 +64,11 @@ const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
     result[type] = SvgVocabulary.items.filter((data) => {
       const { meta } = data;
 
+      if (type === "wildcard") {
+        // The wildcard attachment point type can have anything!
+        return true;
+      }
+
       // If we have no metadata whatsoever, it can attach anywhere.
       if (!meta) return true;
 

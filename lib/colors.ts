@@ -13,6 +13,7 @@ export const ATTACHMENT_POINT_COLORS: {
   arm: "#00ff00",
   horn: "#00ffff",
   crown: "#0000ff",
+  wildcard: "#000000",
 };
 
 export const NESTING_BOUNDING_BOX_COLOR = "#ff00ff";
