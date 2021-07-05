@@ -1,4 +1,4 @@
-import { Point, BBox } from "../vendor/bezier-js";
+import { Point, BBox, Bezier } from "../vendor/bezier-js";
 import { getBoundingBoxForBeziers } from "./bounding-box";
 import * as colors from "./colors";
 import { pathToShapes } from "./path";
@@ -66,15 +66,46 @@ export function* iterAttachmentPoints(specs: Specs): Iterable<AttachmentPoint> {
   }
 }
 
+const NUM_FACING_ARROW_POINTS = 5;
 const NUM_ARROW_POINTS = 4;
 const ARROW_TOP_POINT_IDX = 0;
 const ARROW_BOTTOM_POINT_IDX = 2;
+
+function getAngleBetween(shape: Bezier[]): number {
+  const oneToZero = normalizePoint(
+    subtractPoints(shape[0].get(0.0), shape[1].get(0.0))
+  );
+  const oneToTwo = normalizePoint(
+    subtractPoints(shape[2].get(0.0), shape[1].get(0.0))
+  );
+  const dotProduct = oneToZero.x * oneToTwo.x + oneToTwo.y * oneToTwo.y;
+  return Math.acos(dotProduct);
+}
+
+function parseFacingArrow(shape: Bezier[]): [Bezier[], boolean] {
+  const firstAngle = getAngleBetween([shape[0], shape[1], shape[2]]);
+  const secondAngle = getAngleBetween([shape[3], shape[4], shape[0]]);
+  let hFlip: boolean;
+  if (firstAngle > secondAngle) {
+    hFlip = false;
+    shape = [shape[0], shape[1], shape[3], shape[4]];
+  } else {
+    hFlip = true;
+    shape = [shape[0], shape[1], shape[2], shape[4]];
+  }
+  console.log("FOUND FACING ARROW WITH hFlip =", hFlip);
+  return [shape, hFlip];
+}
 
 function getArrowPoints(path: string): PointWithNormal[] {
   const shapes = pathToShapes(path);
   const points: PointWithNormal[] = [];
 
   for (let shape of shapes) {
+    if (shape.length === NUM_FACING_ARROW_POINTS) {
+      const [arrow, _shouldFlip] = parseFacingArrow(shape);
+      shape = arrow;
+    }
     if (shape.length !== NUM_ARROW_POINTS) {
       throw new Error(
         `Expected arrow to have ${NUM_ARROW_POINTS} points, not ${shape.length}!`
