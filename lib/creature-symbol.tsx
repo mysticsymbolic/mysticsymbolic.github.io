@@ -127,14 +127,18 @@ const AttachedCreatureSymbol: React.FC<AttachedCreatureSymbolProps> = ({
       continue;
     }
 
-    // If we're attaching something oriented towards the left, horizontally flip
-    // the attachment image.
-    let xFlip = parentAp.normal.x < 0 ? -1 : 1;
+    let xFlip = 1;
 
-    // Er, things look weird if we don't inverse the flip logic for
-    // the downward-facing attachments, like legs...
-    if (parentAp.normal.y > 0) {
-      xFlip *= -1;
+    if (!parent.meta?.never_flip_attachments) {
+      // If we're attaching something oriented towards the left, horizontally flip
+      // the attachment image.
+      xFlip = parentAp.normal.x < 0 ? -1 : 1;
+
+      // Er, things look weird if we don't inverse the flip logic for
+      // the downward-facing attachments, like legs...
+      if (parentAp.normal.y > 0) {
+        xFlip *= -1;
+      }
     }
 
     const t = getAttachmentTransforms(parentAp, {
