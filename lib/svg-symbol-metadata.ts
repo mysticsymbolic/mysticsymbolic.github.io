@@ -30,6 +30,14 @@ type SvgSymbolMetadataBooleans = {
    * This changes the rotation direction to clockwise.
    */
   rotate_clockwise?: boolean;
+
+  /**
+   * If true, this indicates that we should never horizontally flip the
+   * orientation of a symbol when attaching it.  Otherwise, we will flip
+   * the symbol horizontally if it's facing left, and flip it horizontally
+   * again if it's facing down.
+   */
+  never_flip_attachments?: boolean;
 };
 
 const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
@@ -38,6 +46,7 @@ const METADATA_BOOLEANS: Set<keyof SvgSymbolMetadataBooleans> = new Set([
   "never_be_nested",
   "invert_nested",
   "rotate_clockwise",
+  "never_flip_attachments",
 ]);
 
 function isSvgSymbolMetadataBoolean(
