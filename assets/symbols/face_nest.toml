@@ -5,6 +5,8 @@ never_be_nested = true
 
 invert_nested = true
 
-never_flip_attachments = true
 
 attach_to = []
+
+
+never_flip_attachments
