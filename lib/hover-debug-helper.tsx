@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "./hover-debug-helper.css";
+
 function getTargetPathInfo(target: SVGElement): string[] {
   const path: string[] = [];
   let node = target;

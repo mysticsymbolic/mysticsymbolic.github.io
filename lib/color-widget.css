@@ -1,0 +1,7 @@
+.sidebar .color-widget {
+  display: flex;
+}
+
+.sidebar .color-widget label {
+  flex-grow: 1;
+}
