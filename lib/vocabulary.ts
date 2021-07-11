@@ -13,6 +13,12 @@ export class Vocabulary<T extends VocabularyType> {
     this.itemMap = new Map(items.map((item) => [item.name, item]));
   }
 
+  /**
+   * Returns a probability distribution of the vocabulary's items.
+   *
+   * Each item may be repeated more than once in the return value,
+   * making it more likely for the item to be randomly chosen.
+   */
   get distribution(): T[] {
     if (!this._distribution) {
       this._distribution = this.getFilteredDistribution(() => true);
@@ -28,11 +34,17 @@ export class Vocabulary<T extends VocabularyType> {
     return item;
   }
 
-  getFilteredDistribution(predicate?: (item: T) => boolean): T[] {
+  /**
+   * Filters the vocabulary by the given predicate, and
+   * returns a probability distribution of the result.
+   *
+   * @see Vocabulary.distribution
+   */
+  getFilteredDistribution(predicate: (item: T) => boolean): T[] {
     const result: T[] = [];
 
     for (let item of this.items) {
-      if (predicate && !predicate(item)) continue;
+      if (!predicate(item)) continue;
       const freq = this.getFrequencyMultiplier(item);
       for (let i = 0; i < freq; i++) {
         result.push(item);
