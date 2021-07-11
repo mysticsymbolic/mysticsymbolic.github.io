@@ -22,6 +22,9 @@
   "author": "",
   "license": "ISC",
   "jest": {
+    "moduleNameMapper": {
+      "\\.(css)$": "<rootDir>/__mocks__/css-mock.js"
+    },
     "testPathIgnorePatterns": [
       "dist",
       ".cache"
