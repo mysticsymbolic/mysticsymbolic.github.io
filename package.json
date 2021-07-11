@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "deploy": "npm run build && gh-pages -d dist",
-    "prettier:check": "prettier --check lib/**/*.ts lib/**/*.tsx",
-    "prettier:fix": "prettier --write   lib/**/*.ts lib/**/*.tsx",
+    "prettier:check": "prettier --check lib/**/*.ts lib/**/*.tsx lib/**/*.css",
+    "prettier:fix": "prettier --write   lib/**/*.ts lib/**/*.tsx lib/**/*.css",
     "typecheck": "tsc --noemit",
     "eslint": "eslint lib --ext .ts,.tsx --max-warnings 1",
     "lint": "npm run prettier:check && npm run typecheck && npm run eslint",
