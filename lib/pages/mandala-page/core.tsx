@@ -201,7 +201,7 @@ const ExtendedMandalaCircleParamsWidget: React.FC<{
 
 function getRandomCircleParams(rng: Random): MandalaCircleParams {
   return {
-    data: rng.choice(SvgVocabulary.items),
+    data: rng.choice(SvgVocabulary.distribution),
     radius: rng.inRange(RADIUS_RANDOM),
     numSymbols: rng.inRange(NUM_SYMBOLS),
     invertEveryOtherSymbol: rng.bool(),
