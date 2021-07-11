@@ -1,6 +1,8 @@
 import React from "react";
 import { slugify } from "./util";
 
+import "./color-widget.css";
+
 type ColorWidgetProps = {
   label: string;
   value: string;

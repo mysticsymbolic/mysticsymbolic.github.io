@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: "Calibri", "Arial", "Helvetica Neue", sans-serif;
@@ -31,8 +32,8 @@ header h1 {
 }
 
 .MSlogo {
-  height:50px;
-  vertical-align:middle;
+  height: 50px;
+  vertical-align: middle;
   margin-bottom: 3px;
 }
 
@@ -45,23 +46,9 @@ footer {
   grid-area: footer;
 }
 
-select, input[type="text"] {
+select,
+input[type="text"] {
   padding: 8px;
-}
-
-.checkerboard-bg {
-  /* https://codepen.io/pascalvgaal/pen/jPXPNP/ */
-  background: #eee url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".1" ><rect x="200" width="200" height="200" /><rect y="200" width="200" height="200" /></svg>');
-  background-size: 20px 20px;
-}
-
-.hover-debug-helper {
-  font-family: "Consolas", "Monaco", monospace;
-  color: white;
-  background: rgba(0, 0, 0, 0.75);
-  padding: 4px;
-  margin-top: 4px;
-  margin-left: 4px;
 }
 
 /** Stupid class we're using instead of <p> to avoid ValidateDOMNesting warnings. */
@@ -124,50 +111,4 @@ ul.navbar li:last-child {
   display: block;
   margin-top: 10px;
   margin-bottom: 10px;
-}
-
-.sidebar .color-widget {
-  display: flex;
-}
-
-.sidebar .color-widget label {
-  flex-grow: 1;
-}
-
-.sidebar .numeric-slider {
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar .numeric-slider .slider {
-  display: flex;
-}
-
-.sidebar .numeric-slider .slider input {
-  flex-basis: 90%;
-}
-
-.sidebar .numeric-slider .slider .slider-value {
-  /**
-   * We want to keep a minimum width for the value or else
-   * there will be a "jitter" effect where the slider will
-   * contract as a result of the label getting smaller,
-   * which will then change the value of the slider, which
-   * will then change the width of the label, ad infinitum.
-   */
-  min-width: 2em;
-}
-
-.overlay-wrapper {
-  position: fixed;
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.9);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
 }

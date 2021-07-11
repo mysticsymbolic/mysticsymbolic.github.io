@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createGIF } from "./animated-gif";
 import { getSvgMetadata, SvgWithBackground } from "./auto-sizing-svg";
 
+import "./export-svg.css";
+
 function getSvgDocument(svgMarkup: string): string {
   return [
     `<?xml version="1.0" encoding="utf-8"?>`,

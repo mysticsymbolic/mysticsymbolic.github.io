@@ -5,3 +5,4 @@ lib/_svg-vocabulary.ts
 lib/**/*.avsc.ts
 dist/browser-main.js
 dist/browser-main.js.map
+dist/browser-main.css

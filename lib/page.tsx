@@ -2,6 +2,8 @@ import React, { MouseEvent, useContext } from "react";
 import { Helmet } from "react-helmet";
 import type { PageName } from "./pages";
 
+import "./page.css";
+
 export type PageContext = {
   currPage: PageName;
   allPages: PageName[];
@@ -68,10 +70,7 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
   return (
     <div className="page">
       <Helmet>
-        <meta charSet="utf-8" />
         <title>{fullTitle}</title>
-        <link rel="icon" href="img/mystic-symbolic-icon.png" />
-        <link rel="stylesheet" href="css/style.css" />
       </Helmet>
       <header>
         <h1>

@@ -11,6 +11,8 @@ import { SymbolContextWidget } from "../symbol-context-widget";
 import { HoverDebugHelper } from "../hover-debug-helper";
 import { Page } from "../page";
 
+import "./vocabulary-page.css";
+
 type SvgSymbolProps = {
   data: SvgSymbolData;
   scale?: number;
