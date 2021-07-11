@@ -101,7 +101,9 @@ export function validateSvgSymbolMetadata(obj: any): {
 
 const MIN_FREQUENCY_MULTIPLIER = 1;
 
-function validateFrequencyMultiplier(value: unknown): number | undefined {
+export function validateFrequencyMultiplier(
+  value: unknown
+): number | undefined {
   if (typeof value === "number") {
     if (value < MIN_FREQUENCY_MULTIPLIER) {
       console.log(
