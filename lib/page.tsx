@@ -2,6 +2,8 @@ import React, { MouseEvent, useContext } from "react";
 import { Helmet } from "react-helmet";
 import type { PageName } from "./pages";
 
+import "./page.css";
+
 export type PageContext = {
   currPage: PageName;
   allPages: PageName[];
@@ -71,7 +73,15 @@ export const Page: React.FC<PageProps> = ({ title, children }) => {
         <title>{fullTitle}</title>
       </Helmet>
       <header>
-        <h1>{fullTitle}</h1>
+        <h1>
+          <img
+            src="img/mysticsymbolic-logo-sun.svg"
+            alt="Mystic Symbolic"
+            title="Mystic Symbolic"
+            className="MSlogo"
+          />{" "}
+          {title}
+        </h1>
         <Navbar />
       </header>
       {children}

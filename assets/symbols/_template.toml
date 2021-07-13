@@ -37,5 +37,11 @@ attach_to = ["tail", "leg", "arm", "horn", "crown"]
 # If true, symbol will rotate clockwise instead of default counter-clockwise
 rotate_clockwise = false
 
+# If true, this indicates that we should never horizontally flip the
+# orientation of a symbol when attaching it.  Otherwise, we will flip
+# the symbol horizontally if it's facing left, and flip it horizontally
+# again if it's facing down.
+never_flip_attachments = false
+
 # If true, symbol may be used as large background shape in some compositions.
 background = false

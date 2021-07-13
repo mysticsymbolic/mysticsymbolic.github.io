@@ -19,6 +19,7 @@ type AttachmentPointSpecs = {
   arm: PointWithNormal[];
   horn: PointWithNormal[];
   crown: PointWithNormal[];
+  wildcard: PointWithNormal[];
 };
 
 type FullSpecs = AttachmentPointSpecs & {
@@ -41,6 +42,7 @@ export const ATTACHMENT_POINT_TYPES: AttachmentPointType[] = [
   "arm",
   "horn",
   "crown",
+  "wildcard",
 ];
 
 const ATTACHMENT_POINT_SET = new Set(ATTACHMENT_POINT_TYPES);

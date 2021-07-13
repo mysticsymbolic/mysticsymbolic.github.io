@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Checkbox } from "../checkbox";
+import { mixColor } from "../color-util";
 import { ColorWidget } from "../color-widget";
 import { NumericSlider } from "../numeric-slider";
 import { Page } from "../page";
+import { Random } from "../random";
+import { lerp, range } from "../util";
 
 const WAVE_STROKE = "#79beda";
 const WAVE_FILL = "#2b7c9e";
@@ -57,7 +60,9 @@ const Wave: React.FC<{
   </>
 );
 
-const NUM_WAVES = 8;
+const BG_COLOR = "#FFFFFF";
+const BG_MAX_BLEND = 0.33;
+const NUM_WAVES = 10;
 const WAVE_DURATION = 1;
 const WAVE_PARALLAX_SCALE_START = 1.2;
 const WAVE_PARALLAX_TRANSLATE_START = 10;
@@ -65,7 +70,51 @@ const WAVE_PARALLAX_SCALE_VELOCITY = 1.25;
 const WAVE_PARALLAX_TRANSLATE_VELOCITY = 30;
 const WAVE_PARALLAX_TRANSLATE_ACCEL = 10;
 
+type HillProps = {
+  idPrefix: string;
+  xScale: number;
+  yScale: number;
+  cx: number;
+  cy: number;
+  r: number;
+  highlight: string;
+  shadow: string;
+};
+
+const DEFAULT_HILL_PROPS: HillProps = {
+  idPrefix: "",
+  xScale: 1,
+  yScale: 1,
+  cx: 50,
+  cy: 50,
+  r: 50,
+  highlight: "#aeb762",
+  shadow: "#616934",
+};
+
+const Hill: React.FC<Partial<HillProps>> = (props) => {
+  const { idPrefix, xScale, yScale, cx, cy, r, highlight, shadow } = {
+    ...DEFAULT_HILL_PROPS,
+    ...props,
+  };
+  const gradientId = `${idPrefix}HillGradient`;
+  const gradientUrl = `url(#${gradientId})`;
+
+  return (
+    <g transform={`translate(${cx} ${cy}) scale(${xScale} ${yScale})`}>
+      <radialGradient id={gradientId}>
+        <stop offset="75%" stopColor={highlight} />
+        <stop offset="100%" stopColor={shadow} />
+      </radialGradient>
+      <circle cx={0} cy={0} r={r} fill={gradientUrl} />
+    </g>
+  );
+};
+
 const Waves: React.FC<{}> = () => {
+  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const newRandomSeed = () => setRandomSeed(Date.now());
+  const rng = new Random(randomSeed);
   const [stroke, setStroke] = useState(WAVE_STROKE);
   const [fill, setFill] = useState(WAVE_FILL);
   const [numWaves, setNumWaves] = useState(NUM_WAVES);
@@ -73,6 +122,7 @@ const Waves: React.FC<{}> = () => {
   const [initialYVel, setInitialYVel] = useState(
     WAVE_PARALLAX_TRANSLATE_VELOCITY
   );
+  const [showHills, setShowHills] = useState(false);
   const [yAccel, setYAccel] = useState(WAVE_PARALLAX_TRANSLATE_ACCEL);
   const [scaleVel, setScaleVel] = useState(WAVE_PARALLAX_SCALE_VELOCITY);
   const [useMask, setUseMask] = useState(false);
@@ -83,10 +133,40 @@ const Waves: React.FC<{}> = () => {
   let waves: JSX.Element[] = [];
 
   for (let i = 0; i < numWaves; i++) {
+    const numHills = Math.floor(rng.inInterval({ min: 0, max: numWaves - i }));
+    const hazeAmt = lerp(
+      0,
+      BG_MAX_BLEND,
+      // The furthest-away waves (the first ones we draw) should be the
+      // most hazy. Scale the amount quadratically so that the waves in
+      // front tend to be less hazy.
+      Math.pow(1 - i / Math.max(numWaves - 1, 1), 2)
+    );
+    const blendedFill = mixColor(fill, BG_COLOR, hazeAmt);
+    const blendedStroke = mixColor(stroke, BG_COLOR, hazeAmt);
+
     waves.push(
       <g key={i} transform={`translate(0 ${y}) scale(${scale} ${scale})`}>
+        {showHills &&
+          range(numHills).map((j) => {
+            return (
+              <Hill
+                key={j}
+                idPrefix={`wave${i}_${j}_`}
+                cx={rng.inInterval({ min: 0, max: 1280 / scale })}
+                r={rng.inInterval({ min: 50, max: 100 })}
+                xScale={rng.inInterval({ min: 1, max: 1.25 })}
+                highlight={mixColor(
+                  DEFAULT_HILL_PROPS.highlight,
+                  BG_COLOR,
+                  hazeAmt
+                )}
+                shadow={mixColor(DEFAULT_HILL_PROPS.shadow, BG_COLOR, hazeAmt)}
+              />
+            );
+          })}
         <g>
-          <Wave fill={fill} stroke={stroke} />
+          <Wave fill={blendedFill} stroke={blendedStroke} />
           <animateTransform
             attributeName="transform"
             type="translate"
@@ -172,6 +252,12 @@ const Waves: React.FC<{}> = () => {
           value={useMask}
           onChange={setUseMask}
         />
+        <Checkbox label="Hills" value={showHills} onChange={setShowHills} />
+        {showHills && (
+          <button accessKey="r" onClick={newRandomSeed}>
+            <u>R</u>andomize hills!
+          </button>
+        )}
       </div>
     </>
   );

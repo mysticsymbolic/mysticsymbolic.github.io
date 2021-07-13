@@ -5,5 +5,7 @@ never_be_nested = true
 
 invert_nested = true
 
+rotate_clockwise = true
+
 
 attach_to = ["tail"]

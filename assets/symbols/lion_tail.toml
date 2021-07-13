@@ -1,5 +1,7 @@
 
 never_be_nested = true
 
+rotate_clockwise = true
+
 
 attach_to = ["tail", "leg", "arm", "horn"]

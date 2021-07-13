@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.5 build 20210422 -->
+<!-- Generator: Moho 13.5.1 build 20210623 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="coffin">
 <g id="coffin">
-<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 420.075 660.368 C 420.063 660.368 299.937 660.368 299.925 660.368 C 299.919 660.322 239.857 199.853 239.851 199.807 C 239.857 199.793 299.919 59.646 299.925 59.632 C 299.937 59.632 420.063 59.632 420.075 59.632 C 420.081 59.646 480.142 199.794 480.149 199.807 C 480.149 199.807 420.081 660.322 420.075 660.368 Z"/>
+<linearGradient id="432CCB3F-ABD4-445E-8996-A4F384431FCC_0" x1="50.00%" y1="50.00%" x2="50.00%" y2="165.98%">
+<stop offset="0.39%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
+<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
+</linearGradient>
+<path fill="url(#432CCB3F-ABD4-445E-8996-A4F384431FCC_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linejoin="round" d="M 420.075 660.368 C 420.063 660.368 299.937 660.368 299.925 660.368 C 299.919 660.322 239.857 199.853 239.851 199.807 C 239.857 199.793 299.919 59.646 299.925 59.632 C 299.937 59.632 420.063 59.632 420.075 59.632 C 420.081 59.646 480.142 199.794 480.149 199.807 C 480.149 199.807 420.081 660.322 420.075 660.368 Z"/>
 </g>
 <g id="specs_2">
 <path fill="#ff00ff" fill-rule="evenodd" stroke="none" d="M 280.661 554.726 C 280.677 554.726 439.323 554.726 439.339 554.726 C 439.339 554.680 439.339 91.808 439.339 91.761 C 439.323 91.761 280.677 91.761 280.661 91.761 C 280.661 91.808 280.661 554.680 280.661 554.726 Z"/>
