@@ -15,7 +15,6 @@ export type RandomPaletteAlgorithm =
   | "randhue"
   | "hichroma";
 
-
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
   "hichroma";
 
@@ -91,7 +90,6 @@ function threeVColor(rng: Random): string[] {
 }
 
 function randHue(rng: Random): string[] {
-
   let L1 = rng.inInterval({ min: 10, max: 25 }),
     L2 = rng.inInterval({ min: L1 + 25, max: 60 }),
     L3 = rng.inInterval({ min: L2 + 25, max: 85 });
@@ -120,7 +118,6 @@ function randHue(rng: Random): string[] {
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
   return hexcolors;
 }
-
 
 function clampHue(h: number): number {
   let hn = (h / 360) % 1;
@@ -206,7 +203,6 @@ const PALETTE_GENERATORS: {
   threevals: createTriadPaletteGenerator(threeVColor),
   randhue: createTriadPaletteGenerator(randHue),
   hichroma: createTriadPaletteGenerator(hiChroma),
-
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
