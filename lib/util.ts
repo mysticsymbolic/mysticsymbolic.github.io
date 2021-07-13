@@ -58,7 +58,7 @@ export function inclusiveRange({ min, max, step }: NumericRange): number[] {
 /**
  * Clamp a number between min and max
  */
-export function clamp(x: number, min: number, max: number) {
+export function clamp(x: number, min: number, max: number): number {
   return Math.max(min, Math.min(x, max));
 }
 
@@ -87,7 +87,7 @@ export function slugify(text: string) {
 }
 
 /** Returns whether the given number is even (as opposed to odd). */
-export function isEvenNumber(value: number) {
+export function isEvenNumber(value: number): boolean {
   return value % 2 === 0;
 }
 
