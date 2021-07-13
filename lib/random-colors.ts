@@ -1,16 +1,22 @@
 import { Random } from "./random";
 import { range, clamp } from "./util";
 import * as colorspaces from "colorspaces";
-import { ColorTuple, hsluvToHex } from "hsluv";
+import { ColorTuple, luvToLch, lchToHsluv, hsluvToHex } from "hsluv";
 import { clampedBytesToRGBColor } from "./color-util";
+import { getUVSliceGeometery } from "./chromatools";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
 //type ColorFunction = (rng: Random) => string[];
 
-export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "threevals" | "randhue";
+export type RandomPaletteAlgorithm =
+  | "RGB"
+  | "CIELUV"
+  | "threevals"
+  | "randhue"
+  | "hichroma";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
-  "threevals";
+  "hichroma";
 
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
@@ -84,9 +90,9 @@ function threeVColor(rng: Random): string[] {
 }
 
 function randHue(rng: Random): string[] {
-  let L1 = rng.inInterval({ min: 10, max: 25 });
-  let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
-  let L3 = rng.inInterval({ min: L2 + 25, max: 85 });
+  let L1 = rng.inInterval({ min: 10, max: 25 }),
+    L2 = rng.inInterval({ min: L1 + 25, max: 60 }),
+    L3 = rng.inInterval({ min: L2 + 25, max: 85 });
 
   let Ls = [L1, L2, L3];
 
@@ -110,6 +116,48 @@ function randHue(rng: Random): string[] {
 
   //scramble order
   hexcolors = rng.uniqueChoices(hexcolors, hexcolors.length);
+  return hexcolors;
+}
+
+function clampHue(h: number): number {
+  let hn = (h / 360) % 1;
+  if (hn < 0.0) {
+    hn = 1.0 - hn;
+  }
+  hn = 360 * hn;
+  return hn;
+}
+
+function hiChroma(rng: Random): string[] {
+  let L1 = rng.inInterval({ min: 0, max: 25 });
+  let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
+  let L3 = rng.inInterval({ min: L2 + 25, max: 100 });
+
+  let Ls = [L1, L2, L3];
+
+  let hsluvs: ColorTuple[] = [];
+
+  for (let i = 0; i < Ls.length; i++) {
+    let uvSlice = getUVSliceGeometery(Ls[i]);
+    let uvVert = rng.uniqueChoices(uvSlice.verticies, 1)[0];
+    let lch = luvToLch([Ls[i], uvVert.x, uvVert.y]);
+    let hsluv = lchToHsluv(lch);
+
+    //jitter hue
+    hsluv[0] = clampHue(hsluv[0] + rng.fromGaussian({ mean: 0, stddev: 10 }));
+    hsluvs.push(hsluv);
+  }
+
+  //randomize
+  hsluvs = rng.uniqueChoices(hsluvs, hsluvs.length);
+
+  //occasionally desaturate the bg
+  if (rng.bool(0.5)) {
+    hsluvs[0][1] = hsluvs[0][1] * 0.1;
+  }
+  console.log("Maneesh");
+  console.log(hsluvs[0]);
+  let hexcolors = hsluvs.map((x) => hsluvToHex(x as ColorTuple));
   return hexcolors;
 }
 
@@ -154,6 +202,7 @@ const PALETTE_GENERATORS: {
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(threeVColor),
   randhue: createTriadPaletteGenerator(randHue),
+  hichroma: createTriadPaletteGenerator(hiChroma),
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(
