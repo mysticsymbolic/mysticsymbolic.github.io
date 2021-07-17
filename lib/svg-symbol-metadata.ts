@@ -66,11 +66,11 @@ export type SvgSymbolMetadata = SvgSymbolMetadataBooleans & {
   /**
    * Setting this to a positive integer (whole number) will multiply the
    * likelihood that this symbol will be chosen from a random selection of symbols
-   * by the given amount. For example, setting it to 2 will make it twice as
-   * likely to be chosen, setting it to 5 will make it five times more likely,
-   * and so on.
+   * by the given amount when this symbol is used in a creature. For example,
+   * setting it to 2 will make it twice as likely to be chosen, setting it to 5
+   * will make it five times more likely, and so on.
    */
-  frequency_multiplier?: number;
+  creature_frequency_multiplier?: number;
 };
 
 export function validateSvgSymbolMetadata(obj: any): {
@@ -90,8 +90,10 @@ export function validateSvgSymbolMetadata(obj: any): {
       metadata[key] = value;
     } else if (key === "attach_to") {
       metadata.attach_to = validateAttachTo(obj[key]);
-    } else if (key === "frequency_multiplier") {
-      metadata.frequency_multiplier = validateFrequencyMultiplier(obj[key]);
+    } else if (key === "creature_frequency_multiplier") {
+      metadata.creature_frequency_multiplier = validateFrequencyMultiplier(
+        obj[key]
+      );
     } else {
       unknownProperties.push(key);
     }

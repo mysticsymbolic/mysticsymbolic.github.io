@@ -1,18 +1,19 @@
 import { Vocabulary } from "./vocabulary";
 
 describe("Vocabulary", () => {
-  it("calculates probability distributions", () => {
-    type Thing = { name: string; freq: number };
-    const one: Thing = { name: "one", freq: 1 };
-    const two: Thing = { name: "two", freq: 2 };
+  type Thing = { name: string; freq: number };
+  const one: Thing = { name: "one", freq: 1 };
+  const two: Thing = { name: "two", freq: 2 };
 
-    const v = new Vocabulary([one, two], (thing) => thing.freq);
+  const v = new Vocabulary([one, two]);
 
+  it("gets items", () => {
     expect(v.items).toEqual([one, two]);
-    expect(v.distribution).toEqual([one, two, two]);
-    expect(v.getFilteredDistribution((thing) => thing.name === "two")).toEqual([
-      two,
-      two,
-    ]);
+    expect(v.get("one")).toBe(one);
+    expect(v.get("two")).toBe(two);
+  });
+
+  it("raises exception on items not found", () => {
+    expect(() => v.get("boop")).toThrow('Unable to find the item "boop"!');
   });
 });

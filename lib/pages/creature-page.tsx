@@ -32,6 +32,7 @@ import {
 import { Page } from "../page";
 import { RandomizerWidget } from "../randomizer-widget";
 import { VocabularyWidget } from "../vocabulary-widget";
+import { createDistribution } from "../distribution";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -41,8 +42,14 @@ import { VocabularyWidget } from "../vocabulary-widget";
  */
 const MIN_ROOT_ATTACHMENT_POINTS = 2;
 
+const getFilteredDistribution = (predicate: (item: SvgSymbolData) => boolean) =>
+  createDistribution(
+    SvgVocabulary.items.filter(predicate),
+    (s) => s.meta?.creature_frequency_multiplier ?? 1
+  );
+
 /** Symbols that can be the "root" (i.e., main body) of a creature. */
-const ROOT_SYMBOLS = SvgVocabulary.getFilteredDistribution(
+const ROOT_SYMBOLS = getFilteredDistribution(
   (data) =>
     data.meta?.always_be_nested !== true &&
     Array.from(iterAttachmentPoints(data.specs || {})).length >=
@@ -61,7 +68,7 @@ const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
   const result = {} as AttachmentSymbolMap;
 
   for (let type of ATTACHMENT_POINT_TYPES) {
-    result[type] = SvgVocabulary.getFilteredDistribution((data) => {
+    result[type] = getFilteredDistribution((data) => {
       const { meta } = data;
 
       if (type === "wildcard") {
@@ -91,7 +98,7 @@ const ATTACHMENT_SYMBOLS: AttachmentSymbolMap = (() => {
 })();
 
 /** Symbols that can be nested within any part of a creature. */
-const NESTED_SYMBOLS = SvgVocabulary.getFilteredDistribution(
+const NESTED_SYMBOLS = getFilteredDistribution(
   // Since we don't currently support recursive nesting, ignore anything that
   // wants nested children.
   (data) =>

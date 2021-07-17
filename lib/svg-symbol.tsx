@@ -99,10 +99,6 @@ export type SvgSymbolContext = {
   disableGradients: boolean;
 };
 
-export function getSvgSymbolFrequencyMultipler(symbol: SvgSymbolData): number {
-  return symbol.meta?.frequency_multiplier ?? 1;
-}
-
 const DEFAULT_CONTEXT: SvgSymbolContext = {
   stroke: "#000000",
   fill: "#ffffff",

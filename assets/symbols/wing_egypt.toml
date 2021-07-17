@@ -3,4 +3,4 @@ never_be_nested = true
 
 attach_to = ["leg", "arm", "horn"]
 
-frequency_multiplier = 40
+creature_frequency_multiplier = 40

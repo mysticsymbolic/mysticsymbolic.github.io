@@ -48,7 +48,7 @@ background = false
 
 # Setting this to a positive integer (whole number) will multiply the
 # likelihood that this symbol will be chosen from a random selection of symbols
-# by the given amount. For example, setting it to 2 will make it twice as
-# likely to be chosen, setting it to 5 will make it five times more likely,
-# and so on.
-frequency_multiplier = 1
+# by the given amount when this symbol is used in a creature. For example,
+# setting it to 2 will make it twice as likely to be chosen, setting it to 5
+# will make it five times more likely, and so on.
+creature_frequency_multiplier = 1
