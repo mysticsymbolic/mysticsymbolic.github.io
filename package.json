@@ -25,9 +25,8 @@
     "moduleNameMapper": {
       "\\.(css)$": "<rootDir>/__mocks__/css-mock.js"
     },
-    "testPathIgnorePatterns": [
-      "dist",
-      ".cache"
+    "collectCoverageFrom": [
+      "lib/**/*.{ts,tsx}"
     ]
   },
   "dependencies": {
