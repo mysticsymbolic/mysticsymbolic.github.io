@@ -10,7 +10,7 @@ type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
 export type RandomPaletteAlgorithm = "RGB" | "CIELUV" | "threevals" | "randhue";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
-  "threevals";
+  "randhue";
 
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
