@@ -3,6 +3,7 @@ import fs from "fs";
 import toml from "toml";
 import {
   validateAttachTo,
+  validateFrequencyMultiplier,
   validateSvgSymbolMetadata,
 } from "./svg-symbol-metadata";
 import { withMockConsoleLog } from "./test-util";
@@ -75,5 +76,29 @@ describe("validateAttachTo()", () => {
     expect(() => validateAttachTo("blah")).toThrow(
       'Expected "attach_to" to be an array, but it is a string!'
     );
+  });
+});
+
+describe("validateFrequencyMultiplier()", () => {
+  it("works", () => {
+    expect(validateFrequencyMultiplier(5)).toBe(5);
+  });
+
+  it("enforces minimum value", () => {
+    withMockConsoleLog((mockLog) => {
+      expect(validateFrequencyMultiplier(-1)).toBe(1);
+      expect(mockLog).toHaveBeenCalledWith(
+        "Frequency multiplier is less than minimum of 1."
+      );
+    });
+  });
+
+  it("ignores garbage values", () => {
+    withMockConsoleLog((mockLog) => {
+      expect(validateFrequencyMultiplier("barf")).toBeUndefined;
+      expect(mockLog).toHaveBeenCalledWith(
+        'Frequency multiplier "barf" is not a number.'
+      );
+    });
   });
 });

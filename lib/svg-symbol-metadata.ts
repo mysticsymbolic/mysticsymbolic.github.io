@@ -62,6 +62,15 @@ export type SvgSymbolMetadata = SvgSymbolMetadataBooleans & {
    * be able to attach to any symbol.
    */
   attach_to?: AttachmentPointType[];
+
+  /**
+   * Setting this to a positive integer (whole number) will multiply the
+   * likelihood that this symbol will be chosen from a random selection of symbols
+   * by the given amount when this symbol is used in a creature. For example,
+   * setting it to 2 will make it twice as likely to be chosen, setting it to 5
+   * will make it five times more likely, and so on.
+   */
+  creature_frequency_multiplier?: number;
 };
 
 export function validateSvgSymbolMetadata(obj: any): {
@@ -81,11 +90,33 @@ export function validateSvgSymbolMetadata(obj: any): {
       metadata[key] = value;
     } else if (key === "attach_to") {
       metadata.attach_to = validateAttachTo(obj[key]);
+    } else if (key === "creature_frequency_multiplier") {
+      metadata.creature_frequency_multiplier = validateFrequencyMultiplier(
+        obj[key]
+      );
     } else {
       unknownProperties.push(key);
     }
   }
   return { metadata, unknownProperties };
+}
+
+const MIN_FREQUENCY_MULTIPLIER = 1;
+
+export function validateFrequencyMultiplier(
+  value: unknown
+): number | undefined {
+  if (typeof value === "number") {
+    if (value < MIN_FREQUENCY_MULTIPLIER) {
+      console.log(
+        `Frequency multiplier is less than minimum of ${MIN_FREQUENCY_MULTIPLIER}.`
+      );
+      return MIN_FREQUENCY_MULTIPLIER;
+    }
+    return Math.floor(value);
+  }
+  console.log(`Frequency multiplier "${value}" is not a number.`);
+  return undefined;
 }
 
 export function validateAttachTo(value: unknown): AttachmentPointType[] {

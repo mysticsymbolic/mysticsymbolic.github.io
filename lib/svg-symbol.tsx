@@ -3,7 +3,7 @@ import { SVGProps } from "react";
 import { BBox } from "../vendor/bezier-js";
 import { FILL_REPLACEMENT_COLOR, STROKE_REPLACEMENT_COLOR } from "./colors";
 import { AttachmentPointType, PointWithNormal, Specs } from "./specs";
-import type { SvgSymbolMetadata } from "./svg-symbol-metadata";
+import { SvgSymbolMetadata } from "./svg-symbol-metadata";
 import {
   UniqueIdMap,
   URL_FUNC_TO_ANCHOR_RE,
