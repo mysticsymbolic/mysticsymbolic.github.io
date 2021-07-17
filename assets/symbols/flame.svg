@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Moho 13.5 build 20210422 -->
+<!-- Generator: Moho 13.5.1 build 20210623 -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Frame_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720px" height="720px">
 <g id="flame">
 <g id="flame">
-<linearGradient id="47C62D7B-B90D-48B8-B995-E8C8D6323170_0" x1="52.57%" y1="92.61%" x2="-40.48%" y2="-23.20%">
-<stop offset="20.00%" style="stop-color:rgb(255,255,255);stop-opacity:1.00" />
-<stop offset="100.00%" style="stop-color:rgb(0,0,0);stop-opacity:1.00" />
-</linearGradient>
-<path fill="url(#47C62D7B-B90D-48B8-B995-E8C8D6323170_0)" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 31.847 C 313.603 111.130 320.782 195.697 362.316 247.481 C 422.618 322.666 416.941 385.419 357.131 396.225 C 288.123 408.692 254.659 304.833 284.690 208.747 C 204.463 286.404 193.581 353.443 196.024 417.557 C 201.783 568.720 323.303 598.331 360.000 688.153 C 406.809 604.283 553.571 543.039 520.538 359.912 C 495.266 219.805 368.959 186.994 360.000 31.847 Z"/>
+<path fill="#ffffff" fill-rule="evenodd" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 360.000 31.847 C 313.603 111.130 320.782 195.697 362.316 247.481 C 422.618 322.666 416.941 385.419 357.131 396.225 C 288.123 408.692 254.659 304.833 284.690 208.747 C 204.463 286.404 193.581 353.443 196.024 417.557 C 201.783 568.720 323.303 598.331 360.000 688.153 C 406.809 604.283 553.571 543.039 520.538 359.912 C 495.266 219.805 368.959 186.994 360.000 31.847 Z"/>
 </g>
 <g id="flame_2">
 <path fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 502.010 362.213 C 478.376 240.689 394.920 239.211 351.978 82.276 C 334.204 151.030 352.134 205.163 383.838 245.914 C 453.470 335.415 434.097 410.682 363.171 419.804 C 299.966 427.933 246.979 368.108 257.321 270.962 C 219.509 333.816 213.156 372.402 216.845 414.391 C 229.001 552.762 328.534 568.474 360.000 645.746 C 400.706 573.006 532.838 520.734 502.010 362.213 "/>
