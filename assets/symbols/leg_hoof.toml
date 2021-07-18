@@ -2,4 +2,4 @@
 
 never_be_nested = true
 
-attach_to = ["leg", "arm", "horn"]
+attach_to = ["leg", "arm"]
