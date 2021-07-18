@@ -33,6 +33,10 @@ import { Page } from "../page";
 import { RandomizerWidget } from "../randomizer-widget";
 import { VocabularyWidget } from "../vocabulary-widget";
 import { createDistribution } from "../distribution";
+import {
+  ComponentWithShareableStateProps,
+  createPageWithShareableState,
+} from "../page-with-shareable-state";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -236,16 +240,29 @@ function repeatUntilSymbolIsIncluded(
   return createCreature(rng);
 }
 
-export const CreaturePage: React.FC<{}> = () => {
-  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
-
+const CreaturePageWithDefaults: React.FC<
+  ComponentWithShareableStateProps<number>
+> = (props) => {
   return (
     <CreaturePageWithRandomSeed
-      randomSeed={randomSeed}
-      onRandomize={() => setRandomSeed(Date.now())}
+      randomSeed={props.defaults}
+      onRandomize={() => props.onChange(Date.now())}
     />
   );
 };
+
+export const CreaturePage = createPageWithShareableState({
+  defaultValue: Date.now(),
+  serialize: (seed) => seed.toString(),
+  deserialize: (str) => {
+    const number = parseInt(str);
+    if (isNaN(number)) {
+      throw new Error("Invalid random seed!");
+    }
+    return number;
+  },
+  component: CreaturePageWithDefaults,
+});
 
 const CreaturePageWithRandomSeed: React.FC<{
   randomSeed: number;
