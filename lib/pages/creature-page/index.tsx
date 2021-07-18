@@ -1,42 +1,42 @@
 import React, { useContext, useMemo, useRef, useState } from "react";
-import { SvgVocabulary, SvgVocabularyWithBlank } from "../svg-vocabulary";
+import { SvgVocabulary, SvgVocabularyWithBlank } from "../../svg-vocabulary";
 import {
   EMPTY_SVG_SYMBOL_DATA,
   noFillIfShowingSpecs,
   SvgSymbolData,
-} from "../svg-symbol";
+} from "../../svg-symbol";
 import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
   iterAttachmentPoints,
-} from "../specs";
-import { Random } from "../random";
-import { range } from "../util";
+} from "../../specs";
+import { Random } from "../../random";
+import { range } from "../../util";
 
-import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
+import { AutoSizingSvg } from "../../auto-sizing-svg";
+import { ExportWidget } from "../../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
   CreatureSymbol,
   NestedCreatureSymbol,
-} from "../creature-symbol";
-import { HoverDebugHelper } from "../hover-debug-helper";
-import { svgScale, SvgTransform } from "../svg-transform";
-import { NumericSlider } from "../numeric-slider";
-import { Checkbox } from "../checkbox";
+} from "../../creature-symbol";
+import { HoverDebugHelper } from "../../hover-debug-helper";
+import { svgScale, SvgTransform } from "../../svg-transform";
+import { NumericSlider } from "../../numeric-slider";
+import { Checkbox } from "../../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
-} from "../svg-composition-context";
-import { Page } from "../page";
-import { RandomizerWidget } from "../randomizer-widget";
-import { VocabularyWidget } from "../vocabulary-widget";
-import { createDistribution } from "../distribution";
+} from "../../svg-composition-context";
+import { Page } from "../../page";
+import { RandomizerWidget } from "../../randomizer-widget";
+import { VocabularyWidget } from "../../vocabulary-widget";
+import { createDistribution } from "../../distribution";
 import {
   ComponentWithShareableStateProps,
   createPageWithShareableState,
-} from "../page-with-shareable-state";
+} from "../../page-with-shareable-state";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
