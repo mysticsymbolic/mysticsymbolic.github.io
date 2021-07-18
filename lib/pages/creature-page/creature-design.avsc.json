@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "AvroCreatureDesign",
+  "fields": [
+    { "name": "randomSeed", "type": "long" },
+    { "name": "randomlyInvert", "type": "boolean" },
+    { "name": "complexity", "type": "int" },
+    { "name": "alwaysIncludeSymbol", "type": "string" },
+    {
+      "name": "compCtx",
+      "type": {
+        "name": "AvroSvgCompositionContext",
+        "type": "record",
+        "fields": [
+          { "name": "stroke", "type": "int" },
+          { "name": "fill", "type": "int" },
+          { "name": "background", "type": "int" },
+          { "name": "uniformStrokeWidth", "type": "float" },
+          { "name": "disableGradients", "type": "boolean", "default": true }
+        ]
+      }
+    }
+  ]
+}

@@ -26,7 +26,7 @@ const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
  * for the purposes of serialization, and "unpacking" the packed type
  * back to its original representation (for deserialization).
  */
-interface Packer<UnpackedType, PackedType> {
+export interface Packer<UnpackedType, PackedType> {
   pack(value: UnpackedType): PackedType;
   unpack(value: PackedType): UnpackedType;
 }
@@ -42,7 +42,7 @@ const CirclePacker: Packer<ExtendedMandalaCircleParams, AvroCircle> = {
   }),
 };
 
-const SvgCompositionContextPacker: Packer<
+export const SvgCompositionContextPacker: Packer<
   SvgCompositionContext,
   AvroSvgCompositionContext
 > = {
