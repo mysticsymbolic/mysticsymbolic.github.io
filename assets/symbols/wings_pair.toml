@@ -17,4 +17,6 @@ background = true
 
 attach_to = ["horn", "crown"]
 
+creature_frequency_multiplier = 7
+
 
