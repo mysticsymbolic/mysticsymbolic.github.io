@@ -237,13 +237,25 @@ function repeatUntilSymbolIsIncluded(
 }
 
 export const CreaturePage: React.FC<{}> = () => {
-  const svgRef = useRef<SVGSVGElement>(null);
   const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+
+  return (
+    <CreaturePageWithRandomSeed
+      randomSeed={randomSeed}
+      onRandomize={() => setRandomSeed(Date.now())}
+    />
+  );
+};
+
+const CreaturePageWithRandomSeed: React.FC<{
+  randomSeed: number;
+  onRandomize: () => void;
+}> = ({ randomSeed, onRandomize }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
   const [randomlyInvert, setRandomlyInvert] = useState(true);
   const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
   const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
   const defaultCtx = useContext(CreatureContext);
-  const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = noFillIfShowingSpecs({
     ...defaultCtx,
     ...compCtx,
@@ -278,7 +290,7 @@ export const CreaturePage: React.FC<{}> = () => {
             value={complexity}
             onChange={(value) => {
               setComplexity(value);
-              newRandomSeed();
+              onRandomize();
             }}
           />
         </div>
@@ -291,7 +303,7 @@ export const CreaturePage: React.FC<{}> = () => {
         </div>
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
-          onSymbolsChange={newRandomSeed}
+          onSymbolsChange={onRandomize}
         >
           <div className="thingy">
             <VocabularyWidget
