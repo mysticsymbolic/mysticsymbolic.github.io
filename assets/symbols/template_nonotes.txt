@@ -21,3 +21,9 @@ background = true
 attach_to = ["tail", "leg", "arm", "horn", "crown"]
 
 
+never_flip_attachments = true
+
+
+creature_frequency_multiplier = 10
+
+
