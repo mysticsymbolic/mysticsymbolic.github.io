@@ -4,3 +4,7 @@
 # point.
 
 attach_to = []
+
+never_be_nested = true
+
+rotate_clockwise = true
