@@ -2,4 +2,6 @@
 
 invert_nested = true
 
+never_be_nested = true
+
 attach_to = ["leg", "arm", "horn"]
