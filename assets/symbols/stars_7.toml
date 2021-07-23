@@ -8,3 +8,6 @@ background = true
 
 
 attach_to = ["tail", "leg", "arm", "horn", "crown"]
+
+
+creature_frequency_multiplier = 3
