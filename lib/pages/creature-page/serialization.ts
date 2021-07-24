@@ -1,13 +1,10 @@
 import * as avro from "avro-js";
-import {
-  Packer,
-  SvgCompositionContextPacker,
-} from "../mandala-page/serialization";
 import { CreatureDesign } from "./core";
 import { AvroCreatureDesign } from "./creature-design.avsc";
 import { fromBase64, toBase64 } from "../../base64";
 import CreatureAvsc from "./creature-design.avsc.json";
 import { SvgVocabularyWithBlank } from "../../svg-vocabulary";
+import { Packer, SvgCompositionContextPacker } from "../../serialization";
 
 const LATEST_VERSION = "v1";
 
