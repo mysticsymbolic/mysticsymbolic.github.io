@@ -1,12 +1,7 @@
 import { SvgVocabulary } from "../../svg-vocabulary";
-import { SvgCompositionContext } from "../../svg-composition-context";
 import MandalaAvsc from "./mandala-design.avsc.json";
 import MandalaAvscV1 from "./mandala-design.v1.avsc.json";
-import type {
-  AvroCircle,
-  AvroMandalaDesign,
-  AvroSvgCompositionContext,
-} from "./mandala-design.avsc";
+import type { AvroCircle, AvroMandalaDesign } from "./mandala-design.avsc";
 import * as avro from "avro-js";
 import {
   MANDALA_DESIGN_DEFAULTS,
@@ -15,21 +10,11 @@ import {
   getCirclesFromDesign,
 } from "./core";
 import { fromBase64, toBase64 } from "../../base64";
-import { clampedBytesToRGBColor, parseHexColor } from "../../color-util";
+import { Packer, SvgCompositionContextPacker } from "../../serialization";
 
 const LATEST_VERSION = "v2";
 
 const avroMandalaDesign = avro.parse<AvroMandalaDesign>(MandalaAvsc);
-
-/**
- * A generic interface for "packing" one type to a different representation
- * for the purposes of serialization, and "unpacking" the packed type
- * back to its original representation (for deserialization).
- */
-interface Packer<UnpackedType, PackedType> {
-  pack(value: UnpackedType): PackedType;
-  unpack(value: PackedType): UnpackedType;
-}
 
 const CirclePacker: Packer<ExtendedMandalaCircleParams, AvroCircle> = {
   pack: ({ data, ...circle }) => ({
@@ -40,39 +25,6 @@ const CirclePacker: Packer<ExtendedMandalaCircleParams, AvroCircle> = {
     ...circle,
     data: SvgVocabulary.get(symbol),
   }),
-};
-
-const SvgCompositionContextPacker: Packer<
-  SvgCompositionContext,
-  AvroSvgCompositionContext
-> = {
-  pack: (ctx) => ({
-    ...ctx,
-    fill: ColorPacker.pack(ctx.fill),
-    stroke: ColorPacker.pack(ctx.stroke),
-    background: ColorPacker.pack(ctx.background),
-    uniformStrokeWidth: ctx.uniformStrokeWidth || 1,
-  }),
-  unpack: (ctx) => ({
-    ...ctx,
-    fill: ColorPacker.unpack(ctx.fill),
-    stroke: ColorPacker.unpack(ctx.stroke),
-    background: ColorPacker.unpack(ctx.background),
-    showSpecs: false,
-  }),
-};
-
-export const ColorPacker: Packer<string, number> = {
-  pack: (string) => {
-    const [red, green, blue] = parseHexColor(string);
-    return (red << 16) + (green << 8) + blue;
-  },
-  unpack: (number) => {
-    const red = (number >> 16) & 0xff;
-    const green = (number >> 8) & 0xff;
-    const blue = number & 0xff;
-    return clampedBytesToRGBColor([red, green, blue]);
-  },
 };
 
 const DesignConfigPacker: Packer<MandalaDesign, AvroMandalaDesign> = {

@@ -1,38 +1,46 @@
-import React, { useContext, useMemo, useRef, useState } from "react";
-import { SvgVocabulary, SvgVocabularyWithBlank } from "../svg-vocabulary";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { SvgVocabulary, SvgVocabularyWithBlank } from "../../svg-vocabulary";
 import {
   EMPTY_SVG_SYMBOL_DATA,
   noFillIfShowingSpecs,
   SvgSymbolData,
-} from "../svg-symbol";
+} from "../../svg-symbol";
 import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
   iterAttachmentPoints,
-} from "../specs";
-import { Random } from "../random";
-import { range } from "../util";
+} from "../../specs";
+import { Random } from "../../random";
+import { range } from "../../util";
 
-import { AutoSizingSvg } from "../auto-sizing-svg";
-import { ExportWidget } from "../export-svg";
+import { AutoSizingSvg } from "../../auto-sizing-svg";
+import { ExportWidget } from "../../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
   CreatureSymbol,
   NestedCreatureSymbol,
-} from "../creature-symbol";
-import { HoverDebugHelper } from "../hover-debug-helper";
-import { svgScale, SvgTransform } from "../svg-transform";
-import { NumericSlider } from "../numeric-slider";
-import { Checkbox } from "../checkbox";
+} from "../../creature-symbol";
+import { HoverDebugHelper } from "../../hover-debug-helper";
+import { svgScale, SvgTransform } from "../../svg-transform";
+import { NumericSlider } from "../../numeric-slider";
+import { Checkbox } from "../../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
-} from "../svg-composition-context";
-import { Page } from "../page";
-import { RandomizerWidget } from "../randomizer-widget";
-import { VocabularyWidget } from "../vocabulary-widget";
-import { createDistribution } from "../distribution";
+} from "../../svg-composition-context";
+import { Page } from "../../page";
+import { RandomizerWidget } from "../../randomizer-widget";
+import { VocabularyWidget } from "../../vocabulary-widget";
+import { createDistribution } from "../../distribution";
+import { ComponentWithShareableStateProps } from "../../page-with-shareable-state";
+import { useDebouncedEffect } from "../../use-debounced-effect";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -236,12 +244,24 @@ function repeatUntilSymbolIsIncluded(
   return createCreature(rng);
 }
 
-export const CreaturePage: React.FC<{}> = () => {
+export const CREATURE_DESIGN_DEFAULTS = {
+  randomSeed: 0,
+  randomlyInvert: true,
+  complexity: INITIAL_COMPLEXITY_LEVEL,
+  alwaysIncludeSymbol: EMPTY_SVG_SYMBOL_DATA,
+  compCtx: createSvgCompositionContext(),
+};
+
+export type CreatureDesign = typeof CREATURE_DESIGN_DEFAULTS;
+
+export const CreaturePageWithDefaults: React.FC<
+  ComponentWithShareableStateProps<CreatureDesign>
+> = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
-  const [randomlyInvert, setRandomlyInvert] = useState(true);
-  const [compCtx, setCompCtx] = useState(createSvgCompositionContext());
-  const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
+  const [randomSeed, setRandomSeed] = useState(defaults.randomSeed);
+  const [randomlyInvert, setRandomlyInvert] = useState(defaults.randomlyInvert);
+  const [compCtx, setCompCtx] = useState(defaults.compCtx);
+  const [complexity, setComplexity] = useState(defaults.complexity);
   const defaultCtx = useContext(CreatureContext);
   const newRandomSeed = () => setRandomSeed(Date.now());
   const ctx: CreatureContextType = noFillIfShowingSpecs({
@@ -249,7 +269,7 @@ export const CreaturePage: React.FC<{}> = () => {
     ...compCtx,
   });
   const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
-    EMPTY_SVG_SYMBOL_DATA
+    defaults.alwaysIncludeSymbol
   );
   const creature = useMemo(
     () =>
@@ -263,6 +283,21 @@ export const CreaturePage: React.FC<{}> = () => {
           })
       ),
     [alwaysInclude, complexity, randomSeed, randomlyInvert]
+  );
+  const design: CreatureDesign = useMemo(
+    () => ({
+      randomSeed,
+      randomlyInvert,
+      complexity,
+      alwaysIncludeSymbol: alwaysInclude,
+      compCtx,
+    }),
+    [randomSeed, randomlyInvert, complexity, alwaysInclude, compCtx]
+  );
+
+  useDebouncedEffect(
+    250,
+    useCallback(() => onChange(design), [onChange, design])
   );
 
   return (
