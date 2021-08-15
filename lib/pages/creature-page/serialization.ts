@@ -1,24 +1,61 @@
 import * as avro from "avro-js";
 import { CreatureDesign } from "./core";
-import { AvroCreatureDesign, AvroCreatureSymbol } from "./creature-design.avsc";
+import {
+  AvroAttachedCreatureSymbol,
+  AvroCreatureDesign,
+  AvroCreatureSymbol,
+} from "./creature-design.avsc";
 import { fromBase64, toBase64 } from "../../base64";
 import CreatureAvsc from "./creature-design.avsc.json";
 import { Packer, SvgCompositionContextPacker } from "../../serialization";
-import { CreatureSymbol } from "../../creature-symbol";
+import { AttachedCreatureSymbol, CreatureSymbol } from "../../creature-symbol";
 import { SvgVocabulary } from "../../svg-vocabulary";
+import { ATTACHMENT_POINT_TYPES } from "../../specs";
 
 const LATEST_VERSION = "v2";
 
 const avroCreatureDesign = avro.parse<AvroCreatureDesign>(CreatureAvsc);
+
+const ATTACHMENT_POINT_MAPPING = new Map(
+  ATTACHMENT_POINT_TYPES.map((name, i) => {
+    return [name, i];
+  })
+);
+
+const AttachedCreatureSymbolPacker: Packer<
+  AttachedCreatureSymbol,
+  AvroAttachedCreatureSymbol
+> = {
+  pack: (value) => {
+    const attachTo = ATTACHMENT_POINT_MAPPING.get(value.attachTo);
+    if (attachTo === undefined) {
+      throw new Error(`Invalid attachment type "${value.attachTo}"`);
+    }
+    return {
+      base: CreatureSymbolPacker.pack(value),
+      attachTo,
+      indices: Buffer.from(value.indices),
+    };
+  },
+  unpack: (value) => {
+    const attachTo = ATTACHMENT_POINT_TYPES[value.attachTo];
+    if (attachTo === undefined) {
+      throw new Error(`Invalid attachment type "${value.attachTo}"`);
+    }
+    return {
+      ...CreatureSymbolPacker.unpack(value.base),
+      attachTo,
+      indices: Array.from(value.indices),
+    };
+  },
+};
 
 const CreatureSymbolPacker: Packer<CreatureSymbol, AvroCreatureSymbol> = {
   pack: (value) => {
     return {
       ...value,
       symbol: value.data.name,
-
-      // TODO: Implement this!
-      attachments: [],
+      attachments: value.attachments.map(AttachedCreatureSymbolPacker.pack),
       nests: [],
     };
   },
@@ -26,9 +63,7 @@ const CreatureSymbolPacker: Packer<CreatureSymbol, AvroCreatureSymbol> = {
     return {
       ...value,
       data: SvgVocabulary.get(value.symbol),
-
-      // TODO: Implement this!
-      attachments: [],
+      attachments: value.attachments.map(AttachedCreatureSymbolPacker.unpack),
       nests: [],
     };
   },
