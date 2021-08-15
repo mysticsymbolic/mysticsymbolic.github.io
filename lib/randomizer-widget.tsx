@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { PaletteAlgorithmWidget } from "./palette-algorithm-widget";
 import { Random } from "./random";
 import {
@@ -7,6 +7,7 @@ import {
   RandomPaletteAlgorithm,
 } from "./random-colors";
 import { SvgCompositionContext } from "./svg-composition-context";
+import { useRememberedState } from "./use-remembered-state";
 
 type SvgCompositionColors = Pick<
   SvgCompositionContext,
@@ -31,10 +32,15 @@ export type RandomizerWidgetProps = {
 
 export const RandomizerWidget: React.FC<RandomizerWidgetProps> = (props) => {
   type RandType = "colors" | "symbols" | "colors and symbols";
-  const [paletteAlg, setPaletteAlg] = useState<RandomPaletteAlgorithm>(
-    DEFAULT_RANDOM_PALETTE_ALGORITHM
+  const [paletteAlg, setPaletteAlg] =
+    useRememberedState<RandomPaletteAlgorithm>(
+      "randomizer-widget:paletteAlg",
+      DEFAULT_RANDOM_PALETTE_ALGORITHM
+    );
+  const [randType, setRandType] = useRememberedState<RandType>(
+    "randomizer-widget:randType",
+    "colors and symbols"
   );
-  const [randType, setRandType] = useState<RandType>("colors and symbols");
   const randomize = () => {
     if (randType === "colors" || randType === "colors and symbols") {
       props.onColorsChange(createRandomCompositionColors(paletteAlg));
