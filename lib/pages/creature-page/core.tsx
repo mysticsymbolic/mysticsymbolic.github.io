@@ -314,26 +314,6 @@ export const CreaturePageWithDefaults: React.FC<
     <Page title="Creature!">
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
-        <div className="thingy">
-          <NumericSlider
-            label="Random creature complexity"
-            min={0}
-            max={MAX_COMPLEXITY_LEVEL}
-            step={1}
-            value={complexity}
-            onChange={(value) => {
-              setComplexity(value);
-              newRandomCreature();
-            }}
-          />
-        </div>
-        <div className="thingy">
-          <Checkbox
-            label="Randomly invert symbols"
-            value={randomlyInvert}
-            onChange={setRandomlyInvert}
-          />
-        </div>
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomCreature}
@@ -344,6 +324,23 @@ export const CreaturePageWithDefaults: React.FC<
               value={alwaysInclude}
               onChange={setAlwaysInclude}
               choices={SvgVocabularyWithBlank}
+            />
+          </div>
+          <div className="thingy">
+            <NumericSlider
+              label="Random creature complexity"
+              min={0}
+              max={MAX_COMPLEXITY_LEVEL}
+              step={1}
+              value={complexity}
+              onChange={setComplexity}
+            />
+          </div>
+          <div className="thingy">
+            <Checkbox
+              label="Randomly invert symbols"
+              value={randomlyInvert}
+              onChange={setRandomlyInvert}
             />
           </div>
         </RandomizerWidget>
