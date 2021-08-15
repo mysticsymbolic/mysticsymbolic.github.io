@@ -4,11 +4,16 @@ import {
   AvroAttachedCreatureSymbol,
   AvroCreatureDesign,
   AvroCreatureSymbol,
+  AvroNestedCreatureSymbol,
 } from "./creature-design.avsc";
 import { fromBase64, toBase64 } from "../../base64";
 import CreatureAvsc from "./creature-design.avsc.json";
 import { Packer, SvgCompositionContextPacker } from "../../serialization";
-import { AttachedCreatureSymbol, CreatureSymbol } from "../../creature-symbol";
+import {
+  AttachedCreatureSymbol,
+  CreatureSymbol,
+  NestedCreatureSymbol,
+} from "../../creature-symbol";
 import { SvgVocabulary } from "../../svg-vocabulary";
 import { ATTACHMENT_POINT_TYPES } from "../../specs";
 
@@ -21,6 +26,24 @@ const ATTACHMENT_POINT_MAPPING = new Map(
     return [name, i];
   })
 );
+
+const NestedCreatureSymbolPacker: Packer<
+  NestedCreatureSymbol,
+  AvroNestedCreatureSymbol
+> = {
+  pack: (value) => {
+    return {
+      base: CreatureSymbolPacker.pack(value),
+      indices: Buffer.from(value.indices),
+    };
+  },
+  unpack: (value) => {
+    return {
+      ...CreatureSymbolPacker.unpack(value.base),
+      indices: Array.from(value.indices),
+    };
+  },
+};
 
 const AttachedCreatureSymbolPacker: Packer<
   AttachedCreatureSymbol,
@@ -56,7 +79,7 @@ const CreatureSymbolPacker: Packer<CreatureSymbol, AvroCreatureSymbol> = {
       ...value,
       symbol: value.data.name,
       attachments: value.attachments.map(AttachedCreatureSymbolPacker.pack),
-      nests: [],
+      nests: value.nests.map(NestedCreatureSymbolPacker.pack),
     };
   },
   unpack: (value) => {
@@ -64,7 +87,7 @@ const CreatureSymbolPacker: Packer<CreatureSymbol, AvroCreatureSymbol> = {
       ...value,
       data: SvgVocabulary.get(value.symbol),
       attachments: value.attachments.map(AttachedCreatureSymbolPacker.unpack),
-      nests: [],
+      nests: value.nests.map(NestedCreatureSymbolPacker.unpack),
     };
   },
 };
