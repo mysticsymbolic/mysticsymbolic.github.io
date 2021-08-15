@@ -42,6 +42,7 @@ import { VocabularyWidget } from "../../vocabulary-widget";
 import { createDistribution } from "../../distribution";
 import { ComponentWithShareableStateProps } from "../../page-with-shareable-state";
 import { useDebouncedEffect } from "../../use-debounced-effect";
+import { useRememberedState } from "../../use-remembered-state";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -264,9 +265,15 @@ export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [randomlyInvert, setRandomlyInvert] = useState(true);
+  const [randomlyInvert, setRandomlyInvert] = useRememberedState(
+    "creature-page:randomlyInvert",
+    true
+  );
   const [compCtx, setCompCtx] = useState(defaults.compCtx);
-  const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
+  const [complexity, setComplexity] = useRememberedState(
+    "creature-page:complexity",
+    INITIAL_COMPLEXITY_LEVEL
+  );
   const [creature, setCreature] = useState(defaults.creature);
   const defaultCtx = useContext(CreatureContext);
   const newRandomCreature = () => {
@@ -286,7 +293,8 @@ export const CreaturePageWithDefaults: React.FC<
     ...defaultCtx,
     ...compCtx,
   });
-  const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
+  const [alwaysInclude, setAlwaysInclude] = useRememberedState<SvgSymbolData>(
+    "creature-page:alwaysInclude",
     EMPTY_SVG_SYMBOL_DATA
   );
   const design: CreatureDesign = useMemo(
