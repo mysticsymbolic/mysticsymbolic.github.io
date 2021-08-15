@@ -34,6 +34,7 @@ import { Checkbox } from "../../checkbox";
 import {
   CompositionContextWidget,
   createSvgCompositionContext,
+  SvgCompositionContext,
 } from "../../svg-composition-context";
 import { Page } from "../../page";
 import { RandomizerWidget } from "../../randomizer-widget";
@@ -206,8 +207,8 @@ const MAX_COMPLEXITY_LEVEL = COMPLEXITY_LEVEL_GENERATORS.length - 1;
 
 const INITIAL_COMPLEXITY_LEVEL = 2;
 
-function getDownloadBasename(randomSeed: number) {
-  return `mystic-symbolic-creature-${randomSeed}`;
+function getDownloadBasename(rootSymbolName: string) {
+  return `mystic-symbolic-creature-${rootSymbolName}`;
 }
 
 function creatureHasSymbol(
@@ -244,55 +245,56 @@ function repeatUntilSymbolIsIncluded(
   return createCreature(rng);
 }
 
-export const CREATURE_DESIGN_DEFAULTS = {
-  randomSeed: 0,
-  randomlyInvert: true,
-  complexity: INITIAL_COMPLEXITY_LEVEL,
-  alwaysIncludeSymbol: EMPTY_SVG_SYMBOL_DATA,
-  compCtx: createSvgCompositionContext(),
+export type CreatureDesign = {
+  compCtx: SvgCompositionContext;
+  creature: CreatureSymbol;
 };
 
-export type CreatureDesign = typeof CREATURE_DESIGN_DEFAULTS;
+export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
+  compCtx: createSvgCompositionContext(),
+  creature: {
+    data: ROOT_SYMBOLS[0],
+    invertColors: false,
+    attachments: [],
+    nests: [],
+  },
+};
 
 export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [randomSeed, setRandomSeed] = useState(defaults.randomSeed);
-  const [randomlyInvert, setRandomlyInvert] = useState(defaults.randomlyInvert);
+  const [randomlyInvert, setRandomlyInvert] = useState(true);
   const [compCtx, setCompCtx] = useState(defaults.compCtx);
-  const [complexity, setComplexity] = useState(defaults.complexity);
+  const [complexity, setComplexity] = useState(INITIAL_COMPLEXITY_LEVEL);
+  const [creature, setCreature] = useState(defaults.creature);
   const defaultCtx = useContext(CreatureContext);
-  const newRandomSeed = () => setRandomSeed(Date.now());
-  const ctx: CreatureContextType = noFillIfShowingSpecs({
-    ...defaultCtx,
-    ...compCtx,
-  });
-  const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
-    defaults.alwaysIncludeSymbol
-  );
-  const creature = useMemo(
-    () =>
+  const newRandomCreature = () => {
+    setCreature(
       repeatUntilSymbolIsIncluded(
         alwaysInclude,
-        new Random(randomSeed),
+        new Random(Date.now()),
         (rng) =>
           COMPLEXITY_LEVEL_GENERATORS[complexity]({
             rng,
             randomlyInvert,
           })
-      ),
-    [alwaysInclude, complexity, randomSeed, randomlyInvert]
+      )
+    );
+  };
+  const ctx: CreatureContextType = noFillIfShowingSpecs({
+    ...defaultCtx,
+    ...compCtx,
+  });
+  const [alwaysInclude, setAlwaysInclude] = useState<SvgSymbolData>(
+    EMPTY_SVG_SYMBOL_DATA
   );
   const design: CreatureDesign = useMemo(
     () => ({
-      randomSeed,
-      randomlyInvert,
-      complexity,
-      alwaysIncludeSymbol: alwaysInclude,
+      creature,
       compCtx,
     }),
-    [randomSeed, randomlyInvert, complexity, alwaysInclude, compCtx]
+    [creature, compCtx]
   );
 
   useDebouncedEffect(
@@ -313,7 +315,7 @@ export const CreaturePageWithDefaults: React.FC<
             value={complexity}
             onChange={(value) => {
               setComplexity(value);
-              newRandomSeed();
+              newRandomCreature();
             }}
           />
         </div>
@@ -326,7 +328,7 @@ export const CreaturePageWithDefaults: React.FC<
         </div>
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
-          onSymbolsChange={newRandomSeed}
+          onSymbolsChange={newRandomCreature}
         >
           <div className="thingy">
             <VocabularyWidget
@@ -339,7 +341,7 @@ export const CreaturePageWithDefaults: React.FC<
         </RandomizerWidget>
         <div className="thingy">
           <ExportWidget
-            basename={getDownloadBasename(randomSeed)}
+            basename={getDownloadBasename(creature.data.name)}
             svgRef={svgRef}
           />
         </div>

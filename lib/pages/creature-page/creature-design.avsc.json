@@ -2,10 +2,6 @@
   "type": "record",
   "name": "AvroCreatureDesign",
   "fields": [
-    { "name": "randomSeed", "type": "long" },
-    { "name": "randomlyInvert", "type": "boolean" },
-    { "name": "complexity", "type": "int" },
-    { "name": "alwaysIncludeSymbol", "type": "string" },
     {
       "name": "compCtx",
       "type": {
@@ -17,6 +13,46 @@
           { "name": "background", "type": "int" },
           { "name": "uniformStrokeWidth", "type": "float" },
           { "name": "disableGradients", "type": "boolean", "default": true }
+        ]
+      }
+    },
+    {
+      "name": "creature",
+      "type": {
+        "name": "AvroCreatureSymbol",
+        "type": "record",
+        "fields": [
+          { "name": "symbol", "type": "string" },
+          { "name": "invertColors", "type": "boolean" },
+          {
+            "name": "attachments",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "AvroAttachedCreatureSymbol",
+                "type": "record",
+                "fields": [
+                  { "name": "base", "type": "AvroCreatureSymbol" },
+                  { "name": "attachTo", "type": "int" },
+                  { "name": "indices", "type": "bytes" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "nests",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "AvroNestedCreatureSymbol",
+                "type": "record",
+                "fields": [
+                  { "name": "base", "type": "AvroCreatureSymbol" },
+                  { "name": "indices", "type": "bytes" }
+                ]
+              }
+            }
+          }
         ]
       }
     }
