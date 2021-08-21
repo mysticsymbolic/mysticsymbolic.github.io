@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { loginViaGithub, logoutViaGithub } from "../auth";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
@@ -108,6 +109,8 @@ export const DebugPage: React.FC<{}> = () => {
         <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
         <h2>Random color sampling</h2>
         <RandomColorSampling />
+        <button onClick={loginViaGithub}>Login with GitHub</button>
+        <button onClick={logoutViaGithub}>Logout</button>
       </div>
       <div className="canvas">
         <CreatureContext.Provider value={ctx}>
