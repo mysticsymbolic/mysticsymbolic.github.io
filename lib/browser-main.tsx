@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { FirebaseGithubAuthProvider } from "./auth";
 import { PageContext, PAGE_QUERY_ARG } from "./page";
 import { pageNames, Pages, toPageName, DEFAULT_PAGE } from "./pages";
 
@@ -56,9 +57,11 @@ const App: React.FC<{}> = (props) => {
   };
 
   return (
-    <PageContext.Provider value={ctx}>
-      <PageComponent />
-    </PageContext.Provider>
+    <FirebaseGithubAuthProvider>
+      <PageContext.Provider value={ctx}>
+        <PageComponent />
+      </PageContext.Provider>
+    </FirebaseGithubAuthProvider>
   );
 };
 

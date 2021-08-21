@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { AuthContext } from "../auth";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
@@ -93,6 +94,24 @@ const RandomColorSampling: React.FC<{}> = () => {
   );
 };
 
+const AuthWidget: React.FC<{}> = () => {
+  const ctx = useContext(AuthContext);
+
+  if (!ctx.providerName) {
+    return null;
+  }
+
+  if (ctx.error) {
+    return <p style={{ color: "red" }}>{ctx.error}</p>;
+  }
+
+  if (ctx.loggedInUser) {
+    return <button onClick={ctx.logout}>Logout {ctx.loggedInUser}</button>;
+  }
+
+  return <button onClick={ctx.login}>Login with {ctx.providerName}</button>;
+};
+
 export const DebugPage: React.FC<{}> = () => {
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
@@ -108,6 +127,7 @@ export const DebugPage: React.FC<{}> = () => {
         <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
         <h2>Random color sampling</h2>
         <RandomColorSampling />
+        <AuthWidget />
       </div>
       <div className="canvas">
         <CreatureContext.Provider value={ctx}>
