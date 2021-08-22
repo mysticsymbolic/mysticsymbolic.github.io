@@ -43,13 +43,23 @@ export interface GalleryContext {
    */
   compositions: GalleryComposition[];
 
+  /** The status of the most recent submission to the gallery. */
   submitStatus: GallerySubmitStatus;
 
+  /**
+   * Submit a composition to the gallery. On success, calls the
+   * given callback, passing it the newly-assigned id of the
+   * composition.
+   *
+   * If already in the process of submitting a composition, this
+   * will do nothing.
+   */
   submit(
     composition: Omit<GalleryComposition, "id" | "createdAt">,
     onSuccess: (id: string) => void
   ): void;
 
+  /** The most recent submission made via `submit()`, if any. */
   lastSubmission?: GalleryComposition;
 
   /** Whether we're currently loading the gallery from the network. */
