@@ -13,7 +13,10 @@ import {
   getFirestore,
   collection,
   getDocs,
+  query,
+  orderBy,
   CollectionReference,
+  Timestamp,
 } from "firebase/firestore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./auth-context";
@@ -103,7 +106,12 @@ export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
   return <AuthContext.Provider value={context} children={children} />;
 };
 
-type FirebaseCompositionDocument = Omit<GalleryComposition, "id">;
+type FirebaseCompositionDocument = Omit<
+  GalleryComposition,
+  "id" | "createdAt"
+> & {
+  createdAt: Timestamp;
+};
 
 function getGalleryCollection(appCtx: FirebaseAppContext) {
   return collection(
@@ -134,15 +142,19 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
 
       setError(undefined);
       setIsLoading(true);
-      getDocs(getGalleryCollection(appCtx))
+      getDocs(query(getGalleryCollection(appCtx), orderBy("createdAt", "desc")))
         .then((snapshot) => {
           setLastRefresh(Date.now());
           setIsLoading(false);
           setCompositions(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }))
+            snapshot.docs.map((doc) => {
+              const { createdAt, ...data } = doc.data();
+              return {
+                ...data,
+                id: doc.id,
+                createdAt: createdAt.toDate(),
+              };
+            })
           );
         })
         .catch(handleError);

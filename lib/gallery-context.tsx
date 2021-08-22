@@ -24,6 +24,9 @@ export type GalleryComposition = {
 
   /** The title of the composition. */
   title: string;
+
+  /** When the composition was submitted to the gallery. */
+  createdAt: Date;
 };
 
 /**
