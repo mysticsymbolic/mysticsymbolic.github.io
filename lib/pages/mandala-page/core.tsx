@@ -23,6 +23,8 @@ import { MandalaCircle, MandalaCircleParams } from "../../mandala-circle";
 import { useAnimationPct } from "../../animation";
 import { RandomizerWidget } from "../../randomizer-widget";
 import { useDebouncedEffect } from "../../use-debounced-effect";
+import { GalleryWidget } from "../../gallery-widget";
+import { serializeMandalaDesign } from "./serialization";
 
 export type ExtendedMandalaCircleParams = MandalaCircleParams & {
   scaling: number;
@@ -397,6 +399,10 @@ export const MandalaPageWithDefaults: React.FC<{
             setCircle1({ ...circle1, ...getRandomCircleParams(rng) });
             setCircle2({ ...circle2, ...getRandomCircleParams(rng) });
           }}
+        />
+        <GalleryWidget
+          kind="mandala"
+          serializeValue={() => serializeMandalaDesign(design)}
         />
         <div className="thingy">
           <ExportWidget

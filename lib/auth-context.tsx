@@ -6,10 +6,9 @@ import React from "react";
 export interface AuthContext {
   /**
    * The currently logged-in user. This will be
-   * null if the user isn't logged in, otherwise it will
-   * be their name.
+   * null if the user isn't logged in.
    */
-  loggedInUser: string | null;
+  loggedInUser: { name: string; id: string } | null;
 
   /**
    * The name of the authentication provider, e.g. "GitHub",

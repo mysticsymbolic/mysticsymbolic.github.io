@@ -1,11 +1,15 @@
 import React from "react";
 
+export type GalleryCompositionKind = "creature" | "mandala";
+
+export type GallerySubmitStatus = "idle" | "submitting" | "error";
+
 export type GalleryComposition = {
   /** A unique identifier/primary key for the composition. */
   id: string;
 
   /** The type of composition. */
-  kind: "creature" | "mandala";
+  kind: GalleryCompositionKind;
 
   /**
    * The serialized value of the composition. This
@@ -24,6 +28,9 @@ export type GalleryComposition = {
 
   /** The title of the composition. */
   title: string;
+
+  /** When the composition was submitted to the gallery. */
+  createdAt: Date;
 };
 
 /**
@@ -35,6 +42,25 @@ export interface GalleryContext {
    * from the network.
    */
   compositions: GalleryComposition[];
+
+  /** The status of the most recent submission to the gallery. */
+  submitStatus: GallerySubmitStatus;
+
+  /**
+   * Submit a composition to the gallery. On success, calls the
+   * given callback, passing it the newly-assigned id of the
+   * composition.
+   *
+   * If already in the process of submitting a composition, this
+   * will do nothing.
+   */
+  submit(
+    composition: Omit<GalleryComposition, "id" | "createdAt">,
+    onSuccess: (id: string) => void
+  ): void;
+
+  /** The most recent submission made via `submit()`, if any. */
+  lastSubmission?: GalleryComposition;
 
   /** Whether we're currently loading the gallery from the network. */
   isLoading: boolean;
@@ -62,5 +88,7 @@ export const GalleryContext = React.createContext<GalleryContext>({
   compositions: [],
   isLoading: false,
   refresh: () => true,
+  submitStatus: "idle",
+  submit: () => {},
   lastRefresh: 0,
 });

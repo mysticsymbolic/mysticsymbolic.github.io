@@ -13,11 +13,19 @@ import {
   getFirestore,
   collection,
   getDocs,
+  query,
+  orderBy,
   CollectionReference,
+  Timestamp,
+  addDoc,
 } from "firebase/firestore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./auth-context";
-import { GalleryComposition, GalleryContext } from "./gallery-context";
+import {
+  GalleryComposition,
+  GalleryContext,
+  GallerySubmitStatus,
+} from "./gallery-context";
 
 const GALLERY_COLLECTION = "compositions";
 
@@ -86,7 +94,10 @@ export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
   }, [appCtx]);
 
   const context: AuthContext = {
-    loggedInUser: user && user.displayName,
+    loggedInUser: user && {
+      id: user.uid,
+      name: user.displayName || `GitHub user ${user.uid}`,
+    },
     providerName: appCtx && "GitHub",
     error,
     login: useCallback(() => {
@@ -103,7 +114,12 @@ export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
   return <AuthContext.Provider value={context} children={children} />;
 };
 
-type FirebaseCompositionDocument = Omit<GalleryComposition, "id">;
+type FirebaseCompositionDocument = Omit<
+  GalleryComposition,
+  "id" | "createdAt"
+> & {
+  createdAt: Timestamp;
+};
 
 function getGalleryCollection(appCtx: FirebaseAppContext) {
   return collection(
@@ -112,40 +128,76 @@ function getGalleryCollection(appCtx: FirebaseAppContext) {
   ) as CollectionReference<FirebaseCompositionDocument>;
 }
 
+function docToComp(
+  doc: FirebaseCompositionDocument,
+  id: string
+): GalleryComposition {
+  const { createdAt, ...data } = doc;
+  return {
+    ...data,
+    id,
+    createdAt: createdAt.toDate(),
+  };
+}
+
 export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
   const appCtx = useContext(FirebaseAppContext);
   const [compositions, setCompositions] = useState<GalleryComposition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [lastRefresh, setLastRefresh] = useState(0);
-
-  const handleError = (e: Error) => {
-    setIsLoading(false);
-    setError(e.message);
-  };
+  const [submitStatus, setSubmitStatus] = useState<GallerySubmitStatus>("idle");
+  const [lastSubmission, setLastSubmission] = useState<
+    GalleryComposition | undefined
+  >(undefined);
 
   const context: GalleryContext = {
     compositions,
     isLoading,
     error,
     lastRefresh,
+    lastSubmission,
+    submitStatus,
+    submit(props, onSuccess) {
+      if (!(appCtx && submitStatus === "idle")) return;
+
+      const doc: FirebaseCompositionDocument = {
+        ...props,
+        createdAt: Timestamp.now(),
+      };
+
+      setSubmitStatus("submitting");
+      setLastSubmission(undefined);
+      addDoc(getGalleryCollection(appCtx), doc)
+        .then((docRef) => {
+          const comp = docToComp(doc, docRef.id);
+          setSubmitStatus("idle");
+          setCompositions([comp, ...compositions]);
+          setLastSubmission(comp);
+          onSuccess(docRef.id);
+        })
+        .catch((e) => {
+          setSubmitStatus("error");
+          console.log(e);
+        });
+    },
     refresh: useCallback(() => {
       if (!(appCtx && !isLoading)) return false;
 
       setError(undefined);
       setIsLoading(true);
-      getDocs(getGalleryCollection(appCtx))
+      getDocs(query(getGalleryCollection(appCtx), orderBy("createdAt", "desc")))
         .then((snapshot) => {
           setLastRefresh(Date.now());
           setIsLoading(false);
           setCompositions(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }))
+            snapshot.docs.map((doc) => docToComp(doc.data(), doc.id))
           );
         })
-        .catch(handleError);
+        .catch((e) => {
+          setIsLoading(false);
+          setError(e.message);
+        });
       return true;
     }, [appCtx, isLoading]),
   };

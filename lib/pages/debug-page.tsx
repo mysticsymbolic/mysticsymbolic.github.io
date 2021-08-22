@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../auth-context";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
@@ -94,29 +93,6 @@ const RandomColorSampling: React.FC<{}> = () => {
   );
 };
 
-const AuthWidget: React.FC<{}> = () => {
-  const ctx = useContext(AuthContext);
-
-  if (!ctx.providerName) {
-    return null;
-  }
-
-  const button = ctx.loggedInUser ? (
-    <button onClick={ctx.logout}>Logout {ctx.loggedInUser}</button>
-  ) : (
-    <button onClick={ctx.login}>Login with {ctx.providerName}</button>
-  );
-
-  const error = ctx.error ? <p className="error">{ctx.error}</p> : null;
-
-  return (
-    <div className="thingy">
-      {button}
-      {error}
-    </div>
-  );
-};
-
 export const DebugPage: React.FC<{}> = () => {
   const [symbolCtx, setSymbolCtx] = useState(createSvgSymbolContext());
   const defaultCtx = useContext(CreatureContext);
@@ -132,7 +108,6 @@ export const DebugPage: React.FC<{}> = () => {
         <SymbolContextWidget ctx={symbolCtx} onChange={setSymbolCtx} />
         <h2>Random color sampling</h2>
         <RandomColorSampling />
-        <AuthWidget />
       </div>
       <div className="canvas">
         <CreatureContext.Provider value={ctx}>

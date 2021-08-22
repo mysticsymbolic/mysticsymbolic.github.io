@@ -89,9 +89,14 @@ to have the following configured:
         // The gallery is globally readable.
         allow read: if true;
 
-        // We don't yet support submitting to the gallery, so
-        // deny all writes for now.
-        allow write: if false;
+        allow write: if request.auth != null &&
+          request.resource.data.keys().hasOnly(['kind', 'serializedValue', 'owner', 'ownerName', 'title', 'createdAt']) &&
+          [request.resource.data.kind].hasAny(['creature', 'mandala']) &&
+          request.resource.data.serializedValue is string &&
+          request.resource.data.owner == request.auth.uid &&
+          request.resource.data.ownerName is string &&
+          request.resource.data.title is string &&
+          request.resource.data.createdAt is timestamp;
       }
     }
   }
