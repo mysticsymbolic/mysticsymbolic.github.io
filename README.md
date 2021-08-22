@@ -86,7 +86,11 @@ to have the following configured:
   service cloud.firestore {
     match /databases/{database}/documents {
       match /{document=**} {
+        // The gallery is globally readable.
         allow read: if true;
+
+        // We don't yet support submitting to the gallery, so
+        // deny all writes for now.
         allow write: if false;
       }
     }
