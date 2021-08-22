@@ -1,4 +1,4 @@
-import { assertNotNull } from "@justfixnyc/util";
+import { assertNotNull } from "@justfixnyc/util/commonjs";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "./auth-context";
 import { GalleryCompositionKind, GalleryContext } from "./gallery-context";
@@ -16,9 +16,13 @@ const AuthWidget: React.FC<{}> = () => {
   }
 
   const button = ctx.loggedInUser ? (
-    <button onClick={ctx.logout}>Logout {ctx.loggedInUser.name}</button>
+    <button type="button" onClick={ctx.logout}>
+      Logout {ctx.loggedInUser.name}
+    </button>
   ) : (
-    <button onClick={ctx.login}>Login with {ctx.providerName}</button>
+    <button type="button" onClick={ctx.login}>
+      Login with {ctx.providerName}
+    </button>
   );
 
   const error = ctx.error ? <p className="error">{ctx.error}</p> : null;
