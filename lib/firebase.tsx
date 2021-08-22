@@ -21,12 +21,14 @@ const DEFAULT_APP_CONFIG: FirebaseOptions = {
   measurementId: "G-JHKRSK1PR6",
 };
 
-type FirebaseGithubAuthState = {
+type FirebaseAppContext = {
+  app: FirebaseApp;
   auth: Auth;
   provider: GithubAuthProvider;
 };
 
-export const FirebaseAppContext = React.createContext<FirebaseApp | null>(null);
+export const FirebaseAppContext =
+  React.createContext<FirebaseAppContext | null>(null);
 
 /**
  * A Firebase app provider.  Any other components that use Firebase must
@@ -39,13 +41,17 @@ export const FirebaseAppProvider: React.FC<{ config?: FirebaseOptions }> = ({
   config,
   children,
 }) => {
-  const [app, setApp] = useState<FirebaseApp | null>(null);
+  const [value, setValue] = useState<FirebaseAppContext | null>(null);
 
   useEffect(() => {
-    setApp(initializeApp(config || DEFAULT_APP_CONFIG));
+    const app = initializeApp(config || DEFAULT_APP_CONFIG);
+    const auth = getAuth(app);
+    const provider = new GithubAuthProvider();
+
+    setValue({ app, auth, provider });
   }, [config]);
 
-  return <FirebaseAppContext.Provider value={app} children={children} />;
+  return <FirebaseAppContext.Provider value={value} children={children} />;
 };
 
 /**
@@ -55,34 +61,31 @@ export const FirebaseAppProvider: React.FC<{ config?: FirebaseOptions }> = ({
  * Note this component is assumed to never be unmounted.
  */
 export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
-  const app = useContext(FirebaseAppContext);
-  const [state, setState] = useState<FirebaseGithubAuthState | null>(null);
+  const appCtx = useContext(FirebaseAppContext);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const handleError = (e: Error) => setError(e.message);
 
   useEffect(() => {
-    if (!app) return;
-    const auth = getAuth(app);
-    const provider = new GithubAuthProvider();
+    if (!appCtx) return;
 
-    setState({ auth, provider });
-    onAuthStateChanged(auth, setUser);
-  }, [app]);
+    onAuthStateChanged(appCtx.auth, setUser);
+  }, [appCtx]);
 
   const context: AuthContext = {
     loggedInUser: user && user.displayName,
-    providerName: state && "GitHub",
+    providerName: appCtx && "GitHub",
     error,
     login: useCallback(() => {
       setError(undefined);
-      state && signInWithPopup(state.auth, state.provider).catch(handleError);
-    }, [state]),
+      appCtx &&
+        signInWithPopup(appCtx.auth, appCtx.provider).catch(handleError);
+    }, [appCtx]),
     logout: useCallback(() => {
       setError(undefined);
-      state && signOut(state.auth).catch(handleError);
-    }, [state]),
+      appCtx && signOut(appCtx.auth).catch(handleError);
+    }, [appCtx]),
   };
 
   return <AuthContext.Provider value={context} children={children} />;
