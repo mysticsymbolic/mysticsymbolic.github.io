@@ -1,11 +1,13 @@
 import React from "react";
 
+export type GalleryCompositionKind = "creature" | "mandala";
+
 export type GalleryComposition = {
   /** A unique identifier/primary key for the composition. */
   id: string;
 
   /** The type of composition. */
-  kind: "creature" | "mandala";
+  kind: GalleryCompositionKind;
 
   /**
    * The serialized value of the composition. This

@@ -43,6 +43,8 @@ import { createDistribution } from "../../distribution";
 import { ComponentWithShareableStateProps } from "../../page-with-shareable-state";
 import { useDebouncedEffect } from "../../use-debounced-effect";
 import { useRememberedState } from "../../use-remembered-state";
+import { GalleryWidget } from "../../gallery-widget";
+import { serializeCreatureDesign } from "./serialization";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -344,6 +346,10 @@ export const CreaturePageWithDefaults: React.FC<
             />
           </div>
         </RandomizerWidget>
+        <GalleryWidget
+          kind="creature"
+          serializeValue={() => serializeCreatureDesign(design)}
+        />
         <div className="thingy">
           <ExportWidget
             basename={getDownloadBasename(creature.data.name)}
