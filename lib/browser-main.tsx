@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { FirebaseAppProvider, FirebaseGithubAuthProvider } from "./auth";
+import { FirebaseAppProvider, FirebaseGithubAuthProvider } from "./firebase";
 import { PageContext, PAGE_QUERY_ARG } from "./page";
 import { pageNames, Pages, toPageName, DEFAULT_PAGE } from "./pages";
 
