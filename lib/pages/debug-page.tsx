@@ -102,7 +102,7 @@ const AuthWidget: React.FC<{}> = () => {
   }
 
   const button = ctx.loggedInUser ? (
-    <button onClick={ctx.logout}>Logout {ctx.loggedInUser}</button>
+    <button onClick={ctx.logout}>Logout {ctx.loggedInUser.name}</button>
   ) : (
     <button onClick={ctx.login}>Login with {ctx.providerName}</button>
   );

@@ -89,7 +89,10 @@ export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
   }, [appCtx]);
 
   const context: AuthContext = {
-    loggedInUser: user && user.displayName,
+    loggedInUser: user && {
+      id: user.uid,
+      name: user.displayName || `GitHub user ${user.uid}`,
+    },
     providerName: appCtx && "GitHub",
     error,
     login: useCallback(() => {
