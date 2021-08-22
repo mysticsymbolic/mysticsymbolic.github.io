@@ -34,8 +34,9 @@ export const GalleryPage: React.FC<{}> = () => {
     <Page title="Gallery!">
       <div className="sidebar">
         <p>
-          This gallery is a work in progress! You can't yet submit anything to
-          it, and we have no thumbnails either. It will improve over time.
+          This gallery is a work in progress! You can publish to it via the
+          sidebar on the creature and mandala pages. We don't have thumbnails
+          yet, though. It will improve over time.
         </p>
         <button onClick={ctx.refresh} disabled={ctx.isLoading}>
           {ctx.isLoading ? "Loading\u2026" : "Refresh"}
