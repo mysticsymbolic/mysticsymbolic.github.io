@@ -101,15 +101,20 @@ const AuthWidget: React.FC<{}> = () => {
     return null;
   }
 
-  if (ctx.error) {
-    return <p style={{ color: "red" }}>{ctx.error}</p>;
-  }
+  const button = ctx.loggedInUser ? (
+    <button onClick={ctx.logout}>Logout {ctx.loggedInUser}</button>
+  ) : (
+    <button onClick={ctx.login}>Login with {ctx.providerName}</button>
+  );
 
-  if (ctx.loggedInUser) {
-    return <button onClick={ctx.logout}>Logout {ctx.loggedInUser}</button>;
-  }
+  const error = ctx.error ? <p style={{ color: "red" }}>{ctx.error}</p> : null;
 
-  return <button onClick={ctx.login}>Login with {ctx.providerName}</button>;
+  return (
+    <div className="thingy">
+      {button}
+      {error}
+    </div>
+  );
 };
 
 export const DebugPage: React.FC<{}> = () => {

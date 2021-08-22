@@ -85,9 +85,11 @@ export const FirebaseGithubAuthProvider: React.FC<{
     providerName: "GitHub",
     error,
     login: useCallback(() => {
+      setError(undefined);
       state && signInWithPopup(state.auth, state.provider).catch(handleError);
     }, [state]),
     logout: useCallback(() => {
+      setError(undefined);
       state && signOut(state.auth).catch(handleError);
     }, [state]),
   };
