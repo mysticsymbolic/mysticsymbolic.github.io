@@ -14,10 +14,12 @@ export interface GalleryContext {
   isLoading: boolean;
   error?: string;
   refresh(): boolean;
+  lastRefresh: number;
 }
 
 export const GalleryContext = React.createContext<GalleryContext>({
   compositions: [],
   isLoading: false,
   refresh: () => true,
+  lastRefresh: 0,
 });

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { GalleryComposition, GalleryContext } from "../gallery-context";
 import { Page } from "../page";
 import { createPageWithStateSearchParams } from "../page-with-shareable-state";
@@ -23,20 +23,17 @@ const GalleryCompositionView: React.FC<GalleryComposition> = (props) => {
 
 export const GalleryPage: React.FC<{}> = () => {
   const ctx = useContext(GalleryContext);
-  const [refreshed, setRefreshed] = useState(false);
 
   useEffect(() => {
-    if (!refreshed) {
-      if (ctx.refresh()) {
-        setRefreshed(true);
-      }
+    if (ctx.lastRefresh === 0) {
+      ctx.refresh();
     }
-  }, [ctx, refreshed]);
+  }, [ctx]);
 
   return (
     <Page title="Gallery!">
       <div className="sidebar">
-        <button onClick={() => setRefreshed(false)} disabled={ctx.isLoading}>
+        <button onClick={ctx.refresh} disabled={ctx.isLoading}>
           {ctx.isLoading ? "Loading\u2026" : "Refresh"}
         </button>
         {ctx.error && <p className="error">{ctx.error}</p>}

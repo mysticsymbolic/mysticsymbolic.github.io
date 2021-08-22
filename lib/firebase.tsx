@@ -117,6 +117,7 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
   const [compositions, setCompositions] = useState<GalleryComposition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [lastRefresh, setLastRefresh] = useState(0);
 
   const handleError = (e: Error) => {
     setIsLoading(false);
@@ -127,6 +128,7 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
     compositions,
     isLoading,
     error,
+    lastRefresh,
     refresh: useCallback(() => {
       if (!(appCtx && !isLoading)) return false;
 
@@ -134,6 +136,7 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
       setIsLoading(true);
       getDocs(getGalleryCollection(appCtx))
         .then((snapshot) => {
+          setLastRefresh(Date.now());
           setIsLoading(false);
           setCompositions(
             snapshot.docs.map((doc) => ({
