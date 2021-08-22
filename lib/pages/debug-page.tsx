@@ -107,7 +107,7 @@ const AuthWidget: React.FC<{}> = () => {
     <button onClick={ctx.login}>Login with {ctx.providerName}</button>
   );
 
-  const error = ctx.error ? <p style={{ color: "red" }}>{ctx.error}</p> : null;
+  const error = ctx.error ? <p className="error">{ctx.error}</p> : null;
 
   return (
     <div className="thingy">

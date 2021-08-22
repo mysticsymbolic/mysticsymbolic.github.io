@@ -8,8 +8,18 @@ import {
   Auth,
   User,
 } from "firebase/auth";
+import {
+  FirebaseFirestore,
+  getFirestore,
+  collection,
+  getDocs,
+  CollectionReference,
+} from "firebase/firestore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./auth-context";
+import { GalleryComposition, GalleryContext } from "./gallery-context";
+
+const GALLERY_COLLECTION = "compositions";
 
 const DEFAULT_APP_CONFIG: FirebaseOptions = {
   apiKey: "AIzaSyAV1kkVvSKEicEa8rLke9o_BxYBu1rb8kw",
@@ -25,6 +35,7 @@ type FirebaseAppContext = {
   app: FirebaseApp;
   auth: Auth;
   provider: GithubAuthProvider;
+  db: FirebaseFirestore;
 };
 
 export const FirebaseAppContext =
@@ -47,8 +58,9 @@ export const FirebaseAppProvider: React.FC<{ config?: FirebaseOptions }> = ({
     const app = initializeApp(config || DEFAULT_APP_CONFIG);
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
+    const db = getFirestore(app);
 
-    setValue({ app, auth, provider });
+    setValue({ app, auth, provider, db });
   }, [config]);
 
   return <FirebaseAppContext.Provider value={value} children={children} />;
@@ -89,4 +101,51 @@ export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
   };
 
   return <AuthContext.Provider value={context} children={children} />;
+};
+
+type FirebaseCompositionDocument = Omit<GalleryComposition, "id">;
+
+function getGalleryCollection(appCtx: FirebaseAppContext) {
+  return collection(
+    appCtx.db,
+    GALLERY_COLLECTION
+  ) as CollectionReference<FirebaseCompositionDocument>;
+}
+
+export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
+  const appCtx = useContext(FirebaseAppContext);
+  const [compositions, setCompositions] = useState<GalleryComposition[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  const handleError = (e: Error) => {
+    setIsLoading(false);
+    setError(e.message);
+  };
+
+  const context: GalleryContext = {
+    compositions,
+    isLoading,
+    error,
+    refresh: useCallback(() => {
+      if (!(appCtx && !isLoading)) return false;
+
+      setError(undefined);
+      setIsLoading(true);
+      getDocs(getGalleryCollection(appCtx))
+        .then((snapshot) => {
+          setIsLoading(false);
+          setCompositions(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+          );
+        })
+        .catch(handleError);
+      return true;
+    }, [appCtx, isLoading]),
+  };
+
+  return <GalleryContext.Provider value={context} children={children} />;
 };
