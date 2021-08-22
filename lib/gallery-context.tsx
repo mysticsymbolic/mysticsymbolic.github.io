@@ -2,6 +2,8 @@ import React from "react";
 
 export type GalleryCompositionKind = "creature" | "mandala";
 
+export type GallerySubmitStatus = "idle" | "submitting" | "error";
+
 export type GalleryComposition = {
   /** A unique identifier/primary key for the composition. */
   id: string;
@@ -41,6 +43,15 @@ export interface GalleryContext {
    */
   compositions: GalleryComposition[];
 
+  submitStatus: GallerySubmitStatus;
+
+  submit(
+    composition: Omit<GalleryComposition, "id" | "createdAt">,
+    onSuccess: (id: string) => void
+  ): void;
+
+  lastSubmission?: GalleryComposition;
+
   /** Whether we're currently loading the gallery from the network. */
   isLoading: boolean;
 
@@ -67,5 +78,7 @@ export const GalleryContext = React.createContext<GalleryContext>({
   compositions: [],
   isLoading: false,
   refresh: () => true,
+  submitStatus: "idle",
+  submit: () => {},
   lastRefresh: 0,
 });
