@@ -8,7 +8,7 @@ import {
   Auth,
   User,
 } from "firebase/auth";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 const DEFAULT_APP_CONFIG: FirebaseOptions = {
   apiKey: "AIzaSyAV1kkVvSKEicEa8rLke9o_BxYBu1rb8kw",
@@ -51,20 +51,40 @@ export interface AuthContext {
 }
 
 type FirebaseGithubAuthState = {
-  app: FirebaseApp;
   auth: Auth;
   provider: GithubAuthProvider;
 };
 
+export const FirebaseAppContext = React.createContext<FirebaseApp | null>(null);
+
 /**
- * A Firebase GitHub authentication provider.
+ * A Firebase app provider.  Any other components that use Firebase must
+ * be a child of this.
  *
  * Note this component is assumed to never be unmounted, nor
- * for its props to change.
+ * for its non-children props to change.
  */
-export const FirebaseGithubAuthProvider: React.FC<{
-  config?: FirebaseOptions;
-}> = ({ config, children }) => {
+export const FirebaseAppProvider: React.FC<{ config?: FirebaseOptions }> = ({
+  config,
+  children,
+}) => {
+  const [app, setApp] = useState<FirebaseApp | null>(null);
+
+  useEffect(() => {
+    setApp(initializeApp(config || DEFAULT_APP_CONFIG));
+  }, [config]);
+
+  return <FirebaseAppContext.Provider value={app} children={children} />;
+};
+
+/**
+ * A Firebase GitHub authentication provider.  Must be a child of a
+ * `FirebaseAppProvider`.
+ *
+ * Note this component is assumed to never be unmounted.
+ */
+export const FirebaseGithubAuthProvider: React.FC<{}> = ({ children }) => {
+  const app = useContext(FirebaseAppContext);
   const [state, setState] = useState<FirebaseGithubAuthState | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -72,17 +92,17 @@ export const FirebaseGithubAuthProvider: React.FC<{
   const handleError = (e: Error) => setError(e.message);
 
   useEffect(() => {
-    const app = initializeApp(config || DEFAULT_APP_CONFIG);
+    if (!app) return;
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
 
-    setState({ app, auth, provider });
+    setState({ auth, provider });
     onAuthStateChanged(auth, setUser);
-  }, [config]);
+  }, [app]);
 
   const context: AuthContext = {
     loggedInUser: user && user.displayName,
-    providerName: "GitHub",
+    providerName: state && "GitHub",
     error,
     login: useCallback(() => {
       setError(undefined);
