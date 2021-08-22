@@ -1,9 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import { GalleryComposition, GalleryContext } from "../gallery-context";
 import { Page } from "../page";
+import { createPageWithStateSearchParams } from "../page-with-shareable-state";
+
+function compositionRemixUrl(comp: GalleryComposition): string {
+  return (
+    "?" +
+    createPageWithStateSearchParams(comp.kind, comp.serializedValue).toString()
+  );
+}
 
 const GalleryCompositionView: React.FC<GalleryComposition> = (props) => {
-  return <p>{props.title}</p>;
+  return (
+    <p>
+      <a href={compositionRemixUrl(props)} target="_blank">
+        {props.title}
+      </a>{" "}
+      {props.kind} by {props.ownerName}
+    </p>
+  );
 };
 
 export const GalleryPage: React.FC<{}> = () => {
