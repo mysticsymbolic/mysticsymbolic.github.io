@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../auth";
+import { AuthContext } from "../auth-context";
 import { AutoSizingSvg } from "../auto-sizing-svg";
 import { CreatureContext, CreatureContextType } from "../creature-symbol";
 import { createCreatureSymbolFactory } from "../creature-symbol-factory";
