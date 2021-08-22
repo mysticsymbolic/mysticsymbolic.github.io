@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { PageContext, PAGE_QUERY_ARG } from "./page";
+import type { PageName } from "./pages";
 
 export type ComponentWithShareableStateProps<T> = {
   /** The default state to use when the component is first rendered. */
@@ -33,6 +34,16 @@ export type PageWithShareableStateOptions<T> = {
 
 /** The query string argument that will store the serialized state. */
 export const STATE_QUERY_ARG = "s";
+
+export function createPageWithStateSearchParams(
+  page: PageName,
+  state: string
+): URLSearchParams {
+  const search = new URLSearchParams();
+  search.set(PAGE_QUERY_ARG, page);
+  search.set(STATE_QUERY_ARG, state);
+  return search;
+}
 
 /**
  * Create a component that represents a page which exposes some
@@ -86,9 +97,7 @@ export function createPageWithShareableState<T>({
       (value: T) => {
         const newState = serialize(value);
         if (state !== newState) {
-          const newSearch = new URLSearchParams();
-          newSearch.set(PAGE_QUERY_ARG, currPage);
-          newSearch.set(STATE_QUERY_ARG, newState);
+          const newSearch = createPageWithStateSearchParams(currPage, newState);
           setIsInOnChange(true);
           setLatestState(newState);
           pushState("?" + newSearch.toString());

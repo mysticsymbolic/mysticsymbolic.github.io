@@ -3,12 +3,14 @@ import { VocabularyPage } from "./vocabulary-page";
 import { CreaturePage } from "./creature-page";
 import { MandalaPage } from "./mandala-page";
 import { DebugPage } from "./debug-page";
+import { GalleryPage } from "./gallery-page";
 
 export const Pages = {
   vocabulary: VocabularyPage,
   creature: CreaturePage,
   waves: WavesPage,
   mandala: MandalaPage,
+  gallery: GalleryPage,
   debug: DebugPage,
 };
 

@@ -68,6 +68,37 @@ To deploy the project to GitHub Pages, run:
 npm run deploy
 ```
 
+## Firebase support
+
+The website features optional Firebase integration.
+
+Currently, the details for the integration are hard-coded
+into the application code; see `lib/firebase.tsx` for details.
+
+Currently, the Firebase project that we integrate with needs
+to have the following configured:
+
+* Cloud Firestore should be enabled with a collection called
+  `compositions` and the following rules:
+
+  ```
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /{document=**} {
+        // The gallery is globally readable.
+        allow read: if true;
+
+        // We don't yet support submitting to the gallery, so
+        // deny all writes for now.
+        allow write: if false;
+      }
+    }
+  }
+  ```
+
+* The GitHub sign-in provider must be enabled.
+
 [NodeJS]: https://nodejs.org/en/
 [Nina Paley]: https://blog.ninapaley.com/
 [Atul Varma]: https://portfolio.toolness.org/
