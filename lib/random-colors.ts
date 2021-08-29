@@ -3,7 +3,7 @@ import { range, clamp } from "./util";
 import * as colorspaces from "colorspaces";
 import { ColorTuple, luvToLch, lchToHsluv, hsluvToHex } from "hsluv";
 import { clampedBytesToRGBColor } from "./color-util";
-import { getUVSliceGeometery } from "./chromatools";
+import { getUVSliceGeometery, maxSafeChromaForL, maxChromaForLH } from "./chromatools";
 
 type RandomPaletteGenerator = (numEntries: number, rng: Random) => string[];
 //type ColorFunction = (rng: Random) => string[];
@@ -13,10 +13,16 @@ export type RandomPaletteAlgorithm =
   | "CIELUV"
   | "threevals"
   | "randhue"
-  | "hichroma";
+  | "randLAlmostNeutralC"
+  | "randLMinSafeC"
+  | "randLMaxSafeC"
+  | "midLMinSafeC"
+  | "midLMaxC"
+  | "chromaContrast"
+  | "hiChroma";
 
 export const DEFAULT_RANDOM_PALETTE_ALGORITHM: RandomPaletteAlgorithm =
-  "hichroma";
+  "hiChroma";
 
 function createRandomRGBColor(rng: Random): string {
   const rgb = range(3).map(() => rng.inRange({ min: 0, max: 255, step: 1 }));
@@ -128,6 +134,67 @@ function clampHue(h: number): number {
   return hn;
 }
 
+function getMixedRGBs(hsluvs: ColorTuple[],rng: Random): ColorTuple[] {
+  hsluvs = rng.uniqueChoices(hsluvs, hsluvs.length);
+  let hexcolors = hsluvs.map((x) => hsluvToHex(x as ColorTuple));
+  return hexcolors;
+}
+
+function randLAlmostNeutralC(rng: Random): string[] {
+  let L = rng.inInterval({ min: 10, max: 90 });
+  let hsluvs: ColorTuple[] = [];
+  let C = maxSafeChromaForL(L) * 0.2;
+  let h = rng.inInterval({min: 0, max: 360});
+ 
+  for (let i = 0; i < 3; i++) {
+    let lch = [L,C,clampHue(h+i*120)];
+    let hsluv = lchToHsluv(lch);
+    hsluvs.push(hsluv);
+  }
+
+  return getMixedRGBs(hsluvs,rng);
+}
+
+
+function randLMinSafeC(rng: Random): string[] {
+  let L = rng.inInterval({ min: 10, max: 90 });
+  let hsluvs: ColorTuple[] = [];
+  let C = maxSafeChromaForL(L);
+  let h = rng.inInterval({min: 0, max: 360});
+ 
+  for (let i = 0; i < 3; i++) {
+    let lch = [L,C,clampHue(h+i*120)];
+    let hsluv = lchToHsluv(lch);
+    hsluvs.push(hsluv);
+  }
+
+  return getMixedRGBs(hsluvs,rng);
+}
+
+function randLMaxSafeC(rng: Random): string[] {
+  let L = rng.inInterval({ min: 10, max: 90 });
+  let hs: number[] = [];
+  let Cs: number[] = [];
+  let hsluvs: ColorTuple[] = [];
+  let h = rng.inInterval({min: 0, max: 360});
+
+  for (let i = 0; i < 3; i++) {
+    let h_i = clampHue(h+i*120)
+    hs.push(h_i);
+    Cs.push(maxChromaForLH(L, h_i));
+  }
+
+  let C =  Math.min( ...Cs );
+    
+  for (let i = 0; i < 3; i++) {                                 
+    let lch = [L,C,hs[i]];
+    let hsluv = lchToHsluv(lch);
+    hsluvs.push(hsluv);
+  }
+
+  return getMixedRGBs(hsluvs,rng);
+}
+
 function hiChroma(rng: Random): string[] {
   let L1 = rng.inInterval({ min: 0, max: 25 });
   let L2 = rng.inInterval({ min: L1 + 25, max: 60 });
@@ -148,17 +215,51 @@ function hiChroma(rng: Random): string[] {
     hsluvs.push(hsluv);
   }
 
-  //randomize
-  hsluvs = rng.uniqueChoices(hsluvs, hsluvs.length);
+  return getMixedRGBs(hsluvs,rng);
+}
 
-  //occasionally desaturate the bg
-  if (rng.bool(0.5)) {
-    hsluvs[0][1] = hsluvs[0][1] * 0.1;
+function midLMinSafeC(rng: Random): string[] {
+  let L = 50;
+  let hsluvs: ColorTuple[] = [];
+  let C = maxSafeChromaForL(L);
+ 
+  for (let i = 0; i < 3; i++) {
+    let lch = [L,C,rng.inInterval({min: 0, max: 360})];
+    let hsluv = lchToHsluv(lch);
+    hsluvs.push(hsluv);
   }
-  console.log("Maneesh");
-  console.log(hsluvs[0]);
-  let hexcolors = hsluvs.map((x) => hsluvToHex(x as ColorTuple));
-  return hexcolors;
+
+  return getMixedRGBs(hsluvs,rng);
+}
+
+
+function midLMaxC(rng: Random): string[] {
+  let L = 50;
+  let hs: number[] = [];
+  let hsluvs: ColorTuple[] = [];
+  //let h = rng.inInterval({min: 0, max: 360});
+
+  for (let i = 0; i < 3; i++) {
+    let hsluv = [rng.inInterval({min: 0, max: 360}) ,100,L];
+    hsluvs.push(hsluv);
+  }
+
+  return getMixedRGBs(hsluvs,rng);
+}
+
+
+function chromaContrast(rng: Random): string[] {
+  let L = rng.inInterval({ min: 10, max: 90 });
+  let h = rng.inInterval({min: 0, max: 360});
+  let Ss = [20,60,100];
+  let hsluvs: ColorTuple[] = [];
+  
+  for (let i = 0; i < 3; i++) {
+    let hsluv = [h,Ss[i],L];
+    hsluvs.push(hsluv);
+  }
+
+  return getMixedRGBs(hsluvs,rng);
 }
 
 /**
@@ -202,7 +303,13 @@ const PALETTE_GENERATORS: {
   CIELUV: createSimplePaletteGenerator(createRandomCIELUVColor),
   threevals: createTriadPaletteGenerator(threeVColor),
   randhue: createTriadPaletteGenerator(randHue),
-  hichroma: createTriadPaletteGenerator(hiChroma),
+  randLAlmostNeutralC: createTriadPaletteGenerator(randLAlmostNeutralC),
+  randLMinSafeC: createTriadPaletteGenerator(randLMinSafeC),
+  randLMaxSafeC: createTriadPaletteGenerator(randLMaxSafeC),
+  midLMinSafeC: createTriadPaletteGenerator(midLMinSafeC),
+  midLMaxC: createTriadPaletteGenerator(midLMaxC),
+  chromaContrast: createTriadPaletteGenerator(chromaContrast),
+  hiChroma: createTriadPaletteGenerator(hiChroma)
 };
 
 export const RANDOM_PALETTE_ALGORITHMS = Object.keys(

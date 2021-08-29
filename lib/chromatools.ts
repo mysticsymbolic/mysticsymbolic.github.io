@@ -101,11 +101,11 @@ function angleFromOrigin(p: Point) {
   return Math.atan2(p.y, p.x);
 }
 
-/*
+
 function lengthOfRayUntilIntersect(theta: Angle, l: Line) {
   return l.intercept / (Math.sin(theta) - l.slope * Math.cos(theta));
 }
-*/
+
 
 function getBounds(L: number): Line[] {
   let result: Line[] = [];
@@ -128,8 +128,8 @@ function getBounds(L: number): Line[] {
   return result;
 }
 
-/*
-function maxSafeChromaForL(L): number {
+
+export function maxSafeChromaForL(L): number {
   let bounds = getBounds(L);
   let min = Infinity;
 
@@ -141,7 +141,8 @@ function maxSafeChromaForL(L): number {
   return min;
 }
 
-function maxChromaForLH(L: number, H: number): number {
+
+export function maxChromaForLH(L: number, H: number): number {
   let hrad = (H / 360) * Math.PI * 2;
   let bounds = getBounds(L);
   let min = Infinity;
@@ -156,7 +157,7 @@ function maxChromaForLH(L: number, H: number): number {
   return min;
 }
 
-
+/*
 function dotProduct(a, b) {
   let sum = 0;
   for (let i = 0; i < a.length; i++)
