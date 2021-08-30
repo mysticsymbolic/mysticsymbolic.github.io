@@ -13,6 +13,11 @@ import { CreatureDesign } from "./creature-page/core";
 import { deserializeCreatureDesign } from "./creature-page/serialization";
 
 import "./gallery-page.css";
+import {
+  createMandalaAnimationRenderer,
+  MandalaDesign,
+} from "./mandala-page/core";
+import { deserializeMandalaDesign } from "./mandala-page/serialization";
 
 function compositionRemixUrl(comp: GalleryComposition): string {
   return (
@@ -22,6 +27,8 @@ function compositionRemixUrl(comp: GalleryComposition): string {
 }
 
 const THUMBNAIL_CLASS = "gallery-thumbnail canvas";
+
+const THUMBNAIL_SCALE = 0.2;
 
 const EmptyThumbnail: React.FC = () => (
   <div className={THUMBNAIL_CLASS + " is-empty"}></div>
@@ -39,11 +46,34 @@ const CreatureThumbnail: React.FC<{ design: CreatureDesign }> = (props) => {
     <div className={THUMBNAIL_CLASS} style={{ backgroundColor: background }}>
       <CreatureContext.Provider value={ctx}>
         <AutoSizingSvg padding={10} ref={svgRef} bgColor={background}>
-          <SvgTransform transform={svgScale(0.2)}>
+          <SvgTransform transform={svgScale(THUMBNAIL_SCALE)}>
             <CreatureSymbol {...props.design.creature} />
           </SvgTransform>
         </AutoSizingSvg>
       </CreatureContext.Provider>
+    </div>
+  );
+};
+
+const MandalaThumbnail: React.FC<{ design: MandalaDesign }> = (props) => {
+  const render = createMandalaAnimationRenderer(props.design, THUMBNAIL_SCALE);
+  const { background } = props.design.baseCompCtx;
+  const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      className={THUMBNAIL_CLASS}
+      style={{ backgroundColor: background }}
+      ref={canvasRef}
+    >
+      <AutoSizingSvg
+        ref={svgRef}
+        bgColor={background}
+        sizeToElement={canvasRef}
+      >
+        {render(0)}
+      </AutoSizingSvg>
     </div>
   );
 };
@@ -58,6 +88,16 @@ function getThumbnail(gc: GalleryComposition): JSX.Element {
       return <EmptyThumbnail />;
     }
     return <CreatureThumbnail design={design} />;
+  }
+  if (gc.kind === "mandala") {
+    let design: MandalaDesign;
+    try {
+      design = deserializeMandalaDesign(gc.serializedValue);
+    } catch (e) {
+      console.log(`Could not deserialize creature "${gc.title}"`, e);
+      return <EmptyThumbnail />;
+    }
+    return <MandalaThumbnail design={design} />;
   }
   return <EmptyThumbnail />;
 }
