@@ -52,28 +52,27 @@ const PublishWidget: React.FC<GalleryWidgetProps> = (props) => {
   const user = assertNotNull(authCtx.loggedInUser, "User must be logged in");
   const galleryCtx = useContext(GalleryContext);
   const [title, setTitle] = useState("");
-  const [publishedId, setPublishedId] = useState("");
+  const [lastSerializedValue, setLastSerializedValue] = useState("");
   const handlePublish = () => {
-    galleryCtx.submit(
-      {
-        title,
-        kind: props.kind,
-        serializedValue: props.serializeValue(),
-        owner: user.id,
-        ownerName: user.name,
-      },
-      setPublishedId
-    );
+    const serializedValue = props.serializeValue();
+    setLastSerializedValue(serializedValue);
+    galleryCtx.submit({
+      title,
+      kind: props.kind,
+      serializedValue,
+      owner: user.id,
+      ownerName: user.name,
+    });
   };
   const isSubmitting = galleryCtx.submitStatus === "submitting";
 
-  if (galleryCtx.lastSubmission?.id === publishedId) {
+  if (galleryCtx.lastSubmission?.serializedValue === lastSerializedValue) {
     return (
       <>
         <p>Your composition "{title}" has been published!</p>
         <button
           onClick={() => {
-            setPublishedId("");
+            setLastSerializedValue("");
             setTitle("");
           }}
         >

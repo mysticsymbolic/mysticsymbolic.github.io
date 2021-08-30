@@ -158,7 +158,7 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
     lastRefresh,
     lastSubmission,
     submitStatus,
-    submit(props, onSuccess) {
+    submit(props) {
       if (!(appCtx && submitStatus === "idle")) return;
 
       const doc: FirebaseCompositionDocument = {
@@ -174,7 +174,6 @@ export const FirebaseGalleryProvider: React.FC<{}> = ({ children }) => {
           setSubmitStatus("idle");
           setCompositions([comp, ...compositions]);
           setLastSubmission(comp);
-          onSuccess(docRef.id);
         })
         .catch((e) => {
           setSubmitStatus("error");

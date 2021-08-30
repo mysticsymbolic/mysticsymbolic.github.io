@@ -54,10 +54,7 @@ export interface GalleryContext {
    * If already in the process of submitting a composition, this
    * will do nothing.
    */
-  submit(
-    composition: Omit<GalleryComposition, "id" | "createdAt">,
-    onSuccess: (id: string) => void
-  ): void;
+  submit(composition: Omit<GalleryComposition, "id" | "createdAt">): void;
 
   /** The most recent submission made via `submit()`, if any. */
   lastSubmission?: GalleryComposition;
