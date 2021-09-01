@@ -1,0 +1,28 @@
+.gallery-thumbnail {
+  width: 320px;
+  height: 240px;
+}
+
+.gallery-item > a {
+  text-decoration: none;
+}
+
+.gallery-thumbnail.is-empty {
+  background-color: lightgray;
+}
+
+.gallery-thumbnail.is-empty > span {
+  color: darkgray;
+  font-size: 48px;
+}
+
+.gallery-item {
+  display: inline-block;
+  border: 1px solid black;
+  margin-right: 1em;
+  margin-bottom: 1em;
+}
+
+.gallery-item p {
+  margin: 1em;
+}

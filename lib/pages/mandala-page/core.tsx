@@ -226,14 +226,17 @@ function isDesignAnimated(design: MandalaDesign): boolean {
   return getCirclesFromDesign(design).some((c) => c.animateSymbolRotation);
 }
 
-function createAnimationRenderer({
-  baseCompCtx,
-  invertCircle2,
-  circle1,
-  circle2,
-  useTwoCircles,
-  firstBehind,
-}: MandalaDesign): AnimationRenderer {
+export function createMandalaAnimationRenderer(
+  {
+    baseCompCtx,
+    invertCircle2,
+    circle1,
+    circle2,
+    useTwoCircles,
+    firstBehind,
+  }: MandalaDesign,
+  scale = 0.5
+): AnimationRenderer {
   const symbolCtx = noFillIfShowingSpecs(baseCompCtx);
   const circle2SymbolCtx = invertCircle2 ? swapColors(symbolCtx) : symbolCtx;
 
@@ -259,7 +262,7 @@ function createAnimationRenderer({
       }
     }
 
-    return <SvgTransform transform={svgScale(0.5)}>{circles}</SvgTransform>;
+    return <SvgTransform transform={svgScale(scale)}>{circles}</SvgTransform>;
   };
 }
 
@@ -336,7 +339,10 @@ export const MandalaPageWithDefaults: React.FC<{
     ]
   );
   const isAnimated = isDesignAnimated(design);
-  const render = useMemo(() => createAnimationRenderer(design), [design]);
+  const render = useMemo(
+    () => createMandalaAnimationRenderer(design),
+    [design]
+  );
 
   useDebouncedEffect(
     250,
