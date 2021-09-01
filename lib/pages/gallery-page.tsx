@@ -102,7 +102,7 @@ function getThumbnail(gc: GalleryComposition): JSX.Element {
     try {
       return THUMBNAILERS[gc.kind](gc);
     } catch (e) {
-      errorTitle = `Could not deserialize ${gc.kind} "${gc.title}".`;
+      errorTitle = `Could not deserialize ${gc.kind} "${gc.title}": ${e.message}`;
       console.error(e);
     }
   } else {
