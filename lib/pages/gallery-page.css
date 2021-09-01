@@ -3,8 +3,17 @@
   height: 240px;
 }
 
+.gallery-item > a {
+  text-decoration: none;
+}
+
 .gallery-thumbnail.is-empty {
   background-color: lightgray;
+}
+
+.gallery-thumbnail.is-empty > span {
+  color: darkgray;
+  font-size: 48px;
 }
 
 .gallery-item {

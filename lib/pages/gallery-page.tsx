@@ -34,8 +34,10 @@ const THUMBNAIL_CLASS = "gallery-thumbnail canvas";
 
 const THUMBNAIL_SCALE = 0.2;
 
-const EmptyThumbnail: React.FC = () => (
-  <div className={THUMBNAIL_CLASS + " is-empty"}></div>
+const ErrorThumbnail: React.FC<{ title?: string }> = ({ title }) => (
+  <div className={THUMBNAIL_CLASS + " is-empty"} title={title}>
+    <span>☹</span>
+  </div>
 );
 
 const CreatureThumbnail: React.FC<{ design: CreatureDesign }> = (props) => {
@@ -94,17 +96,22 @@ const THUMBNAILERS: {
 };
 
 function getThumbnail(gc: GalleryComposition): JSX.Element {
+  let errorTitle: string;
+
   if (gc.kind in THUMBNAILERS) {
     try {
       return THUMBNAILERS[gc.kind](gc);
     } catch (e) {
-      console.log(`Could not deserialize ${gc.kind} "${gc.title}"`, e);
+      errorTitle = `Could not deserialize ${gc.kind} "${gc.title}".`;
+      console.error(e);
     }
   } else {
-    console.log(`Found unknown gallery composition kind "${gc.kind}".`);
+    errorTitle = `Found unknown gallery composition kind "${gc.kind}".`;
   }
 
-  return <EmptyThumbnail />;
+  console.log(errorTitle);
+
+  return <ErrorThumbnail title={errorTitle} />;
 }
 
 const GalleryCompositionView: React.FC<GalleryComposition> = (props) => {
