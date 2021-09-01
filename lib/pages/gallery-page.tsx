@@ -146,7 +146,7 @@ export const GalleryPage: React.FC<{}> = () => {
   return (
     <Page title="Gallery!">
       <div className="sidebar">
-        <p>
+        <p style={{ marginTop: "0" }}>
           You can publish to this gallery via the sidebar on other pages of this
           site.
         </p>
