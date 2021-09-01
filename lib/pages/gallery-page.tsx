@@ -5,7 +5,11 @@ import {
   CreatureContextType,
   CreatureSymbol,
 } from "../creature-symbol";
-import { GalleryComposition, GalleryContext } from "../gallery-context";
+import {
+  GalleryComposition,
+  GalleryCompositionKind,
+  GalleryContext,
+} from "../gallery-context";
 import { Page } from "../page";
 import { createPageWithStateSearchParams } from "../page-with-shareable-state";
 import { svgScale, SvgTransform } from "../svg-transform";
@@ -78,27 +82,28 @@ const MandalaThumbnail: React.FC<{ design: MandalaDesign }> = (props) => {
   );
 };
 
+const THUMBNAILERS: {
+  [key in GalleryCompositionKind]: (gc: GalleryComposition) => JSX.Element;
+} = {
+  creature: (gc) => (
+    <CreatureThumbnail design={deserializeCreatureDesign(gc.serializedValue)} />
+  ),
+  mandala: (gc) => (
+    <MandalaThumbnail design={deserializeMandalaDesign(gc.serializedValue)} />
+  ),
+};
+
 function getThumbnail(gc: GalleryComposition): JSX.Element {
-  if (gc.kind === "creature") {
-    let design: CreatureDesign;
+  if (gc.kind in THUMBNAILERS) {
     try {
-      design = deserializeCreatureDesign(gc.serializedValue);
+      return THUMBNAILERS[gc.kind](gc);
     } catch (e) {
-      console.log(`Could not deserialize creature "${gc.title}"`, e);
-      return <EmptyThumbnail />;
+      console.log(`Could not deserialize ${gc.kind} "${gc.title}"`, e);
     }
-    return <CreatureThumbnail design={design} />;
+  } else {
+    console.log(`Found unknown gallery composition kind "${gc.kind}".`);
   }
-  if (gc.kind === "mandala") {
-    let design: MandalaDesign;
-    try {
-      design = deserializeMandalaDesign(gc.serializedValue);
-    } catch (e) {
-      console.log(`Could not deserialize creature "${gc.title}"`, e);
-      return <EmptyThumbnail />;
-    }
-    return <MandalaThumbnail design={design} />;
-  }
+
   return <EmptyThumbnail />;
 }
 
