@@ -10,6 +10,7 @@ import {
   GalleryCompositionKind,
   GalleryContext,
 } from "../gallery-context";
+import { LoadingIndicator } from "../loading-indicator";
 import { Page } from "../page";
 import { createPageWithStateSearchParams } from "../page-with-shareable-state";
 import { svgScale, SvgTransform } from "../svg-transform";
@@ -155,9 +156,13 @@ export const GalleryPage: React.FC<{}> = () => {
         {ctx.error && <p className="error">{ctx.error}</p>}
       </div>
       <div className="canvas scrollable">
-        {ctx.compositions.map((comp) => (
-          <GalleryCompositionView key={comp.id} {...comp} />
-        ))}
+        {ctx.isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          ctx.compositions.map((comp) => (
+            <GalleryCompositionView key={comp.id} {...comp} />
+          ))
+        )}
       </div>
     </Page>
   );
