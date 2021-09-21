@@ -16,6 +16,7 @@ import { createPageWithStateSearchParams } from "../page-with-shareable-state";
 import { svgScale, SvgTransform } from "../svg-transform";
 import { CreatureDesign } from "./creature-page/core";
 import { deserializeCreatureDesign } from "./creature-page/serialization";
+import { getFriendlyPageName } from "./friendly-page-names";
 
 import "./gallery-page.css";
 import {
@@ -128,7 +129,7 @@ const GalleryCompositionView: React.FC<GalleryComposition> = (props) => {
         <a href={url} target="_blank">
           {props.title}
         </a>{" "}
-        {props.kind} by {props.ownerName}
+        {getFriendlyPageName(props.kind)} by {props.ownerName}
       </p>
     </div>
   );

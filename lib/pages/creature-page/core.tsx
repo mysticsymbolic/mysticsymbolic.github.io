@@ -313,7 +313,7 @@ export const CreaturePageWithDefaults: React.FC<
   );
 
   return (
-    <Page title="Creature!">
+    <Page title="Cluster!">
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
         <RandomizerWidget
@@ -330,7 +330,7 @@ export const CreaturePageWithDefaults: React.FC<
           </div>
           <div className="thingy">
             <NumericSlider
-              label="Random creature complexity"
+              label="Random cluster complexity"
               min={0}
               max={MAX_COMPLEXITY_LEVEL}
               step={1}

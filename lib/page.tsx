@@ -1,6 +1,7 @@
 import React, { MouseEvent, useContext } from "react";
 import { Helmet } from "react-helmet";
 import type { PageName } from "./pages";
+import { getFriendlyPageName } from "./pages/friendly-page-names";
 
 import "./page.css";
 
@@ -38,7 +39,7 @@ const PageLink: React.FC<{ page: PageName }> = ({ page }) => {
 
   return (
     <a href={href} onClick={handleClick}>
-      {page}
+      {getFriendlyPageName(page)}
     </a>
   );
 };
@@ -51,7 +52,11 @@ const Navbar: React.FC<{}> = (props) => {
       <ul className="navbar">
         {pc.allPages.map((pageName) => (
           <li key={pageName}>
-            {pc.currPage === pageName ? pageName : <PageLink page={pageName} />}
+            {pc.currPage === pageName ? (
+              getFriendlyPageName(pageName)
+            ) : (
+              <PageLink page={pageName} />
+            )}
           </li>
         ))}
       </ul>
