@@ -50,6 +50,9 @@ const DeserializationErrorModal: React.FC = () => {
 
   if (!show) return null;
 
+  // TODO: This isn't accessible at all; it ought to trap keyboard focus,
+  // disappear when the user presses ESC, and so on.
+
   return (
     <div className="page-error">
       <div>
