@@ -45,6 +45,30 @@ export function createPageWithStateSearchParams(
   return search;
 }
 
+const DeserializationErrorModal: React.FC = () => {
+  const [show, setShow] = useState(true);
+
+  if (!show) return null;
+
+  // TODO: This isn't accessible at all; it ought to trap keyboard focus,
+  // disappear when the user presses ESC, and so on.
+
+  return (
+    <div className="page-error">
+      <div>
+        <p>
+          Sorry, an error occurred when trying to load the composition on this
+          page.
+        </p>
+        <p>
+          Either its data is corrupted, or displaying it is no longer supported.
+        </p>
+        <button onClick={() => setShow(false)}>OK</button>
+      </div>
+    </div>
+  );
+};
+
 /**
  * Create a component that represents a page which exposes some
  * aspect of its state in the current URL, so that it can be
@@ -84,13 +108,16 @@ export function createPageWithShareableState<T>({
      */
     const [isInOnChange, setIsInOnChange] = useState(false);
 
-    /** The default state from th URL, which we'll pass into our component. */
+    /** The default state from the URL, which we'll pass into our component. */
     let defaults: T = defaultValue;
+
+    let didDeserializeThrow = false;
 
     try {
       defaults = deserialize(state || "");
     } catch (e) {
       console.log(`Error deserializing state: ${e}`);
+      didDeserializeThrow = true;
     }
 
     const onChange = useCallback(
@@ -115,7 +142,12 @@ export function createPageWithShareableState<T>({
       }
     }, [isInOnChange, state, latestState, key]);
 
-    return <Component key={key} defaults={defaults} onChange={onChange} />;
+    return (
+      <>
+        {didDeserializeThrow && <DeserializationErrorModal />}
+        <Component key={key} defaults={defaults} onChange={onChange} />
+      </>
+    );
   };
 
   return PageWithShareableState;
