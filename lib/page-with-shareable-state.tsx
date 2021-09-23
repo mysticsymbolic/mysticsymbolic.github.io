@@ -86,14 +86,16 @@ export function createPageWithShareableState<T>({
 
     /** The default state from the URL, which we'll pass into our component. */
     let defaults: T = defaultValue;
-    let deserializeError = false;
+    let didDeserializeThrow = false;
 
     try {
       defaults = deserialize(state || "");
     } catch (e) {
       console.log(`Error deserializing state: ${e}`);
-      deserializeError = true;
+      didDeserializeThrow = true;
     }
+
+    const [showError, setShowError] = useState(didDeserializeThrow);
 
     const onChange = useCallback(
       (value: T) => {
@@ -119,7 +121,7 @@ export function createPageWithShareableState<T>({
 
     return (
       <>
-        {deserializeError && (
+        {showError && (
           <div className="page-error">
             <div>
               <p>
@@ -130,7 +132,7 @@ export function createPageWithShareableState<T>({
                 Either its data is corrupted, or displaying it is no longer
                 supported.
               </p>
-              <button>Alas</button>
+              <button onClick={() => setShowError(false)}>OK</button>
             </div>
           </div>
         )}
