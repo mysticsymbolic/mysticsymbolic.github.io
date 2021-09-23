@@ -126,7 +126,6 @@ ul.navbar li:last-child {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
   background-color: rgba(0, 0, 0, 0.75);
 }
 
@@ -135,7 +134,6 @@ ul.navbar li:last-child {
   color: white;
   padding: 2em;
   max-width: 50em;
-  pointer-events: auto;
 }
 
 .page-error div p:first-child {
