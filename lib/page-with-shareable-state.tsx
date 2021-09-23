@@ -45,6 +45,27 @@ export function createPageWithStateSearchParams(
   return search;
 }
 
+const DeserializationErrorModal: React.FC = () => {
+  const [show, setShow] = useState(true);
+
+  if (!show) return null;
+
+  return (
+    <div className="page-error">
+      <div>
+        <p>
+          Sorry, an error occurred when trying to load the composition on this
+          page.
+        </p>
+        <p>
+          Either its data is corrupted, or displaying it is no longer supported.
+        </p>
+        <button onClick={() => setShow(false)}>OK</button>
+      </div>
+    </div>
+  );
+};
+
 /**
  * Create a component that represents a page which exposes some
  * aspect of its state in the current URL, so that it can be
@@ -86,6 +107,7 @@ export function createPageWithShareableState<T>({
 
     /** The default state from the URL, which we'll pass into our component. */
     let defaults: T = defaultValue;
+
     let didDeserializeThrow = false;
 
     try {
@@ -94,8 +116,6 @@ export function createPageWithShareableState<T>({
       console.log(`Error deserializing state: ${e}`);
       didDeserializeThrow = true;
     }
-
-    const [showError, setShowError] = useState(didDeserializeThrow);
 
     const onChange = useCallback(
       (value: T) => {
@@ -121,21 +141,7 @@ export function createPageWithShareableState<T>({
 
     return (
       <>
-        {showError && (
-          <div className="page-error">
-            <div>
-              <p>
-                Sorry, an error occurred when trying to load the composition on
-                this page.
-              </p>
-              <p>
-                Either its data is corrupted, or displaying it is no longer
-                supported.
-              </p>
-              <button onClick={() => setShowError(false)}>OK</button>
-            </div>
-          </div>
-        )}
+        {didDeserializeThrow && <DeserializationErrorModal />}
         <Component key={key} defaults={defaults} onChange={onChange} />
       </>
     );
