@@ -116,3 +116,39 @@ ul.navbar li:last-child {
 .error {
   color: red;
 }
+
+.page-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.page-error div {
+  background: crimson;
+  color: white;
+  padding: 2em;
+  max-width: 50em;
+  pointer-events: auto;
+}
+
+.page-error div p:first-child {
+  margin-top: 0;
+}
+
+.page-error div p:last-child {
+  margin-bottom: 0;
+}
+
+.page-error div button {
+  display: block;
+  width: 66%;
+  margin: 3em auto 0 auto;
+  text-align: center;
+}

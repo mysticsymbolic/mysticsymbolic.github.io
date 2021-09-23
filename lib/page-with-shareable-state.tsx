@@ -84,13 +84,15 @@ export function createPageWithShareableState<T>({
      */
     const [isInOnChange, setIsInOnChange] = useState(false);
 
-    /** The default state from th URL, which we'll pass into our component. */
+    /** The default state from the URL, which we'll pass into our component. */
     let defaults: T = defaultValue;
+    let deserializeError = false;
 
     try {
       defaults = deserialize(state || "");
     } catch (e) {
       console.log(`Error deserializing state: ${e}`);
+      deserializeError = true;
     }
 
     const onChange = useCallback(
@@ -115,7 +117,26 @@ export function createPageWithShareableState<T>({
       }
     }, [isInOnChange, state, latestState, key]);
 
-    return <Component key={key} defaults={defaults} onChange={onChange} />;
+    return (
+      <>
+        {deserializeError && (
+          <div className="page-error">
+            <div>
+              <p>
+                Sorry, an error occurred when trying to load the composition on
+                this page.
+              </p>
+              <p>
+                Either its data is corrupted, or displaying it is no longer
+                supported.
+              </p>
+              <button>Alas</button>
+            </div>
+          </div>
+        )}
+        <Component key={key} defaults={defaults} onChange={onChange} />
+      </>
+    );
   };
 
   return PageWithShareableState;
