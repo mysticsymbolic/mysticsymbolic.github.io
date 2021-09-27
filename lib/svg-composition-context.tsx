@@ -40,7 +40,12 @@ export function CompositionContextWidget<T extends SvgCompositionContext>({
   };
   const extraButtons = (
     <>
-      <button onClick={resetColors}>B&amp;W</button>{" "}
+      <button
+        onClick={resetColors}
+        title="Reset colors to their black &amp; white defaults"
+      >
+        B&amp;W
+      </button>{" "}
     </>
   );
   return (
