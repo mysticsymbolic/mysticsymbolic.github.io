@@ -34,8 +34,26 @@ export function CompositionContextWidget<T extends SvgCompositionContext>({
   onChange,
   children,
 }: CompositionContextWidgetProps<T>): JSX.Element {
+  const resetColors = () => {
+    const { background, stroke, fill } = DEFAULT_CONTEXT;
+    onChange({ ...ctx, background, stroke, fill });
+  };
+  const extraButtons = (
+    <>
+      <button
+        onClick={resetColors}
+        title="Reset colors to their black &amp; white defaults"
+      >
+        B&amp;W
+      </button>{" "}
+    </>
+  );
   return (
-    <SymbolContextWidget ctx={ctx} onChange={onChange}>
+    <SymbolContextWidget
+      ctx={ctx}
+      onChange={onChange}
+      extraButtons={extraButtons}
+    >
       {children}
       <ColorWidget
         label="Background"
