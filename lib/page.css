@@ -51,6 +51,10 @@ input[type="text"] {
   padding: 8px;
 }
 
+summary {
+  cursor: pointer;
+}
+
 /** Stupid class we're using instead of <p> to avoid ValidateDOMNesting warnings. */
 .thingy {
   margin-top: 10px;

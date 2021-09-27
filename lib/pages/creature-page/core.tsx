@@ -263,6 +263,37 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+function changeCreatureSymbol(
+  creature: CreatureSymbol,
+  data: SvgSymbolData
+): CreatureSymbol {
+  return {
+    ...creature,
+    data,
+  };
+}
+
+const CreatureEditorWidget: React.FC<{
+  creature: CreatureSymbol;
+  onChange: (symbol: CreatureSymbol) => void;
+}> = ({ creature, onChange }) => {
+  return (
+    <div className="thingy">
+      <details>
+        <summary>Edit cluster&hellip;</summary>
+        <div className="thingy">
+          <VocabularyWidget
+            label="Symbol"
+            value={creature.data}
+            onChange={(data) => onChange(changeCreatureSymbol(creature, data))}
+            choices={SvgVocabularyWithBlank}
+          />
+        </div>
+      </details>
+    </div>
+  );
+};
+
 export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
@@ -316,6 +347,7 @@ export const CreaturePageWithDefaults: React.FC<
     <Page title="Cluster!">
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
+        <CreatureEditorWidget creature={creature} onChange={setCreature} />
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomCreature}
