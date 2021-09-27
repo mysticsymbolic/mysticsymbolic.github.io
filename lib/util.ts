@@ -132,3 +132,11 @@ export function withoutNulls<T>(arr: (T | null)[]): T[] {
 export function lerp(a: number, b: number, amount: number) {
   return a + amount * (b - a);
 }
+
+/**
+ * Capitalize the given word, forcing the first letter to
+ * uppercase and the rest to lowercase.
+ */
+export function capitalize(value: string) {
+  return value.slice(0, 1).toUpperCase() + value.slice(1).toLowerCase();
+}
