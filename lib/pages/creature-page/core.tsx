@@ -263,16 +263,6 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
-function changeCreatureSymbol(
-  creature: CreatureSymbol,
-  data: SvgSymbolData
-): CreatureSymbol {
-  return {
-    ...creature,
-    data,
-  };
-}
-
 const CreatureEditorWidget: React.FC<{
   creature: CreatureSymbol;
   onChange: (symbol: CreatureSymbol) => void;
@@ -285,10 +275,15 @@ const CreatureEditorWidget: React.FC<{
           <VocabularyWidget
             label="Symbol"
             value={creature.data}
-            onChange={(data) => onChange(changeCreatureSymbol(creature, data))}
+            onChange={(data) => onChange({ ...creature, data })}
             choices={SvgVocabularyWithBlank}
           />
         </div>
+        <Checkbox
+          label="Invert colors"
+          value={creature.invertColors}
+          onChange={(invertColors) => onChange({ ...creature, invertColors })}
+        />
       </details>
     </div>
   );
