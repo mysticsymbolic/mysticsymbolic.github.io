@@ -1,4 +1,5 @@
 import React, {
+  CSSProperties,
   useCallback,
   useContext,
   useMemo,
@@ -22,6 +23,7 @@ import { range } from "../../util";
 import { AutoSizingSvg } from "../../auto-sizing-svg";
 import { ExportWidget } from "../../export-svg";
 import {
+  AttachedCreatureSymbol,
   CreatureContext,
   CreatureContextType,
   CreatureSymbol,
@@ -263,6 +265,112 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+const CreaturePartEditor: React.FC<{
+  creature: CreatureSymbol;
+  onChange: (symbol: CreatureSymbol) => void;
+  idPrefix: string;
+}> = ({ creature, onChange, idPrefix }) => {
+  const specs = creature.data.specs || {};
+  const updateAttachment = (
+    originalAttachment: AttachedCreatureSymbol,
+    attachUpdates: CreatureSymbol
+  ) => {
+    const index = creature.attachments.indexOf(originalAttachment);
+    if (index === -1) {
+      throw new Error(
+        `Assertion failure, unable to find attachment in creature`
+      );
+    }
+    const attachments = creature.attachments.slice();
+    attachments[index] = {
+      ...attachments[index],
+      ...attachUpdates,
+    };
+    onChange({
+      ...creature,
+      attachments,
+    });
+  };
+
+  return (
+    <>
+      <div className="thingy">
+        <VocabularyWidget
+          label="Symbol"
+          id={`${idPrefix}symbol`}
+          value={creature.data}
+          onChange={(data) => onChange({ ...creature, data })}
+          choices={SvgVocabulary}
+        />
+      </div>
+      <Checkbox
+        label="Invert colors"
+        value={creature.invertColors}
+        onChange={(invertColors) => onChange({ ...creature, invertColors })}
+      />
+      {ATTACHMENT_POINT_TYPES.map((type) => {
+        if (type === "anchor") return null;
+        const points = specs[type] || [];
+        const symbolHasAttachments = points.length > 0;
+        const creatureAttachments = creature.attachments.filter(
+          (at) => at.attachTo === type
+        );
+        const creatureDefinesAttachments = creatureAttachments.length > 0;
+        if (!symbolHasAttachments && !creatureDefinesAttachments) {
+          return null;
+        }
+        const style: CSSProperties = {};
+        let title = `Symbol defines a ${type} and cluster provides one`;
+        if (!symbolHasAttachments) {
+          style.textDecoration = "line-through";
+          title = `Cluster defines a ${type} but symbol doesn't define one`;
+          // Honestly, this is just going to confuse people, so leave it out
+          // for now.
+          return;
+        }
+        if (!creatureDefinesAttachments) {
+          style.color = "gray";
+          title = `Symbol defines a ${type} but cluster doesn't provide one`;
+        }
+        return (
+          <div key={type}>
+            <div style={style} title={title}>
+              {type}
+            </div>
+            {creatureAttachments.map((attach, i) => {
+              const atIdPrefix = `${idPrefix}_${type}_${i}_`;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    borderLeft: "2px solid lightgray",
+                    paddingLeft: "4px",
+                  }}
+                >
+                  <div className="flex-widget">
+                    <label htmlFor={`${atIdPrefix}_indices`}>Indices:</label>
+                    <input
+                      id={`${atIdPrefix}_indices`}
+                      type="text"
+                      disabled
+                      value={attach.indices.join(", ")}
+                    />
+                  </div>
+                  <CreaturePartEditor
+                    creature={attach}
+                    onChange={updateAttachment.bind(null, attach)}
+                    idPrefix={atIdPrefix}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
 const CreatureEditorWidget: React.FC<{
   creature: CreatureSymbol;
   onChange: (symbol: CreatureSymbol) => void;
@@ -271,18 +379,10 @@ const CreatureEditorWidget: React.FC<{
     <div className="thingy">
       <details>
         <summary>Edit cluster&hellip;</summary>
-        <div className="thingy">
-          <VocabularyWidget
-            label="Symbol"
-            value={creature.data}
-            onChange={(data) => onChange({ ...creature, data })}
-            choices={SvgVocabularyWithBlank}
-          />
-        </div>
-        <Checkbox
-          label="Invert colors"
-          value={creature.invertColors}
-          onChange={(invertColors) => onChange({ ...creature, invertColors })}
+        <CreaturePartEditor
+          creature={creature}
+          onChange={onChange}
+          idPrefix="creature_edit_"
         />
       </details>
     </div>
