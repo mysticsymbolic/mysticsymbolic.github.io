@@ -18,7 +18,7 @@ import {
   iterAttachmentPoints,
 } from "../../specs";
 import { Random } from "../../random";
-import { range } from "../../util";
+import { capitalize, range } from "../../util";
 
 import { AutoSizingSvg } from "../../auto-sizing-svg";
 import { ExportWidget } from "../../export-svg";
@@ -332,10 +332,11 @@ const CreaturePartEditor: React.FC<{
           style.color = "gray";
           title = `Symbol defines a ${type} but cluster doesn't provide one`;
         }
+        const typeCap = capitalize(type);
         return (
           <div key={type}>
             <div style={style} title={title}>
-              {type}
+              {typeCap} attachments
             </div>
             {creatureAttachments.map((attach, i) => {
               const atIdPrefix = `${idPrefix}_${type}_${i}_`;
@@ -348,7 +349,9 @@ const CreaturePartEditor: React.FC<{
                   }}
                 >
                   <div className="flex-widget">
-                    <label htmlFor={`${atIdPrefix}_indices`}>Indices:</label>
+                    <label htmlFor={`${atIdPrefix}_indices`}>
+                      {typeCap} attachment point indices:
+                    </label>
                     <input
                       id={`${atIdPrefix}_indices`}
                       type="text"
