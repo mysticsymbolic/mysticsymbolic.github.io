@@ -1,4 +1,5 @@
 import React from "react";
+import { mixColor } from "./color-util";
 import { ColorWidget } from "./color-widget";
 import { DEFAULT_BG_COLOR } from "./colors";
 import { createSvgSymbolContext, SvgSymbolContext } from "./svg-symbol";
@@ -38,6 +39,13 @@ export function CompositionContextWidget<T extends SvgCompositionContext>({
     const { background, stroke, fill } = DEFAULT_CONTEXT;
     onChange({ ...ctx, background, stroke, fill });
   };
+  const monochromatizeColors = () => {
+    onChange({
+      ...ctx,
+      stroke: mixColor(ctx.background, DEFAULT_CONTEXT.stroke, 0.1),
+      fill: mixColor(ctx.background, DEFAULT_CONTEXT.fill, 0.1),
+    });
+  };
   const extraButtons = (
     <>
       <button
@@ -45,6 +53,12 @@ export function CompositionContextWidget<T extends SvgCompositionContext>({
         title="Reset colors to their black &amp; white defaults"
       >
         B&amp;W
+      </button>{" "}
+      <button
+        onClick={monochromatizeColors}
+        title="Make stroke and fill a variation of the background"
+      >
+        Mono
       </button>{" "}
     </>
   );
