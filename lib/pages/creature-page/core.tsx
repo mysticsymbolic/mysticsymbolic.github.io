@@ -271,19 +271,30 @@ const CreaturePartEditor: React.FC<{
   idPrefix: string;
 }> = ({ creature, onChange, idPrefix }) => {
   const specs = creature.data.specs || {};
-  const updateAttachment = (
-    originalAttachment: AttachedCreatureSymbol,
-    attachUpdates: CreatureSymbol
-  ) => {
-    const index = creature.attachments.indexOf(originalAttachment);
+  const getAttachmentIndex = (attachment: AttachedCreatureSymbol) => {
+    const index = creature.attachments.indexOf(attachment);
     if (index === -1) {
       throw new Error(
         `Assertion failure, unable to find attachment in creature`
       );
     }
+    return index;
+  };
+  const deleteAttachment = (attachment: AttachedCreatureSymbol) => {
     const attachments = creature.attachments.slice();
-    attachments[index] = {
-      ...attachments[index],
+    attachments.splice(getAttachmentIndex(attachment), 1);
+    onChange({
+      ...creature,
+      attachments,
+    });
+  };
+  const updateAttachment = (
+    originalAttachment: AttachedCreatureSymbol,
+    attachUpdates: CreatureSymbol
+  ) => {
+    const attachments = creature.attachments.slice();
+    attachments[getAttachmentIndex(originalAttachment)] = {
+      ...originalAttachment,
       ...attachUpdates,
     };
     onChange({
@@ -358,6 +369,11 @@ const CreaturePartEditor: React.FC<{
                       disabled
                       value={attach.indices.join(", ")}
                     />
+                  </div>
+                  <div className="thingy">
+                    <button onClick={deleteAttachment.bind(null, attach)}>
+                      Remove this attachment
+                    </button>
                   </div>
                   <CreaturePartEditor
                     creature={attach}
