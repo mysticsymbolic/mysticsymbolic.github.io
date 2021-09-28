@@ -265,6 +265,29 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+const AttachmentIndicesWidget: React.FC<{
+  type: AttachmentPointType;
+  creature: CreatureSymbol;
+  attachment: AttachedCreatureSymbol;
+  onChange: (attachments: AttachedCreatureSymbol) => void;
+  idPrefix: string;
+}> = (props) => {
+  const id = `${props.idPrefix}_indices`;
+  const typeCap = capitalize(props.type);
+
+  return (
+    <div className="flex-widget">
+      <label htmlFor={id}>{typeCap} attachment point indices:</label>
+      <input
+        id={id}
+        type="text"
+        disabled
+        value={props.attachment.indices.join(", ")}
+      />
+    </div>
+  );
+};
+
 const CreaturePartEditor: React.FC<{
   creature: CreatureSymbol;
   onChange: (symbol: CreatureSymbol) => void;
@@ -351,6 +374,7 @@ const CreaturePartEditor: React.FC<{
             </div>
             {creatureAttachments.map((attach, i) => {
               const atIdPrefix = `${idPrefix}_${type}_${i}_`;
+
               return (
                 <div
                   key={i}
@@ -359,17 +383,15 @@ const CreaturePartEditor: React.FC<{
                     paddingLeft: "4px",
                   }}
                 >
-                  <div className="flex-widget">
-                    <label htmlFor={`${atIdPrefix}_indices`}>
-                      {typeCap} attachment point indices:
-                    </label>
-                    <input
-                      id={`${atIdPrefix}_indices`}
-                      type="text"
-                      disabled
-                      value={attach.indices.join(", ")}
-                    />
-                  </div>
+                  <AttachmentIndicesWidget
+                    type={type}
+                    creature={creature}
+                    attachment={attach}
+                    idPrefix={atIdPrefix}
+                    onChange={(attachments) =>
+                      onChange({ ...creature, ...attachments })
+                    }
+                  />
                   <div className="thingy">
                     <button onClick={deleteAttachment.bind(null, attach)}>
                       Remove this attachment
