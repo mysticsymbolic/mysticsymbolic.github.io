@@ -288,11 +288,15 @@ const AttachmentIndicesWidget: React.FC<{
   );
 };
 
-const CreaturePartEditor: React.FC<{
-  creature: CreatureSymbol;
-  onChange: (symbol: CreatureSymbol) => void;
+function CreaturePartEditor<T extends CreatureSymbol>({
+  creature,
+  onChange,
+  idPrefix,
+}: {
+  creature: T;
+  onChange: (symbol: T) => void;
   idPrefix: string;
-}> = ({ creature, onChange, idPrefix }) => {
+}): JSX.Element {
   const specs = creature.data.specs || {};
   const getAttachmentIndex = (attachment: AttachedCreatureSymbol) => {
     const index = creature.attachments.indexOf(attachment);
@@ -410,7 +414,7 @@ const CreaturePartEditor: React.FC<{
       })}
     </>
   );
-};
+}
 
 const CreatureEditorWidget: React.FC<{
   creature: CreatureSymbol;
