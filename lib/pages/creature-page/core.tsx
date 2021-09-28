@@ -473,20 +473,33 @@ function CreaturePartEditor<T extends CreatureSymbol>({
   );
 }
 
+const RememberedDetails: React.FC<{ id: string }> = ({ id, children }) => {
+  const [isOpen, setIsOpen] = useRememberedState(id, false);
+
+  return (
+    <details
+      onToggle={(e) => setIsOpen((e.currentTarget as HTMLDetailsElement).open)}
+      open={isOpen}
+    >
+      {children}
+    </details>
+  );
+};
+
 const CreatureEditorWidget: React.FC<{
   creature: CreatureSymbol;
   onChange: (symbol: CreatureSymbol) => void;
 }> = ({ creature, onChange }) => {
   return (
     <div className="thingy">
-      <details>
+      <RememberedDetails id="creature_editor_widget">
         <summary>Edit cluster&hellip;</summary>
         <CreaturePartEditor
           creature={creature}
           onChange={onChange}
           idPrefix="creature_edit_"
         />
-      </details>
+      </RememberedDetails>
     </div>
   );
 };
