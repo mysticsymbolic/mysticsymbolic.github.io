@@ -320,15 +320,11 @@ const AttachmentIndicesWidget: React.FC<{
   );
 };
 
-function CreaturePartEditor<T extends CreatureSymbol>({
+function AttachmentEditor<T extends CreatureSymbol>({
   creature,
   onChange,
   idPrefix,
-}: {
-  creature: T;
-  onChange: (symbol: T) => void;
-  idPrefix: string;
-}): JSX.Element {
+}: CreatureEditorProps<T>): JSX.Element {
   const specs = creature.data.specs || {};
   const getAttachmentIndex = (attachment: AttachedCreatureSymbol) => {
     const index = creature.attachments.indexOf(attachment);
@@ -361,20 +357,7 @@ function CreaturePartEditor<T extends CreatureSymbol>({
 
   return (
     <>
-      <div className="thingy">
-        <VocabularyWidget
-          label="Symbol"
-          id={`${idPrefix}symbol`}
-          value={creature.data}
-          onChange={(data) => onChange({ ...creature, data })}
-          choices={SvgVocabulary}
-        />
-      </div>
-      <Checkbox
-        label="Invert colors"
-        value={creature.invertColors}
-        onChange={(invertColors) => onChange({ ...creature, invertColors })}
-      />
+      {" "}
       {ATTACHMENT_POINT_TYPES.map((type) => {
         if (type === "anchor") return null;
         const points = specs[type] || [];
@@ -439,6 +422,42 @@ function CreaturePartEditor<T extends CreatureSymbol>({
           </div>
         );
       })}
+    </>
+  );
+}
+
+type CreatureEditorProps<T extends CreatureSymbol> = {
+  creature: T;
+  onChange: (symbol: T) => void;
+  idPrefix: string;
+};
+
+function CreaturePartEditor<T extends CreatureSymbol>({
+  creature,
+  onChange,
+  idPrefix,
+}: CreatureEditorProps<T>): JSX.Element {
+  return (
+    <>
+      <div className="thingy">
+        <VocabularyWidget
+          label="Symbol"
+          id={`${idPrefix}symbol`}
+          value={creature.data}
+          onChange={(data) => onChange({ ...creature, data })}
+          choices={SvgVocabulary}
+        />
+      </div>
+      <Checkbox
+        label="Invert colors"
+        value={creature.invertColors}
+        onChange={(invertColors) => onChange({ ...creature, invertColors })}
+      />
+      <AttachmentEditor
+        creature={creature}
+        onChange={onChange}
+        idPrefix={idPrefix}
+      />
     </>
   );
 }
