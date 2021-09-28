@@ -317,13 +317,10 @@ function CreaturePartEditor<T extends CreatureSymbol>({
   };
   const updateAttachment = (
     originalAttachment: AttachedCreatureSymbol,
-    attachUpdates: CreatureSymbol
+    updatedAttachment: AttachedCreatureSymbol
   ) => {
     const attachments = creature.attachments.slice();
-    attachments[getAttachmentIndex(originalAttachment)] = {
-      ...originalAttachment,
-      ...attachUpdates,
-    };
+    attachments[getAttachmentIndex(originalAttachment)] = updatedAttachment;
     onChange({
       ...creature,
       attachments,
