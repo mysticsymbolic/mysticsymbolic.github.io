@@ -16,7 +16,6 @@ import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
   iterAttachmentPoints,
-  PointWithNormal,
 } from "../../specs";
 import { Random } from "../../random";
 import { capitalize, range } from "../../util";
@@ -266,27 +265,13 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
-const AttachmentIndicesWidget: React.FC<{
-  label: string;
-  points: PointWithNormal[];
-  attachmentsOfType: AttachedCreatureSymbol[];
-  attachment: AttachedCreatureSymbol;
-  onChange: (attachment: AttachedCreatureSymbol) => void;
-}> = ({ attachment, ...props }) => {
-  const allIndices = range(props.points.length);
+function getImmutableIndices(
+  attachmentsOfType: AttachedCreatureSymbol[],
+  attachment: AttachedCreatureSymbol
+): Set<number> {
   const immutableIndices = new Set<number>();
-  const toggleIndex = (i: number) => {
-    const indices = attachment.indices.slice();
-    const idx = indices.indexOf(i);
-    if (idx === -1) {
-      indices.push(i);
-    } else {
-      indices.splice(idx, 1);
-    }
-    props.onChange({ ...attachment, indices });
-  };
 
-  for (let a of props.attachmentsOfType) {
+  for (let a of attachmentsOfType) {
     if (a !== attachment) {
       for (let idx of a.indices) {
         // This index is taken up by another attachment.
@@ -300,9 +285,31 @@ const AttachmentIndicesWidget: React.FC<{
     immutableIndices.add(attachment.indices[0]);
   }
 
+  return immutableIndices;
+}
+
+const AttachmentIndicesWidget: React.FC<{
+  label: string;
+  numIndices: number;
+  immutableIndices: Set<number>;
+  attachment: AttachedCreatureSymbol;
+  onChange: (attachment: AttachedCreatureSymbol) => void;
+}> = ({ attachment, onChange, label, numIndices, immutableIndices }) => {
+  const allIndices = range(numIndices);
+  const toggleIndex = (i: number) => {
+    const indices = attachment.indices.slice();
+    const idx = indices.indexOf(i);
+    if (idx === -1) {
+      indices.push(i);
+    } else {
+      indices.splice(idx, 1);
+    }
+    onChange({ ...attachment, indices });
+  };
+
   return (
     <>
-      <div>{props.label}</div>
+      <div>{label}</div>
       <div>
         {allIndices.map((i) => {
           return (
@@ -390,6 +397,10 @@ function AttachmentEditor<T extends CreatureSymbol>({
             </div>
             {creatureAttachments.map((attach, i) => {
               const atIdPrefix = `${idPrefix}_${type}_${i}_`;
+              const immutableIndices = getImmutableIndices(
+                creatureAttachments,
+                attach
+              );
 
               return (
                 <div
@@ -401,8 +412,8 @@ function AttachmentEditor<T extends CreatureSymbol>({
                 >
                   <AttachmentIndicesWidget
                     label={`${typeCap} attachment point indices:`}
-                    points={points}
-                    attachmentsOfType={creatureAttachments}
+                    numIndices={points.length}
+                    immutableIndices={immutableIndices}
                     attachment={attach}
                     onChange={updateAttachment.bind(null, attach)}
                   />
