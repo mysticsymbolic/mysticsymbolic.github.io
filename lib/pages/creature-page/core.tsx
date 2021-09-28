@@ -269,7 +269,7 @@ const AttachmentIndicesWidget: React.FC<{
   type: AttachmentPointType;
   creature: CreatureSymbol;
   attachment: AttachedCreatureSymbol;
-  onChange: (attachments: AttachedCreatureSymbol) => void;
+  onChange: (attachment: AttachedCreatureSymbol) => void;
   idPrefix: string;
 }> = (props) => {
   const id = `${props.idPrefix}_indices`;
@@ -389,9 +389,7 @@ function CreaturePartEditor<T extends CreatureSymbol>({
                     creature={creature}
                     attachment={attach}
                     idPrefix={atIdPrefix}
-                    onChange={(attachments) =>
-                      onChange({ ...creature, ...attachments })
-                    }
+                    onChange={updateAttachment.bind(null, attach)}
                   />
                   <div className="thingy">
                     <button onClick={deleteAttachment.bind(null, attach)}>
