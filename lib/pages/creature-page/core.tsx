@@ -16,6 +16,7 @@ import {
   AttachmentPointType,
   ATTACHMENT_POINT_TYPES,
   iterAttachmentPoints,
+  PointWithNormal,
 } from "../../specs";
 import { Random } from "../../random";
 import { capitalize, range } from "../../util";
@@ -266,25 +267,56 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
 };
 
 const AttachmentIndicesWidget: React.FC<{
-  type: AttachmentPointType;
-  creature: CreatureSymbol;
+  label: string;
+  points: PointWithNormal[];
+  attachmentsOfType: AttachedCreatureSymbol[];
   attachment: AttachedCreatureSymbol;
   onChange: (attachment: AttachedCreatureSymbol) => void;
-  idPrefix: string;
-}> = (props) => {
-  const id = `${props.idPrefix}_indices`;
-  const typeCap = capitalize(props.type);
+}> = ({ attachment, ...props }) => {
+  const allIndices = range(props.points.length);
+  const immutableIndices = new Set<number>();
+  const toggleIndex = (i: number) => {
+    const indices = attachment.indices.slice();
+    const idx = indices.indexOf(i);
+    if (idx === -1) {
+      indices.push(i);
+    } else {
+      indices.splice(idx, 1);
+    }
+    props.onChange({ ...attachment, indices });
+  };
+
+  for (let a of props.attachmentsOfType) {
+    if (a !== attachment) {
+      for (let idx of a.indices) {
+        // This index is taken up by another attachment.
+        immutableIndices.add(idx);
+      }
+    }
+  }
+
+  if (attachment.indices.length === 1) {
+    // This attachment is only for one index, don't let it be unselected.
+    immutableIndices.add(attachment.indices[0]);
+  }
 
   return (
-    <div className="flex-widget">
-      <label htmlFor={id}>{typeCap} attachment point indices:</label>
-      <input
-        id={id}
-        type="text"
-        disabled
-        value={props.attachment.indices.join(", ")}
-      />
-    </div>
+    <>
+      <div>{props.label}</div>
+      <div>
+        {allIndices.map((i) => {
+          return (
+            <Checkbox
+              key={i}
+              label={i.toString()}
+              onChange={() => toggleIndex(i)}
+              disabled={immutableIndices.has(i)}
+              value={attachment.indices.includes(i)}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 };
 
@@ -385,10 +417,10 @@ function CreaturePartEditor<T extends CreatureSymbol>({
                   }}
                 >
                   <AttachmentIndicesWidget
-                    type={type}
-                    creature={creature}
+                    label={`${typeCap} attachment point indices:`}
+                    points={points}
+                    attachmentsOfType={creatureAttachments}
                     attachment={attach}
-                    idPrefix={atIdPrefix}
                     onChange={updateAttachment.bind(null, attach)}
                   />
                   <div className="thingy">
