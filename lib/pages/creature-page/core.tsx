@@ -265,6 +265,21 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+function getAvailableIndices(
+  attachmentsOfType: AttachedCreatureSymbol[],
+  numIndices: number
+): number[] {
+  const available = new Set(range(numIndices));
+
+  for (let a of attachmentsOfType) {
+    for (let i of a.indices) {
+      available.delete(i);
+    }
+  }
+
+  return Array.from(available);
+}
+
 function getImmutableIndices(
   attachmentsOfType: AttachedCreatureSymbol[],
   attachment: AttachedCreatureSymbol
@@ -361,6 +376,20 @@ function AttachmentEditor<T extends CreatureSymbol>({
       attachments,
     });
   };
+  const addAttachment = (attachTo: AttachmentPointType, indices: number[]) => {
+    const attachment: AttachedCreatureSymbol = {
+      attachTo,
+      indices,
+      data: SvgVocabulary.items[0],
+      invertColors: false,
+      attachments: [],
+      nests: [],
+    };
+    onChange({
+      ...creature,
+      attachments: [...creature.attachments, attachment],
+    });
+  };
 
   return (
     <>
@@ -389,6 +418,10 @@ function AttachmentEditor<T extends CreatureSymbol>({
           style.color = "gray";
           title = `Symbol defines a ${type} but cluster doesn't provide one`;
         }
+        const availableIndices = getAvailableIndices(
+          creatureAttachments,
+          points.length
+        );
         const typeCap = capitalize(type);
         return (
           <div key={type}>
@@ -430,6 +463,11 @@ function AttachmentEditor<T extends CreatureSymbol>({
                 </div>
               );
             })}
+            {availableIndices.length > 0 && (
+              <button onClick={() => addAttachment(type, availableIndices)}>
+                Add {type} attachment
+              </button>
+            )}
           </div>
         );
       })}
