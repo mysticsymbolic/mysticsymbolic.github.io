@@ -352,6 +352,120 @@ function IndicesWidget<T extends SymbolWithIndices>({
   );
 }
 
+function NestingEditor<T extends CreatureSymbol>({
+  creature,
+  onChange,
+  idPrefix,
+}: CreatureEditorProps<T>): JSX.Element | null {
+  const specs = creature.data.specs || {};
+  const getNestedIndex = (nested: NestedCreatureSymbol) => {
+    const index = creature.nests.indexOf(nested);
+    if (index === -1) {
+      throw new Error(
+        `Assertion failure, unable to find nested symbol in creature`
+      );
+    }
+    return index;
+  };
+  const deleteNested = (nested: NestedCreatureSymbol) => {
+    const nests = creature.nests.slice();
+    nests.splice(getNestedIndex(nested), 1);
+    onChange({
+      ...creature,
+      nests,
+    });
+  };
+  const updateNested = (
+    originalNested: NestedCreatureSymbol,
+    updatedNested: NestedCreatureSymbol
+  ) => {
+    const nests = creature.nests.slice();
+    nests[getNestedIndex(originalNested)] = updatedNested;
+    onChange({
+      ...creature,
+      nests,
+    });
+  };
+  const addNested = (indices: number[]) => {
+    const nested: NestedCreatureSymbol = {
+      indices,
+      data: SvgVocabulary.items[0],
+      invertColors: false,
+      attachments: [],
+      nests: [],
+    };
+    onChange({
+      ...creature,
+      nests: [...creature.nests, nested],
+    });
+  };
+
+  const points = specs.nesting || [];
+  const symbolHasNesting = points.length > 0;
+  const creatureDefinesNesting = creature.nests.length > 0;
+  if (!symbolHasNesting && !creatureDefinesNesting) {
+    return null;
+  }
+  const style: CSSProperties = {};
+  let title = `Symbol defines nesting and cluster provides at least one`;
+  if (!symbolHasNesting) {
+    style.textDecoration = "line-through";
+    title = `Cluster defines nesting but symbol doesn't define any`;
+    // Honestly, this is just going to confuse people, so leave it out
+    // for now.
+    return null;
+  }
+  if (!creatureDefinesNesting) {
+    style.color = "gray";
+    title = `Symbol defines nesting but cluster doesn't provide any`;
+  }
+  const availableIndices = getAvailableIndices(creature.nests, points.length);
+  return (
+    <div>
+      <div style={style} title={title}>
+        Nesting
+      </div>
+      {creature.nests.map((nest, i) => {
+        const atIdPrefix = `${idPrefix}_nest_${i}_`;
+        const immutableIndices = getImmutableIndices(creature.nests, nest);
+
+        return (
+          <div
+            key={i}
+            style={{
+              borderLeft: "2px solid lightgray",
+              paddingLeft: "4px",
+            }}
+          >
+            <IndicesWidget
+              label={`nesting indices:`}
+              numIndices={points.length}
+              immutableIndices={immutableIndices}
+              symbol={nest}
+              onChange={updateNested.bind(null, nest)}
+            />
+            <div className="thingy">
+              <button onClick={deleteNested.bind(null, nest)}>
+                Remove this nested symbol
+              </button>
+            </div>
+            <CreaturePartEditor
+              creature={nest}
+              onChange={updateNested.bind(null, nest)}
+              idPrefix={atIdPrefix}
+            />
+          </div>
+        );
+      })}
+      {availableIndices.length > 0 && (
+        <button onClick={() => addNested(availableIndices)}>
+          Add nested symbol
+        </button>
+      )}
+    </div>
+  );
+}
+
 function AttachmentEditor<T extends CreatureSymbol>({
   creature,
   onChange,
@@ -416,17 +530,17 @@ function AttachmentEditor<T extends CreatureSymbol>({
           return null;
         }
         const style: CSSProperties = {};
-        let title = `Symbol defines a ${type} and cluster provides one`;
+        let title = `Symbol defines ${type}(s) and cluster provides at least one`;
         if (!symbolHasAttachments) {
           style.textDecoration = "line-through";
-          title = `Cluster defines a ${type} but symbol doesn't define one`;
+          title = `Cluster defines ${type}(s) but symbol doesn't define any`;
           // Honestly, this is just going to confuse people, so leave it out
           // for now.
           return;
         }
         if (!creatureDefinesAttachments) {
           style.color = "gray";
-          title = `Symbol defines a ${type} but cluster doesn't provide one`;
+          title = `Symbol defines ${type}(s) but cluster doesn't provide any`;
         }
         const availableIndices = getAvailableIndices(
           creatureAttachments,
@@ -513,6 +627,11 @@ function CreaturePartEditor<T extends CreatureSymbol>({
         onChange={(invertColors) => onChange({ ...creature, invertColors })}
       />
       <AttachmentEditor
+        creature={creature}
+        onChange={onChange}
+        idPrefix={idPrefix}
+      />
+      <NestingEditor
         creature={creature}
         onChange={onChange}
         idPrefix={idPrefix}
