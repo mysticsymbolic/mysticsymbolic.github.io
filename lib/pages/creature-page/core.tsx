@@ -265,14 +265,16 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+type SymbolWithIndices = CreatureSymbol & { indices: number[] };
+
 function getAvailableIndices(
-  attachmentsOfType: AttachedCreatureSymbol[],
+  symbols: SymbolWithIndices[],
   numIndices: number
 ): number[] {
   const available = new Set(range(numIndices));
 
-  for (let a of attachmentsOfType) {
-    for (let i of a.indices) {
+  for (let s of symbols) {
+    for (let i of s.indices) {
       available.delete(i);
     }
   }
@@ -281,45 +283,53 @@ function getAvailableIndices(
 }
 
 function getImmutableIndices(
-  attachmentsOfType: AttachedCreatureSymbol[],
-  attachment: AttachedCreatureSymbol
+  symbols: SymbolWithIndices[],
+  symbol: SymbolWithIndices
 ): Set<number> {
   const immutableIndices = new Set<number>();
 
-  for (let a of attachmentsOfType) {
-    if (a !== attachment) {
-      for (let idx of a.indices) {
+  for (let s of symbols) {
+    if (s !== symbol) {
+      for (let idx of s.indices) {
         // This index is taken up by another attachment.
         immutableIndices.add(idx);
       }
     }
   }
 
-  if (attachment.indices.length === 1) {
+  if (symbol.indices.length === 1) {
     // This attachment is only for one index, don't let it be unselected.
-    immutableIndices.add(attachment.indices[0]);
+    immutableIndices.add(symbol.indices[0]);
   }
 
   return immutableIndices;
 }
 
-const AttachmentIndicesWidget: React.FC<{
+type IndicesWidgetProps<T extends SymbolWithIndices> = {
   label: string;
   numIndices: number;
   immutableIndices: Set<number>;
-  attachment: AttachedCreatureSymbol;
-  onChange: (attachment: AttachedCreatureSymbol) => void;
-}> = ({ attachment, onChange, label, numIndices, immutableIndices }) => {
+  symbol: T;
+  onChange: (symbol: T) => void;
+};
+
+function IndicesWidget<T extends SymbolWithIndices>({
+  symbol,
+  onChange,
+  label,
+  numIndices,
+  immutableIndices,
+}: IndicesWidgetProps<T>): JSX.Element {
   const allIndices = range(numIndices);
   const toggleIndex = (i: number) => {
-    const indices = attachment.indices.slice();
+    const indices = symbol.indices.slice();
     const idx = indices.indexOf(i);
     if (idx === -1) {
       indices.push(i);
     } else {
       indices.splice(idx, 1);
     }
-    onChange({ ...attachment, indices });
+    onChange({ ...symbol, indices });
   };
 
   return (
@@ -333,14 +343,14 @@ const AttachmentIndicesWidget: React.FC<{
               label={i.toString()}
               onChange={() => toggleIndex(i)}
               disabled={immutableIndices.has(i)}
-              value={attachment.indices.includes(i)}
+              value={symbol.indices.includes(i)}
             />
           );
         })}
       </div>
     </>
   );
-};
+}
 
 function AttachmentEditor<T extends CreatureSymbol>({
   creature,
@@ -443,11 +453,11 @@ function AttachmentEditor<T extends CreatureSymbol>({
                     paddingLeft: "4px",
                   }}
                 >
-                  <AttachmentIndicesWidget
+                  <IndicesWidget
                     label={`${typeCap} attachment point indices:`}
                     numIndices={points.length}
                     immutableIndices={immutableIndices}
-                    attachment={attach}
+                    symbol={attach}
                     onChange={updateAttachment.bind(null, attach)}
                   />
                   <div className="thingy">
