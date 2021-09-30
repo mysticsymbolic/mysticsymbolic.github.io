@@ -352,53 +352,62 @@ function IndicesWidget<T extends SymbolWithIndices>({
   );
 }
 
+class ArrayManipulator<T> {
+  constructor(readonly items: T[]) {}
+
+  strictIndexOf(item: T): number {
+    const index = this.items.indexOf(item);
+    if (index === -1) {
+      throw new Error(`Assertion failure, unable to find item`);
+    }
+    return index;
+  }
+
+  withItemRemoved(item: T): T[] {
+    const items = this.items.slice();
+    items.splice(this.strictIndexOf(item), 1);
+    return items;
+  }
+
+  withItemUpdated(originalItem: T, updatedItem: T): T[] {
+    const items = this.items.slice();
+    items[this.strictIndexOf(originalItem)] = updatedItem;
+    return items;
+  }
+
+  withItemAdded(item: T): T[] {
+    return [...this.items, item];
+  }
+}
+
 function NestingEditor<T extends CreatureSymbol>({
   creature,
   onChange,
   idPrefix,
 }: CreatureEditorProps<T>): JSX.Element | null {
   const specs = creature.data.specs || {};
-  const getNestedIndex = (nested: NestedCreatureSymbol) => {
-    const index = creature.nests.indexOf(nested);
-    if (index === -1) {
-      throw new Error(
-        `Assertion failure, unable to find nested symbol in creature`
-      );
-    }
-    return index;
-  };
-  const deleteNested = (nested: NestedCreatureSymbol) => {
-    const nests = creature.nests.slice();
-    nests.splice(getNestedIndex(nested), 1);
+  const nests = new ArrayManipulator(creature.nests);
+  const handleChangedNests = (nests: NestedCreatureSymbol[]) =>
     onChange({
       ...creature,
       nests,
     });
-  };
+  const deleteNested = (nested: NestedCreatureSymbol) =>
+    handleChangedNests(nests.withItemRemoved(nested));
   const updateNested = (
-    originalNested: NestedCreatureSymbol,
-    updatedNested: NestedCreatureSymbol
-  ) => {
-    const nests = creature.nests.slice();
-    nests[getNestedIndex(originalNested)] = updatedNested;
-    onChange({
-      ...creature,
-      nests,
-    });
-  };
-  const addNested = (indices: number[]) => {
-    const nested: NestedCreatureSymbol = {
-      indices,
-      data: SvgVocabulary.items[0],
-      invertColors: false,
-      attachments: [],
-      nests: [],
-    };
-    onChange({
-      ...creature,
-      nests: [...creature.nests, nested],
-    });
-  };
+    orig: NestedCreatureSymbol,
+    updated: NestedCreatureSymbol
+  ) => handleChangedNests(nests.withItemUpdated(orig, updated));
+  const addNested = (indices: number[]) =>
+    handleChangedNests(
+      nests.withItemAdded({
+        indices,
+        data: SvgVocabulary.items[0],
+        invertColors: false,
+        attachments: [],
+        nests: [],
+      })
+    );
 
   const points = specs.nesting || [];
   const symbolHasNesting = points.length > 0;
@@ -472,48 +481,29 @@ function AttachmentEditor<T extends CreatureSymbol>({
   idPrefix,
 }: CreatureEditorProps<T>): JSX.Element {
   const specs = creature.data.specs || {};
-  const getAttachmentIndex = (attachment: AttachedCreatureSymbol) => {
-    const index = creature.attachments.indexOf(attachment);
-    if (index === -1) {
-      throw new Error(
-        `Assertion failure, unable to find attachment in creature`
-      );
-    }
-    return index;
-  };
-  const deleteAttachment = (attachment: AttachedCreatureSymbol) => {
-    const attachments = creature.attachments.slice();
-    attachments.splice(getAttachmentIndex(attachment), 1);
-    onChange({
-      ...creature,
-      attachments,
-    });
-  };
+  const attachments = new ArrayManipulator(creature.attachments);
+  const handleChangedAttachments = (attachments: AttachedCreatureSymbol[]) =>
+    onChange({ ...creature, attachments });
+  const deleteAttachment = (attachment: AttachedCreatureSymbol) =>
+    handleChangedAttachments(attachments.withItemRemoved(attachment));
   const updateAttachment = (
     originalAttachment: AttachedCreatureSymbol,
     updatedAttachment: AttachedCreatureSymbol
-  ) => {
-    const attachments = creature.attachments.slice();
-    attachments[getAttachmentIndex(originalAttachment)] = updatedAttachment;
-    onChange({
-      ...creature,
-      attachments,
-    });
-  };
-  const addAttachment = (attachTo: AttachmentPointType, indices: number[]) => {
-    const attachment: AttachedCreatureSymbol = {
-      attachTo,
-      indices,
-      data: SvgVocabulary.items[0],
-      invertColors: false,
-      attachments: [],
-      nests: [],
-    };
-    onChange({
-      ...creature,
-      attachments: [...creature.attachments, attachment],
-    });
-  };
+  ) =>
+    handleChangedAttachments(
+      attachments.withItemUpdated(originalAttachment, updatedAttachment)
+    );
+  const addAttachment = (attachTo: AttachmentPointType, indices: number[]) =>
+    handleChangedAttachments(
+      attachments.withItemAdded({
+        attachTo,
+        indices,
+        data: SvgVocabulary.items[0],
+        invertColors: false,
+        attachments: [],
+        nests: [],
+      })
+    );
 
   return (
     <>
