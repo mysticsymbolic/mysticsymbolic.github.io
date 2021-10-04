@@ -45,6 +45,7 @@ import { useDebouncedEffect } from "../../use-debounced-effect";
 import { useRememberedState } from "../../use-remembered-state";
 import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
+import { CreatureEditorWidget } from "./creature-editor";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -316,6 +317,7 @@ export const CreaturePageWithDefaults: React.FC<
     <Page title="Cluster!">
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
+        <CreatureEditorWidget creature={creature} onChange={setCreature} />
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomCreature}

@@ -1,4 +1,5 @@
 import {
+  capitalize,
   flatten,
   float,
   inclusiveRange,
@@ -50,4 +51,11 @@ test("toFriendlyDecimal() works", () => {
 
 test("withoutNulls() works", () => {
   expect(withoutNulls([1, 2, 0, null, 3])).toEqual([1, 2, 0, 3]);
+});
+
+test("capitalize() works", () => {
+  for (let boop of ["boop", "BOOP", "Boop", "bOoP"]) {
+    expect(capitalize(boop)).toBe("Boop");
+  }
+  expect(capitalize("")).toBe("");
 });

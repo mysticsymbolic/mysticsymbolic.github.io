@@ -51,6 +51,14 @@ input[type="text"] {
   padding: 8px;
 }
 
+summary {
+  /**
+   * The default <summary> doesn't change the cursor, which makes it hard
+   * to tell that it's interactive on hover, so let's change that.
+   */
+  cursor: pointer;
+}
+
 /** Stupid class we're using instead of <p> to avoid ValidateDOMNesting warnings. */
 .thingy {
   margin-top: 10px;
