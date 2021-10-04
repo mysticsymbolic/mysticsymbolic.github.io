@@ -52,6 +52,10 @@ input[type="text"] {
 }
 
 summary {
+  /**
+   * The default <summary> doesn't change the cursor, which makes it hard
+   * to tell that it's interactive on hover, so let's change that.
+   */
   cursor: pointer;
 }
 
