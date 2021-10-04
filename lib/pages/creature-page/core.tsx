@@ -47,6 +47,7 @@ import { useDebouncedEffect } from "../../use-debounced-effect";
 import { useRememberedState } from "../../use-remembered-state";
 import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
+import { RememberedDetails } from "../../remembered-details";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -629,19 +630,6 @@ function CreaturePartEditor<T extends CreatureSymbol>({
     </>
   );
 }
-
-const RememberedDetails: React.FC<{ id: string }> = ({ id, children }) => {
-  const [isOpen, setIsOpen] = useRememberedState(id, false);
-
-  return (
-    <details
-      onToggle={(e) => setIsOpen((e.currentTarget as HTMLDetailsElement).open)}
-      open={isOpen}
-    >
-      {children}
-    </details>
-  );
-};
 
 const CreatureEditorWidget: React.FC<{
   creature: CreatureSymbol;
