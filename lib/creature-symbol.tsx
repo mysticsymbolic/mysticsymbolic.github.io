@@ -208,12 +208,21 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
   return <>{children}</>;
 };
 
+/**
+ * Any function that takes a number in the range [0, 1] and
+ * transforms it to a number in the same range, for the
+ * purposes of animation easing.
+ */
 type EasingFunction = (t: number) => number;
 
 // https://gist.github.com/gre/1650294
 const easeInOutQuad: EasingFunction = (t) =>
   t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
+/**
+ * Ease from 0, get to 1 by the time t=0.5, and then
+ * ease back to 0.
+ */
 const easeInOutQuadPingPong: EasingFunction = (t) => {
   if (t < 0.5) {
     return easeInOutQuad(t * 2);
@@ -221,12 +230,20 @@ const easeInOutQuadPingPong: EasingFunction = (t) => {
   return 1 - easeInOutQuad((t - 0.5) * 2);
 };
 
+/**
+ * Convert a percentage (number in the range [0, 1]) to
+ * a number in the range [-1, 1].
+ */
+function pctToNegativeOneToOne(pct: number) {
+  return (pct - 0.5) * 2;
+}
+
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
-  const animPct = easeInOutQuadPingPong(props.animPct || 0);
-  const y = animPct * 50.0;
+  const yHover =
+    pctToNegativeOneToOne(easeInOutQuadPingPong(props.animPct || 0)) * 25.0;
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -240,7 +257,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
   return (
-    <SvgTransform transform={[svgTranslate({ x: 0, y })]}>
+    <SvgTransform transform={[svgTranslate({ x: 0, y: yHover })]}>
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
