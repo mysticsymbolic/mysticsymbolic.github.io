@@ -49,7 +49,9 @@ export type CreatureSymbol = {
   nests: NestedCreatureSymbol[];
 };
 
-export type CreatureSymbolProps = CreatureSymbol;
+export type CreatureSymbolProps = CreatureSymbol & {
+  animPct?: number;
+};
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
@@ -206,10 +208,25 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
   return <>{children}</>;
 };
 
+type EasingFunction = (t: number) => number;
+
+// https://gist.github.com/gre/1650294
+const easeInOutQuad: EasingFunction = (t) =>
+  t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+const easeInOutQuadPingPong: EasingFunction = (t) => {
+  if (t < 0.5) {
+    return easeInOutQuad(t * 2);
+  }
+  return 1 - easeInOutQuad((t - 0.5) * 2);
+};
+
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
+  const animPct = easeInOutQuadPingPong(props.animPct || 0);
+  const y = animPct * 50.0;
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -223,7 +240,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
   return (
-    <>
+    <SvgTransform transform={[svgTranslate({ x: 0, y })]}>
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
@@ -239,6 +256,6 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
           ))}
         </CreatureContext.Provider>
       )}
-    </>
+    </SvgTransform>
   );
 };

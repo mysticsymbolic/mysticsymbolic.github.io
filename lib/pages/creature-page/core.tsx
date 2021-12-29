@@ -46,6 +46,7 @@ import { useRememberedState } from "../../use-remembered-state";
 import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
 import { CreatureEditorWidget } from "./creature-editor";
+import { useAnimationPct } from "../../animation";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -377,17 +378,25 @@ type CreatureCanvasProps = {
 
 const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
   ({ compCtx, ctx, creature }, svgRef) => {
+    const canvasRef = useRef<HTMLDivElement | null>(null);
+    const animPct = useAnimationPct(5000);
+
     return (
-      <div className="canvas" style={{ backgroundColor: compCtx.background }}>
+      <div
+        className="canvas"
+        style={{ backgroundColor: compCtx.background }}
+        ref={canvasRef}
+      >
         <CreatureContext.Provider value={ctx}>
           <HoverDebugHelper>
             <AutoSizingSvg
               padding={20}
               ref={svgRef}
+              sizeToElement={canvasRef}
               bgColor={compCtx.background}
             >
               <SvgTransform transform={svgScale(0.5)}>
-                <CreatureSymbol {...creature} />
+                <CreatureSymbol {...creature} animPct={animPct} />
               </SvgTransform>
             </AutoSizingSvg>
           </HoverDebugHelper>
