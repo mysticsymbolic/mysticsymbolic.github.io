@@ -359,6 +359,25 @@ export const CreaturePageWithDefaults: React.FC<
           />
         </div>
       </div>
+      <CreatureCanvas
+        compCtx={compCtx}
+        ctx={ctx}
+        creature={creature}
+        ref={svgRef}
+      />
+    </Page>
+  );
+};
+
+type CreatureCanvasProps = {
+  compCtx: SvgCompositionContext;
+  ctx: CreatureContextType;
+  creature: CreatureSymbol;
+};
+
+const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
+  ({ compCtx, ctx, creature }, svgRef) => {
+    return (
       <div className="canvas" style={{ backgroundColor: compCtx.background }}>
         <CreatureContext.Provider value={ctx}>
           <HoverDebugHelper>
@@ -374,6 +393,6 @@ export const CreaturePageWithDefaults: React.FC<
           </HoverDebugHelper>
         </CreatureContext.Provider>
       </div>
-    </Page>
-  );
-};
+    );
+  }
+);
