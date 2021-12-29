@@ -396,20 +396,15 @@ const ANIMATION_PERIOD_MS = 5000;
 
 const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
   ({ compCtx, render }, svgRef) => {
-    const canvasRef = useRef<HTMLDivElement | null>(null);
     const animPct = useAnimationPct(ANIMATION_PERIOD_MS);
 
     return (
-      <div
-        className="canvas"
-        style={{ backgroundColor: compCtx.background }}
-        ref={canvasRef}
-      >
+      <div className="canvas" style={{ backgroundColor: compCtx.background }}>
         <HoverDebugHelper>
           <AutoSizingSvg
-            padding={20}
+            padding={100}
             ref={svgRef}
-            sizeToElement={canvasRef}
+            resizeKey={render}
             bgColor={compCtx.background}
           >
             {render(animPct)}
