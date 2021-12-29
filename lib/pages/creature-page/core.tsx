@@ -20,7 +20,7 @@ import { Random } from "../../random";
 import { range } from "../../util";
 
 import { AutoSizingSvg } from "../../auto-sizing-svg";
-import { ExportWidget } from "../../export-svg";
+import { AnimationRenderer, ExportWidget } from "../../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
@@ -314,6 +314,11 @@ export const CreaturePageWithDefaults: React.FC<
     useCallback(() => onChange(design), [onChange, design])
   );
 
+  const render = useMemo(
+    () => createCreatureAnimationRenderer(creature, ctx),
+    [creature, ctx]
+  );
+
   return (
     <Page title="Cluster!">
       <div className="sidebar">
@@ -357,29 +362,42 @@ export const CreaturePageWithDefaults: React.FC<
           <ExportWidget
             basename={getDownloadBasename(creature.data.name)}
             svgRef={svgRef}
+            animate={{ duration: ANIMATION_PERIOD_MS, render }}
           />
         </div>
       </div>
-      <CreatureCanvas
-        compCtx={compCtx}
-        ctx={ctx}
-        creature={creature}
-        ref={svgRef}
-      />
+      <CreatureCanvas compCtx={compCtx} render={render} ref={svgRef} />
     </Page>
   );
 };
 
+function createCreatureAnimationRenderer(
+  creature: CreatureSymbol,
+  ctx: CreatureContextType,
+  scale = 0.5
+): AnimationRenderer {
+  return (animPct) => {
+    return (
+      <SvgTransform transform={svgScale(scale)}>
+        <CreatureContext.Provider value={ctx}>
+          <CreatureSymbol {...creature} animPct={animPct} />
+        </CreatureContext.Provider>
+      </SvgTransform>
+    );
+  };
+}
+
 type CreatureCanvasProps = {
   compCtx: SvgCompositionContext;
-  ctx: CreatureContextType;
-  creature: CreatureSymbol;
+  render: AnimationRenderer;
 };
 
+const ANIMATION_PERIOD_MS = 5000;
+
 const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
-  ({ compCtx, ctx, creature }, svgRef) => {
+  ({ compCtx, render }, svgRef) => {
     const canvasRef = useRef<HTMLDivElement | null>(null);
-    const animPct = useAnimationPct(5000);
+    const animPct = useAnimationPct(ANIMATION_PERIOD_MS);
 
     return (
       <div
@@ -387,20 +405,16 @@ const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
         style={{ backgroundColor: compCtx.background }}
         ref={canvasRef}
       >
-        <CreatureContext.Provider value={ctx}>
-          <HoverDebugHelper>
-            <AutoSizingSvg
-              padding={20}
-              ref={svgRef}
-              sizeToElement={canvasRef}
-              bgColor={compCtx.background}
-            >
-              <SvgTransform transform={svgScale(0.5)}>
-                <CreatureSymbol {...creature} animPct={animPct} />
-              </SvgTransform>
-            </AutoSizingSvg>
-          </HoverDebugHelper>
-        </CreatureContext.Provider>
+        <HoverDebugHelper>
+          <AutoSizingSvg
+            padding={20}
+            ref={svgRef}
+            sizeToElement={canvasRef}
+            bgColor={compCtx.background}
+          >
+            {render(animPct)}
+          </AutoSizingSvg>
+        </HoverDebugHelper>
       </div>
     );
   }
