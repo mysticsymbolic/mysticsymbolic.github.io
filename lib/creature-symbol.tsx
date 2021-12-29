@@ -51,14 +51,19 @@ export type CreatureSymbol = {
 
 export type CreatureSymbolProps = CreatureSymbol & {
   animPct?: number;
+  animScale?: number;
 };
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
+  animPct: number;
+  animScale: number;
 };
 
 type AttachedCreatureSymbolProps = AttachedCreatureSymbol & {
   parent: SvgSymbolData;
+  animPct: number;
+  animScale: number;
 };
 
 function getNestingTransforms(parent: BBox, child: BBox) {
@@ -238,12 +243,19 @@ function pctToNegativeOneToOne(pct: number) {
   return (pct - 0.5) * 2;
 }
 
+const Y_HOVER_AMPLITUDE = 25.0;
+const CHILD_ANIM_SCALE_MULTIPLIER = 0.5;
+
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
+  const animPct = props.animPct ?? 0;
+  const animScale = props.animScale ?? 1;
   const yHover =
-    pctToNegativeOneToOne(easeInOutQuadPingPong(props.animPct || 0)) * 25.0;
+    pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) *
+    Y_HOVER_AMPLITUDE *
+    animScale;
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -261,7 +273,13 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
-            <AttachedCreatureSymbol key={i} {...a} parent={data} />
+            <AttachedCreatureSymbol
+              key={i}
+              {...a}
+              parent={data}
+              animPct={animPct}
+              animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
+            />
           ))}
         </CreatureContext.Provider>
       )}
@@ -269,7 +287,13 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       {nests.length && (
         <CreatureContext.Provider value={nestedCtx}>
           {nests.map((n, i) => (
-            <NestedCreatureSymbol key={i} {...n} parent={data} />
+            <NestedCreatureSymbol
+              key={i}
+              {...n}
+              parent={data}
+              animPct={animPct}
+              animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
+            />
           ))}
         </CreatureContext.Provider>
       )}
