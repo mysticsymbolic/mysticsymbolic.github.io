@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
+import { CreatureAnimator, nullAnimator } from "./creature-animator";
 import { scalePointXY, subtractPoints } from "./point";
 import { AttachmentPointType } from "./specs";
 import {
@@ -49,24 +50,22 @@ export type CreatureSymbol = {
   nests: NestedCreatureSymbol[];
 };
 
-type AnimationType = "hover" | "rotate";
-
 export type CreatureSymbolProps = CreatureSymbol & {
-  animType?: AnimationType;
+  animator?: CreatureAnimator;
   animPct?: number;
   animScale?: number;
 };
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
-  animType: AnimationType;
+  animator: CreatureAnimator;
   animPct: number;
   animScale: number;
 };
 
 type AttachedCreatureSymbolProps = AttachedCreatureSymbol & {
   parent: SvgSymbolData;
-  animType: AnimationType;
+  animator: CreatureAnimator;
   animPct: number;
   animScale: number;
 };
@@ -218,55 +217,20 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
   return <>{children}</>;
 };
 
-/**
- * Any function that takes a number in the range [0, 1] and
- * transforms it to a number in the same range, for the
- * purposes of animation easing.
- */
-type EasingFunction = (t: number) => number;
-
-// https://gist.github.com/gre/1650294
-const easeInOutQuad: EasingFunction = (t) =>
-  t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-
-/**
- * Ease from 0, get to 1 by the time t=0.5, and then
- * ease back to 0.
- */
-const easeInOutQuadPingPong: EasingFunction = (t) => {
-  if (t < 0.5) {
-    return easeInOutQuad(t * 2);
-  }
-  return 1 - easeInOutQuad((t - 0.5) * 2);
-};
-
-/**
- * Convert a percentage (number in the range [0, 1]) to
- * a number in the range [-1, 1].
- */
-function pctToNegativeOneToOne(pct: number) {
-  return (pct - 0.5) * 2;
-}
-
-const Y_HOVER_AMPLITUDE = 25.0;
 const CHILD_ANIM_SCALE_MULTIPLIER = 0.5;
 
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
-  const animType = props.animType ?? "hover";
+  const animator = props.animator ?? nullAnimator;
   const animPct = props.animPct ?? 0;
   const animScale = props.animScale ?? 1;
-  const yHover =
-    pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) *
-    Y_HOVER_AMPLITUDE *
-    animScale;
-  const origin = getBoundingBoxCenter(data.bbox);
-  const svgTransforms =
-    animType === "hover"
-      ? [svgTranslate({ x: 0, y: yHover })]
-      : [svgRotate(animPct * 360)];
+  const svgTransforms = useMemo(
+    () => animator.getSvgTransforms(animPct, animScale, data),
+    [animator, animPct, animScale, data]
+  );
+  const childAnimator = useMemo(() => animator.getChildAnimator(), [animator]);
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -280,7 +244,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
   return (
-    <SvgTransform transform={[svgTransformOrigin(origin, svgTransforms)]}>
+    <SvgTransform transform={svgTransforms}>
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
@@ -290,7 +254,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               parent={data}
               animPct={animPct}
               animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
-              animType="rotate"
+              animator={childAnimator}
             />
           ))}
         </CreatureContext.Provider>
@@ -305,7 +269,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               parent={data}
               animPct={animPct}
               animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
-              animType="rotate"
+              animator={childAnimator}
             />
           ))}
         </CreatureContext.Provider>
