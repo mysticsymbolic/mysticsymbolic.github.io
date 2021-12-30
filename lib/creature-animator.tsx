@@ -60,22 +60,28 @@ const animateSpin: CreatureAnimate = (animPct, symbol) => {
   return [svgTransformOrigin(origin, [svgRotate(animPct * 360)])];
 };
 
-export const hoverAnimator: CreatureAnimator = {
-  animate: animateHover,
-  getChildAnimator: () => hoverAnimator,
-};
-
 const spinAnimator: CreatureAnimator = {
   animate: animateSpin,
   getChildAnimator: () => spinAnimator,
 };
 
-export const hoverAndSpinAnimator: CreatureAnimator = {
-  animate: animateHover,
-  getChildAnimator: () => spinAnimator,
-};
+export const CREATURE_ANIMATOR_NAMES = ["none", "breathe", "spin"] as const;
 
-export const nullAnimator: CreatureAnimator = {
-  animate: () => [],
-  getChildAnimator: () => nullAnimator,
+type CreatureAnimatorName = typeof CREATURE_ANIMATOR_NAMES[number];
+
+export const CreatureAnimators: {
+  [k in CreatureAnimatorName]: CreatureAnimator;
+} = {
+  none: {
+    animate: () => [],
+    getChildAnimator: () => CreatureAnimators.none,
+  },
+  breathe: {
+    animate: animateHover,
+    getChildAnimator: () => CreatureAnimators.breathe,
+  },
+  spin: {
+    animate: animateHover,
+    getChildAnimator: () => spinAnimator,
+  },
 };

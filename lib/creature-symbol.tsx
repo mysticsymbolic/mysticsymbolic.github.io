@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from "react";
 import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
-import { CreatureAnimator, nullAnimator } from "./creature-animator";
+import { CreatureAnimator, CreatureAnimators } from "./creature-animator";
 import { scalePointXY, subtractPoints } from "./point";
 import { AttachmentPointType } from "./specs";
 import {
@@ -218,7 +218,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
-  const animator = props.animator ?? nullAnimator;
+  const animator = props.animator ?? CreatureAnimators.none;
   const animPct = props.animPct ?? 0;
   const svgTransforms = useMemo(
     () => animator.animate(animPct, data),

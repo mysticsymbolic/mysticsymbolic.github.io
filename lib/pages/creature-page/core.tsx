@@ -47,7 +47,7 @@ import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
 import { CreatureEditorWidget } from "./creature-editor";
 import { useAnimationPct } from "../../animation";
-import { hoverAndSpinAnimator } from "../../creature-animator";
+import { CreatureAnimators } from "../../creature-animator";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -384,7 +384,7 @@ function createCreatureAnimationRenderer(
           <CreatureSymbol
             {...creature}
             animPct={animPct}
-            animator={hoverAndSpinAnimator}
+            animator={CreatureAnimators.spin}
           />
         </CreatureContext.Provider>
       </SvgTransform>
