@@ -9,7 +9,6 @@ import {
 
 type AnimationTransformer = (
   animPct: number,
-  animScale: number,
   symbol: SvgSymbolData
 ) => SvgTransform[];
 
@@ -50,15 +49,13 @@ function pctToNegativeOneToOne(pct: number) {
 
 const Y_HOVER_AMPLITUDE = 25.0;
 
-const hoverTransformer: AnimationTransformer = (animPct, animScale) => {
+const hoverTransformer: AnimationTransformer = (animPct) => {
   const yHover =
-    pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) *
-    Y_HOVER_AMPLITUDE *
-    animScale;
+    pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) * Y_HOVER_AMPLITUDE;
   return [svgTranslate({ x: 0, y: yHover })];
 };
 
-const spinTransformer: AnimationTransformer = (animPct, animScale, symbol) => {
+const spinTransformer: AnimationTransformer = (animPct, symbol) => {
   const origin = getBoundingBoxCenter(symbol.bbox);
   return [svgTransformOrigin(origin, [svgRotate(animPct * 360)])];
 };

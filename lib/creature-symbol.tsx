@@ -53,21 +53,18 @@ export type CreatureSymbol = {
 export type CreatureSymbolProps = CreatureSymbol & {
   animator?: CreatureAnimator;
   animPct?: number;
-  animScale?: number;
 };
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
   animator: CreatureAnimator;
   animPct: number;
-  animScale: number;
 };
 
 type AttachedCreatureSymbolProps = AttachedCreatureSymbol & {
   parent: SvgSymbolData;
   animator: CreatureAnimator;
   animPct: number;
-  animScale: number;
 };
 
 function getNestingTransforms(parent: BBox, child: BBox) {
@@ -217,18 +214,15 @@ const NestedCreatureSymbol: React.FC<NestedCreatureSymbolProps> = ({
   return <>{children}</>;
 };
 
-const CHILD_ANIM_SCALE_MULTIPLIER = 0.5;
-
 export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
   const animator = props.animator ?? nullAnimator;
   const animPct = props.animPct ?? 0;
-  const animScale = props.animScale ?? 1;
   const svgTransforms = useMemo(
-    () => animator.getSvgTransforms(animPct, animScale, data),
-    [animator, animPct, animScale, data]
+    () => animator.getSvgTransforms(animPct, data),
+    [animator, animPct, data]
   );
   const childAnimator = useMemo(() => animator.getChildAnimator(), [animator]);
 
@@ -253,7 +247,6 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               {...a}
               parent={data}
               animPct={animPct}
-              animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
               animator={childAnimator}
             />
           ))}
@@ -268,7 +261,6 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               {...n}
               parent={data}
               animPct={animPct}
-              animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
               animator={childAnimator}
             />
           ))}
