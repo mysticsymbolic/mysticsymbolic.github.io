@@ -7,13 +7,13 @@ import {
   svgTranslate,
 } from "./svg-transform";
 
-type AnimationTransformer = (
+type CreatureAnimate = (
   animPct: number,
   symbol: SvgSymbolData
 ) => SvgTransform[];
 
 export interface CreatureAnimator {
-  getSvgTransforms: AnimationTransformer;
+  animate: CreatureAnimate;
   getChildAnimator(): CreatureAnimator;
 }
 
@@ -49,33 +49,33 @@ function pctToNegativeOneToOne(pct: number) {
 
 const Y_HOVER_AMPLITUDE = 25.0;
 
-const hoverTransformer: AnimationTransformer = (animPct) => {
+const animateHover: CreatureAnimate = (animPct) => {
   const yHover =
     pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) * Y_HOVER_AMPLITUDE;
   return [svgTranslate({ x: 0, y: yHover })];
 };
 
-const spinTransformer: AnimationTransformer = (animPct, symbol) => {
+const animateSpin: CreatureAnimate = (animPct, symbol) => {
   const origin = getBoundingBoxCenter(symbol.bbox);
   return [svgTransformOrigin(origin, [svgRotate(animPct * 360)])];
 };
 
 export const hoverAnimator: CreatureAnimator = {
-  getSvgTransforms: hoverTransformer,
+  animate: animateHover,
   getChildAnimator: () => hoverAnimator,
 };
 
 const spinAnimator: CreatureAnimator = {
-  getSvgTransforms: spinTransformer,
+  animate: animateSpin,
   getChildAnimator: () => spinAnimator,
 };
 
 export const hoverAndSpinAnimator: CreatureAnimator = {
-  getSvgTransforms: hoverTransformer,
+  animate: animateHover,
   getChildAnimator: () => spinAnimator,
 };
 
 export const nullAnimator: CreatureAnimator = {
-  getSvgTransforms: () => [],
+  animate: () => [],
   getChildAnimator: () => nullAnimator,
 };

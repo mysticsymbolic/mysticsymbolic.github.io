@@ -221,7 +221,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   const animator = props.animator ?? nullAnimator;
   const animPct = props.animPct ?? 0;
   const svgTransforms = useMemo(
-    () => animator.getSvgTransforms(animPct, data),
+    () => animator.animate(animPct, data),
     [animator, animPct, data]
   );
   const childAnimator = useMemo(() => animator.getChildAnimator(), [animator]);
