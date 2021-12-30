@@ -304,6 +304,7 @@ export const CreaturePageWithDefaults: React.FC<
       "creature-page:animatorName",
       "none"
     );
+  const isAnimated = animatorName !== "none";
   const [randomlyInvert, setRandomlyInvert] = useRememberedState(
     "creature-page:randomlyInvert",
     true
@@ -399,11 +400,16 @@ export const CreaturePageWithDefaults: React.FC<
           <ExportWidget
             basename={getDownloadBasename(creature.data.name)}
             svgRef={svgRef}
-            animate={{ duration: ANIMATION_PERIOD_MS, render }}
+            animate={isAnimated && { duration: ANIMATION_PERIOD_MS, render }}
           />
         </div>
       </div>
-      <CreatureCanvas compCtx={compCtx} render={render} ref={svgRef} />
+      <CreatureCanvas
+        compCtx={compCtx}
+        render={render}
+        ref={svgRef}
+        isAnimated={isAnimated}
+      />
     </Page>
   );
 };
@@ -430,6 +436,7 @@ function createCreatureAnimationRenderer(
 }
 
 type CreatureCanvasProps = {
+  isAnimated: boolean;
   compCtx: SvgCompositionContext;
   render: AnimationRenderer;
 };
@@ -437,8 +444,8 @@ type CreatureCanvasProps = {
 const ANIMATION_PERIOD_MS = 5000;
 
 const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
-  ({ compCtx, render }, svgRef) => {
-    const animPct = useAnimationPct(ANIMATION_PERIOD_MS);
+  ({ isAnimated, compCtx, render }, svgRef) => {
+    const animPct = useAnimationPct(isAnimated ? ANIMATION_PERIOD_MS : 0);
 
     return (
       <div className="canvas" style={{ backgroundColor: compCtx.background }}>
