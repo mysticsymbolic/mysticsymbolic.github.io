@@ -49,19 +49,24 @@ export type CreatureSymbol = {
   nests: NestedCreatureSymbol[];
 };
 
+type AnimationType = "hover" | "rotate";
+
 export type CreatureSymbolProps = CreatureSymbol & {
+  animType?: AnimationType;
   animPct?: number;
   animScale?: number;
 };
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
+  animType: AnimationType;
   animPct: number;
   animScale: number;
 };
 
 type AttachedCreatureSymbolProps = AttachedCreatureSymbol & {
   parent: SvgSymbolData;
+  animType: AnimationType;
   animPct: number;
   animScale: number;
 };
@@ -250,12 +255,18 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
+  const animType = props.animType ?? "hover";
   const animPct = props.animPct ?? 0;
   const animScale = props.animScale ?? 1;
   const yHover =
     pctToNegativeOneToOne(easeInOutQuadPingPong(animPct)) *
     Y_HOVER_AMPLITUDE *
     animScale;
+  const origin = getBoundingBoxCenter(data.bbox);
+  const svgTransforms =
+    animType === "hover"
+      ? [svgTranslate({ x: 0, y: yHover })]
+      : [svgRotate(animPct * 360)];
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -269,7 +280,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
   return (
-    <SvgTransform transform={[svgTranslate({ x: 0, y: yHover })]}>
+    <SvgTransform transform={[svgTransformOrigin(origin, svgTransforms)]}>
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
@@ -279,6 +290,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               parent={data}
               animPct={animPct}
               animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
+              animType="rotate"
             />
           ))}
         </CreatureContext.Provider>
@@ -293,6 +305,7 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
               parent={data}
               animPct={animPct}
               animScale={animScale * CHILD_ANIM_SCALE_MULTIPLIER}
+              animType="rotate"
             />
           ))}
         </CreatureContext.Provider>
