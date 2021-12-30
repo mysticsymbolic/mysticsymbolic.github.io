@@ -67,7 +67,7 @@ const spinAnimator: CreatureAnimator = {
 
 export const CREATURE_ANIMATOR_NAMES = ["none", "breathe", "spin"] as const;
 
-type CreatureAnimatorName = typeof CREATURE_ANIMATOR_NAMES[number];
+export type CreatureAnimatorName = typeof CREATURE_ANIMATOR_NAMES[number];
 
 export const CreatureAnimators: {
   [k in CreatureAnimatorName]: CreatureAnimator;

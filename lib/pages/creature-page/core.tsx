@@ -47,7 +47,11 @@ import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
 import { CreatureEditorWidget } from "./creature-editor";
 import { useAnimationPct } from "../../animation";
-import { CreatureAnimators } from "../../creature-animator";
+import {
+  CreatureAnimatorName,
+  CreatureAnimators,
+  CREATURE_ANIMATOR_NAMES,
+} from "../../creature-animator";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -266,10 +270,40 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+type AnimationWidgetProps = {
+  value: CreatureAnimatorName;
+  onChange: (name: CreatureAnimatorName) => void;
+};
+
+const AnimationWidget: React.FC<AnimationWidgetProps> = (props) => {
+  const id = "animationName";
+  return (
+    <div className="flex-widget thingy">
+      <label htmlFor={id}>Animation (experimental):</label>
+      <select
+        id={id}
+        onChange={(e) => props.onChange(e.target.value as CreatureAnimatorName)}
+        value={props.value}
+      >
+        {CREATURE_ANIMATOR_NAMES.map((choice) => (
+          <option key={choice} value={choice}>
+            {choice}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
 export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [animatorName, setAnimatorName] =
+    useRememberedState<CreatureAnimatorName>(
+      "creature-page:animatorName",
+      "none"
+    );
   const [randomlyInvert, setRandomlyInvert] = useRememberedState(
     "creature-page:randomlyInvert",
     true
@@ -316,8 +350,9 @@ export const CreaturePageWithDefaults: React.FC<
   );
 
   const render = useMemo(
-    () => createCreatureAnimationRenderer(creature, ctx),
-    [creature, ctx]
+    () =>
+      createCreatureAnimationRenderer(creature, ctx, undefined, animatorName),
+    [creature, ctx, animatorName]
   );
 
   return (
@@ -325,6 +360,7 @@ export const CreaturePageWithDefaults: React.FC<
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
         <CreatureEditorWidget creature={creature} onChange={setCreature} />
+        <AnimationWidget value={animatorName} onChange={setAnimatorName} />
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomCreature}
@@ -375,7 +411,8 @@ export const CreaturePageWithDefaults: React.FC<
 function createCreatureAnimationRenderer(
   creature: CreatureSymbol,
   ctx: CreatureContextType,
-  scale = 0.5
+  scale = 0.5,
+  animatorName: CreatureAnimatorName = "none"
 ): AnimationRenderer {
   return (animPct) => {
     return (
@@ -384,7 +421,7 @@ function createCreatureAnimationRenderer(
           <CreatureSymbol
             {...creature}
             animPct={animPct}
-            animator={CreatureAnimators.spin}
+            animator={CreatureAnimators[animatorName]}
           />
         </CreatureContext.Provider>
       </SvgTransform>
