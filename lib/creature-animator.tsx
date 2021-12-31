@@ -75,9 +75,25 @@ const spinAnimator: CreatureAnimator = {
   getChildAnimator: () => spinAnimator,
 };
 
+/**
+ * Names of all the animators.
+ *
+ * Note that this list should never be re-ordered, as the index of
+ * each animator corresponds to its animator id.
+ */
 export const CREATURE_ANIMATOR_NAMES = ["none", "breathe", "spin"] as const;
 
 export type CreatureAnimatorName = typeof CREATURE_ANIMATOR_NAMES[number];
+
+export function creatureAnimatorNameToId(name: CreatureAnimatorName): number {
+  return CREATURE_ANIMATOR_NAMES.indexOf(name);
+}
+
+export function creatureAnimatorIdToName(
+  id: number
+): CreatureAnimatorName | undefined {
+  return CREATURE_ANIMATOR_NAMES[id];
+}
 
 export const CreatureAnimators: {
   [k in CreatureAnimatorName]: CreatureAnimator;

@@ -3,11 +3,6 @@
   "name": "AvroCreatureDesign",
   "fields": [
     {
-      "name": "animatorId",
-      "type": "int",
-      "default": 0
-    },
-    {
       "name": "compCtx",
       "type": {
         "name": "AvroSvgCompositionContext",
