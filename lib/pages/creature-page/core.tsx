@@ -256,11 +256,13 @@ function repeatUntilSymbolIsIncluded(
 }
 
 export type CreatureDesign = {
+  animatorName: CreatureAnimatorName;
   compCtx: SvgCompositionContext;
   creature: CreatureSymbol;
 };
 
 export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
+  animatorName: "none",
   compCtx: createSvgCompositionContext(),
   creature: {
     data: ROOT_SYMBOLS[0],
@@ -279,7 +281,7 @@ const AnimationWidget: React.FC<AnimationWidgetProps> = (props) => {
   const id = "animationName";
   return (
     <div className="flex-widget thingy">
-      <label htmlFor={id}>Animation (experimental):</label>
+      <label htmlFor={id}>Animation:</label>
       <select
         id={id}
         onChange={(e) => props.onChange(e.target.value as CreatureAnimatorName)}
@@ -299,11 +301,7 @@ export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [animatorName, setAnimatorName] =
-    useRememberedState<CreatureAnimatorName>(
-      "creature-page:animatorName",
-      "none"
-    );
+  const [animatorName, setAnimatorName] = useState(defaults.animatorName);
   const isAnimated = animatorName !== "none";
   const [randomlyInvert, setRandomlyInvert] = useRememberedState(
     "creature-page:randomlyInvert",
@@ -339,10 +337,11 @@ export const CreaturePageWithDefaults: React.FC<
   );
   const design: CreatureDesign = useMemo(
     () => ({
+      animatorName,
       creature,
       compCtx,
     }),
-    [creature, compCtx]
+    [creature, compCtx, animatorName]
   );
 
   useDebouncedEffect(
