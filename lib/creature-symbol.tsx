@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { BBox, Point } from "../vendor/bezier-js";
 import { getAttachmentTransforms } from "./attach";
 import { getBoundingBoxCenter, uniformlyScaleToFit } from "./bounding-box";
+import { CreatureAnimator, CreatureAnimators } from "./creature-animator";
 import { scalePointXY, subtractPoints } from "./point";
 import { AttachmentPointType } from "./specs";
 import {
@@ -49,14 +50,21 @@ export type CreatureSymbol = {
   nests: NestedCreatureSymbol[];
 };
 
-export type CreatureSymbolProps = CreatureSymbol;
+export type CreatureSymbolProps = CreatureSymbol & {
+  animator?: CreatureAnimator;
+  animPct?: number;
+};
 
 type NestedCreatureSymbolProps = NestedCreatureSymbol & {
   parent: SvgSymbolData;
+  animator: CreatureAnimator;
+  animPct: number;
 };
 
 type AttachedCreatureSymbolProps = AttachedCreatureSymbol & {
   parent: SvgSymbolData;
+  animator: CreatureAnimator;
+  animPct: number;
 };
 
 function getNestingTransforms(parent: BBox, child: BBox) {
@@ -210,6 +218,13 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   let ctx = useContext(CreatureContext);
   const { data, attachments, nests } = props;
   const attachmentCtx: CreatureContextType = { ...ctx, parent: data };
+  const animator = props.animator ?? CreatureAnimators.none;
+  const animPct = props.animPct ?? 0;
+  const svgTransforms = useMemo(
+    () => animator.animate(animPct, data),
+    [animator, animPct, data]
+  );
+  const childAnimator = useMemo(() => animator.getChildAnimator(), [animator]);
 
   if (props.invertColors) {
     ctx = swapColors(ctx);
@@ -223,11 +238,17 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
   // appear behind our symbol, while anything nested within our symbol
   // should be after our symbol so they appear in front of it.
   return (
-    <>
+    <SvgTransform transform={svgTransforms}>
       {attachments.length && (
         <CreatureContext.Provider value={attachmentCtx}>
           {attachments.map((a, i) => (
-            <AttachedCreatureSymbol key={i} {...a} parent={data} />
+            <AttachedCreatureSymbol
+              key={i}
+              {...a}
+              parent={data}
+              animPct={animPct}
+              animator={childAnimator}
+            />
           ))}
         </CreatureContext.Provider>
       )}
@@ -235,10 +256,16 @@ export const CreatureSymbol: React.FC<CreatureSymbolProps> = (props) => {
       {nests.length && (
         <CreatureContext.Provider value={nestedCtx}>
           {nests.map((n, i) => (
-            <NestedCreatureSymbol key={i} {...n} parent={data} />
+            <NestedCreatureSymbol
+              key={i}
+              {...n}
+              parent={data}
+              animPct={animPct}
+              animator={childAnimator}
+            />
           ))}
         </CreatureContext.Provider>
       )}
-    </>
+    </SvgTransform>
   );
 };

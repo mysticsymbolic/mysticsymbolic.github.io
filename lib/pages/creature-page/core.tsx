@@ -20,7 +20,7 @@ import { Random } from "../../random";
 import { range } from "../../util";
 
 import { AutoSizingSvg } from "../../auto-sizing-svg";
-import { ExportWidget } from "../../export-svg";
+import { AnimationRenderer, ExportWidget } from "../../export-svg";
 import {
   CreatureContext,
   CreatureContextType,
@@ -46,6 +46,12 @@ import { useRememberedState } from "../../use-remembered-state";
 import { GalleryWidget } from "../../gallery-widget";
 import { serializeCreatureDesign } from "./serialization";
 import { CreatureEditorWidget } from "./creature-editor";
+import { useAnimationPct } from "../../animation";
+import {
+  CreatureAnimatorName,
+  CreatureAnimators,
+  CREATURE_ANIMATOR_NAMES,
+} from "../../creature-animator";
 
 /**
  * The minimum number of attachment points that any symbol used as the main body
@@ -264,10 +270,41 @@ export const CREATURE_DESIGN_DEFAULTS: CreatureDesign = {
   },
 };
 
+type AnimationWidgetProps = {
+  value: CreatureAnimatorName;
+  onChange: (name: CreatureAnimatorName) => void;
+};
+
+const AnimationWidget: React.FC<AnimationWidgetProps> = (props) => {
+  const id = "animationName";
+  return (
+    <div className="flex-widget thingy">
+      <label htmlFor={id}>Animation (experimental):</label>
+      <select
+        id={id}
+        onChange={(e) => props.onChange(e.target.value as CreatureAnimatorName)}
+        value={props.value}
+      >
+        {CREATURE_ANIMATOR_NAMES.map((choice) => (
+          <option key={choice} value={choice}>
+            {choice}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
 export const CreaturePageWithDefaults: React.FC<
   ComponentWithShareableStateProps<CreatureDesign>
 > = ({ defaults, onChange }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [animatorName, setAnimatorName] =
+    useRememberedState<CreatureAnimatorName>(
+      "creature-page:animatorName",
+      "none"
+    );
+  const isAnimated = animatorName !== "none";
   const [randomlyInvert, setRandomlyInvert] = useRememberedState(
     "creature-page:randomlyInvert",
     true
@@ -313,11 +350,18 @@ export const CreaturePageWithDefaults: React.FC<
     useCallback(() => onChange(design), [onChange, design])
   );
 
+  const render = useMemo(
+    () =>
+      createCreatureAnimationRenderer(creature, ctx, undefined, animatorName),
+    [creature, ctx, animatorName]
+  );
+
   return (
     <Page title="Cluster!">
       <div className="sidebar">
         <CompositionContextWidget ctx={compCtx} onChange={setCompCtx} />
         <CreatureEditorWidget creature={creature} onChange={setCreature} />
+        <AnimationWidget value={animatorName} onChange={setAnimatorName} />
         <RandomizerWidget
           onColorsChange={(colors) => setCompCtx({ ...compCtx, ...colors })}
           onSymbolsChange={newRandomCreature}
@@ -356,42 +400,65 @@ export const CreaturePageWithDefaults: React.FC<
           <ExportWidget
             basename={getDownloadBasename(creature.data.name)}
             svgRef={svgRef}
+            animate={isAnimated && { duration: ANIMATION_PERIOD_MS, render }}
           />
         </div>
       </div>
       <CreatureCanvas
         compCtx={compCtx}
-        ctx={ctx}
-        creature={creature}
+        render={render}
         ref={svgRef}
+        isAnimated={isAnimated}
       />
     </Page>
   );
 };
 
+function createCreatureAnimationRenderer(
+  creature: CreatureSymbol,
+  ctx: CreatureContextType,
+  scale = 0.5,
+  animatorName: CreatureAnimatorName = "none"
+): AnimationRenderer {
+  return (animPct) => {
+    return (
+      <SvgTransform transform={svgScale(scale)}>
+        <CreatureContext.Provider value={ctx}>
+          <CreatureSymbol
+            {...creature}
+            animPct={animPct}
+            animator={CreatureAnimators[animatorName]}
+          />
+        </CreatureContext.Provider>
+      </SvgTransform>
+    );
+  };
+}
+
 type CreatureCanvasProps = {
+  isAnimated: boolean;
   compCtx: SvgCompositionContext;
-  ctx: CreatureContextType;
-  creature: CreatureSymbol;
+  render: AnimationRenderer;
 };
 
+const ANIMATION_PERIOD_MS = 5000;
+
 const CreatureCanvas = React.forwardRef<SVGSVGElement, CreatureCanvasProps>(
-  ({ compCtx, ctx, creature }, svgRef) => {
+  ({ isAnimated, compCtx, render }, svgRef) => {
+    const animPct = useAnimationPct(isAnimated ? ANIMATION_PERIOD_MS : 0);
+
     return (
       <div className="canvas" style={{ backgroundColor: compCtx.background }}>
-        <CreatureContext.Provider value={ctx}>
-          <HoverDebugHelper>
-            <AutoSizingSvg
-              padding={20}
-              ref={svgRef}
-              bgColor={compCtx.background}
-            >
-              <SvgTransform transform={svgScale(0.5)}>
-                <CreatureSymbol {...creature} />
-              </SvgTransform>
-            </AutoSizingSvg>
-          </HoverDebugHelper>
-        </CreatureContext.Provider>
+        <HoverDebugHelper>
+          <AutoSizingSvg
+            padding={100}
+            ref={svgRef}
+            resizeKey={render}
+            bgColor={compCtx.background}
+          >
+            {render(animPct)}
+          </AutoSizingSvg>
+        </HoverDebugHelper>
       </div>
     );
   }

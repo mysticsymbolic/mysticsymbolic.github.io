@@ -3,7 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 type AutoSizingSvgProps = {
   padding?: number;
   bgColor?: string;
+
+  /**
+   * A ref to an element that we resize the SVG dimensions
+   * to match. If not provided, we'll just use the bounding
+   * box of the SVG itself.
+   */
   sizeToElement?: React.RefObject<HTMLElement>;
+
+  /**
+   * Whenever this key changes, we'll resize the SVG. If
+   * it's undefined, we will use `props.children` as
+   * the key.
+   */
+  resizeKey?: any;
+
   children: JSX.Element | JSX.Element[];
 };
 
@@ -45,10 +59,14 @@ export const AutoSizingSvg = React.forwardRef(
 
     useResizeHandler(resizeToElement);
 
-    // Note that we're passing `props.children` in as a dependency; it's not
-    // used anywhere in the effect, but since any change to the
-    // children may result in a dimension change in the SVG element, we
-    // want it to trigger the effect.
+    // This is an "artificial" effect dependency that isn't used anywhere in
+    // our effect, but is used to determine when our effect is triggered.
+    // By default, since any change to `props.children` may result in a
+    // dimension change in the SVG element, we want it to trigger the effect,
+    // but alternatively our caller can tell us when to resize via
+    // `props.resizeKey` too.
+    const resizeDependency = props.resizeKey ?? props.children;
+
     useEffect(() => {
       if (!resizeToElement()) {
         const svgEl = gRef.current;
@@ -61,7 +79,7 @@ export const AutoSizingSvg = React.forwardRef(
           setHeight(bbox.height + padding * 2);
         }
       }
-    }, [props.padding, resizeToElement, props.children]);
+    }, [props.padding, resizeToElement, resizeDependency]);
 
     return (
       <svg
