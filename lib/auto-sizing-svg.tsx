@@ -3,8 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 type AutoSizingSvgProps = {
   padding?: number;
   bgColor?: string;
+
+  /**
+   * A ref to an element that we resize the SVG dimensions
+   * to match. If not provided, we'll just use the bounding
+   * box of the SVG itself.
+   */
   sizeToElement?: React.RefObject<HTMLElement>;
+
+  /**
+   * Whenever this key changes, we'll resize the SVG. If
+   * it's undefined, we will use `props.children` as
+   * the key.
+   */
   resizeKey?: any;
+
   children: JSX.Element | JSX.Element[];
 };
 

@@ -7,13 +7,23 @@ import {
   svgTranslate,
 } from "./svg-transform";
 
+/**
+ * A type of function that tells us how to transform a creature based
+ * on how far through an animation we are.
+ */
 type CreatureAnimate = (
   animPct: number,
   symbol: SvgSymbolData
 ) => SvgTransform[];
 
+/**
+ * A strategy for animating a creature.
+ */
 export interface CreatureAnimator {
+  /** How to animate the main body of the creature. */
   animate: CreatureAnimate;
+
+  /** How to animate the children (attachments & nests) of the creature. */
   getChildAnimator(): CreatureAnimator;
 }
 
